@@ -1,5 +1,5 @@
-import React, { memo, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert } from 'react-native';
+import React, { memo, useState, useEffect } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert} from 'react-native';
 import Background from '../components/Background';
 import Logo from '../components/Logo';
 import Header from '../components/Header';
@@ -13,11 +13,11 @@ import {
   nameValidator,
 } from '../core/utils';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
-import { Dropdown } from 'react-native-material-dropdown';
 import AnimatedLoader from "react-native-animated-loader";
-import {Button as BTNElements} from 'react-native-elements';
+import {Button as BTNElements, CheckBox } from 'react-native-elements';
 import {Foundation} from '@expo/vector-icons'
 import  moment  from  "moment";
+import RNPickerSelect from 'react-native-picker-select';
 
 const RegisterScreen = ({ navigation }) => {
   const [firstName, setFirstName] = useState({ value: '', error: '' });
@@ -29,8 +29,53 @@ const RegisterScreen = ({ navigation }) => {
   const [birthdate, setBirthdate] = useState(null)
   const [isLoading, setIsLoading] = useState(false);
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
+  const [maleChecked, setMaleChecked] = useState(false)
+  const [femaleChecked, setFemaleChecked] = useState(false)
+  const [languages, setLanguages] = useState([])
+  const [languageChosen, setLanguageChosen] = useState('')
+
 
   const apiUrl = 'http://proj.ruppin.ac.il/bgroup10/PROD/api/Tourist/Register'
+  const languageApiUrl = 'http://proj.ruppin.ac.il/bgroup10/PROD/api/Language';
+
+  //on load the screen - get all the languages from DB
+  useEffect(() => {
+    
+   getFromDB(); 
+   
+    }, [])
+
+    //get all languages
+    const getFromDB = () =>{
+      fetch(languageApiUrl, {
+        method: 'GET',
+        headers: new Headers({
+          'Content-type': 'application/json; charset=UTF-8' //very important to add the 'charset=UTF-8'!!!!
+        })
+        
+      })
+        .then(res => {
+        // console.warn('res=', JSON.stringify(res));
+          return res.json()
+        })
+        .then(
+          (result) => {
+         //console.warn("fetch POST= ", JSON.stringify(result));
+         const temp = [];
+           for (let i = 0; i < result.length; i++) {
+             
+             const Id = result[i].Id
+             const lbl = result[i].LName
+             temp.push({label: lbl, value: Id})
+           }
+           setLanguages(temp)
+           
+           },
+          (error) => {
+            console.warn("err post=", error);
+          });
+    }
+
 
 //show date picker
 const showDatePicker = () => {
@@ -49,7 +94,7 @@ const handleConfirm = date => {
   hideDatePicker();
 };
 
-
+//on sign up pressed - validation & post if validation approved
   const _onSignUpPressed = () => {
     setIsLoading(true)
     //validation
@@ -206,11 +251,21 @@ const navigateTo = (profile) =>{
     
   };
 
-  const data = [{
-    value: 'Male',
-  }, {
-    value: 'Female',
-  }];
+//checked or unchecked function for the Gender
+  const toggleGender = (id) =>{
+if(id == 1 && !maleChecked){
+  setMaleChecked(true)
+  setFemaleChecked(false)
+  setGender('male')
+}
+if(id== 2 && !femaleChecked){
+  setFemaleChecked(true);
+  setMaleChecked(false)
+  setGender('female')
+}
+  }
+
+
   return (
     
     <Background>
@@ -287,18 +342,33 @@ const navigateTo = (profile) =>{
         secureTextEntry
       />
 
-         
-          <Dropdown
-             containerStyle={styles.DropDown}
-             textColor='black'
-             label='Gender'
-             labelTextStyle={{marginLeft: 10, marginTop: 4}}
-             itemTextStyle={{color: 'black'}}
-             dropdownOffset={{ 'top': 0 }}
-             data={data}
-             onChangeText={value => setGender(value)}
-           />
+        <View style={{fontSize: 16, paddingVertical: 12, paddingHorizontal: 10, borderWidth: 1, borderColor: 'gray', borderRadius: 4, color: 'black', paddingRight: 30, backgroundColor: 'white', marginTop: 20}}>          
+         <RNPickerSelect
+            onValueChange={(value) => setLanguageChosen(value)}
+            items={languages}
+            placeholder={{label: 'Select a language',value: null,}}
+          />
+        </View>
 
+          <View style={{flex: 1, flexDirection: 'row'}}>
+            <Text style={{color: 'white', fontWeight: 'bold', alignSelf: 'center', fontSize: 18}}>Gender:</Text>
+            <CheckBox
+              title='Male'
+              checked={maleChecked}
+              containerStyle={{backgroundColor: 'transparent', borderColor: 'transparent'}}
+              textStyle={{color: 'white'}}
+              onPress={() => toggleGender(1)}
+            />
+            <CheckBox
+              title='Female'
+              checked={femaleChecked}
+              containerStyle={{backgroundColor: 'transparent', borderColor: 'transparent'}}
+              textStyle={{color: 'white'}}
+              onPress={() => toggleGender(2)}
+            />
+
+
+          </View>
          <View style={{alignItems: 'center'}}>
 
          <BTNElements
@@ -324,7 +394,7 @@ const navigateTo = (profile) =>{
         />
           
          </View>
-
+        
       <Button 
       mode="contained" 
       onPress={_onSignUpPressed} style={styles.button}
@@ -364,13 +434,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#4b9fd6',
   },
-  DropDown:{
-    backgroundColor: 'white', 
-    width: '50%',
-    alignSelf: 'center', 
-    marginVertical: 12,  
-    borderRadius: 5 ,
-  },
+
 
 });
 

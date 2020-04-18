@@ -9,7 +9,7 @@ import * as Facebook from 'expo-facebook';
 import {FontAwesome, AntDesign} from '@expo/vector-icons'
 import * as Google from "expo-google-app-auth";
 import AnimatedLoader from "react-native-animated-loader";
-//commit check
+ 
 
 const HomeScreen = ({ navigation }) => {
   

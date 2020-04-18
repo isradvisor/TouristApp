@@ -37,8 +37,9 @@ const FadeInView = (props) => {
 
 
 // You can then use your `FadeInView` in place of a `View` in your components:
-export default () => {
+export default ({navigation}) => {
 
+  const profile = navigation.getParam('profile');
   const [fontLoaded, setFontLoaded] = useState(false);
   const [modalVisible, setModalVisible] = useState(true);
   const [isImageViewVisible, setIsImageViewVisible] = useState(false);
@@ -285,7 +286,7 @@ export default () => {
       }
 
       const user = {
-        Email: "galbz123@gmail.com",
+        Email: profile.Email,
         Hobbies: idHobbiesListForDB,
         Expertises : idExpertiseListForDB
       }
@@ -312,6 +313,9 @@ export default () => {
           (error) => {
             console.warn("err post=", error);
           });
+
+
+          //need to complete: navigation to the last page
      }
     
   return (
