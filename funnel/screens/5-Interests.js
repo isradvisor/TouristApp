@@ -305,9 +305,10 @@ export default ({navigation}) => {
           return res.json()
         })
         .then(
+          //results = row affected in DB & tourist ID
           (result) => {
-          console.warn("fetch POST= ", JSON.stringify(result));
-    
+           console.warn("fetch POST= ", JSON.stringify(result));
+           navigation.navigate('MatchScreen', {TouristId: result[0], profile: profile})
   
            },
           (error) => {
@@ -588,7 +589,7 @@ textImages:{
   },
 
   galleryBtn: {
-    backgroundColor: 'white', 
+    backgroundColor: '#f2f2f2', 
     alignSelf: 'flex-start'
   },
 })

@@ -5,6 +5,7 @@ import TripType from './funnel/screens/2-tripType';
 import FlightsDates from './funnel/screens/3-FlightsDates'
 import Budget from './funnel/screens/4-Budget'
 import Interest from './funnel/screens/5-Interests'
+import MatchScreen from './funnel/screens/6-matchScreen'
 import {
   HomeScreen,
   LoginScreen,
@@ -24,7 +25,8 @@ const Router = createStackNavigator(
     TripType,
     FlightsDates,
     Budget,
-    Interest
+    Interest,
+    MatchScreen
   },
   {
     initialRouteName: 'HomeScreen',

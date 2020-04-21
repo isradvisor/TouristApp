@@ -67,6 +67,7 @@ const RegisterScreen = ({ navigation }) => {
              const Id = result[i].Id
              const lbl = result[i].LName
              temp.push({label: lbl, value: Id})
+
            }
            setLanguages(temp)
            
@@ -144,7 +145,8 @@ const handleConfirm = date => {
         Email: email.value,
         PasswordTourist: password.value,
         Gender: gender,
-        YearOfBirth: birthdate
+        YearOfBirth: birthdate,
+        LanguageCode: languageChosen
       }
 
       fetch(apiUrl, {
@@ -164,9 +166,9 @@ const handleConfirm = date => {
          // console.warn("fetch POST= ", JSON.stringify(result));
 
         //Error list from fetch:
-        //0 = db error
-        //1= sign up succeeded
-        //2 = email already use
+        //0 / 1 = db error
+        //2= sign up succeeded
+        //3 = email already use
 
 
             switch(result){
@@ -182,11 +184,11 @@ const handleConfirm = date => {
                 setIsLoading(flase)
                 break;
 
-                case 1:
+                case 2:
                   StopLoadingProccessWithNavigate(CloseLoading, user);
                 break;
 
-                case 2:
+                case 3:
                   Alert.alert(
                     'Error',
                     'Email already in use, please change Email address',
