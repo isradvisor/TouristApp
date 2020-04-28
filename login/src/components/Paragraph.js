@@ -1,16 +1,52 @@
-import React, { memo } from 'react';
-import { StyleSheet, Text } from 'react-native';
+import React, { memo, useEffect, useState } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
 import { theme } from '../core/theme';
+import * as Font from 'expo-font';
 
-const Paragraph = ({ children }) => <Text style={styles.text}>{children}</Text>;
+const Paragraph = ({ children }) => {
+  
+  const [fontLoaded, setFontLoaded] = useState(false)
+
+  //load the font before loading the whole page
+useEffect(() => {
+  async function loadFont() {
+    loadContent();
+    
+  };
+    loadFont();
+  }, [])
+
+  //font load
+  const loadContent =  () =>{
+    
+    Font.loadAsync({
+      'ComicNeue-Bold': require('../../../funnel/fonts/ComicNeue-Bold.ttf')
+    }).then(() => setFontLoaded(true))
+
+  }
+  return(
+    <View>
+      {fontLoaded && <Text style={styles.text}>{children}</Text>}
+    </View>
+  )
+
+}
+
+
+
 
 const styles = StyleSheet.create({
   text: {
-    fontSize: 16,
+    fontSize: 18,
     lineHeight: 26,
     color: theme.colors.white,
     textAlign: 'center',
-    marginBottom: 14,
+    marginBottom: 2,
+    marginTop: 20,
+    fontFamily: 'ComicNeue-Bold',
+    textShadowColor:'#585858',
+    textShadowOffset:{width: 5, height: 5},
+    textShadowRadius: 4,
   },
 });
 

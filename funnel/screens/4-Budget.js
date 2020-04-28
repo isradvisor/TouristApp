@@ -151,7 +151,7 @@ const fetchToDB = (user) =>{
             break;
 
             case 1:
-              console.warn('fetch Succeeded! :)')    
+              //console.warn('fetch Succeeded! :)')    
               navigation.navigate('Interest', {profile: profile})             
             break;
               default:

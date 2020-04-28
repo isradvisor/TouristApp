@@ -134,7 +134,7 @@ const handleConfirm = date => {
       ToDate: endDate,
       EstimateDate: moment(esitmateMonth).format('YYYY-MM-DD')
     }
-    console.warn(user)
+    //console.warn(user)
     fetchToDB(user)
   }
   else{
@@ -145,7 +145,7 @@ const handleConfirm = date => {
       ToDate: moment(endDate).format('YYYY-MM-DD'),
       EstimateDate: null
     }
-    console.warn(user)
+    //console.warn(user)
     fetchToDB(user)
   }
  }

@@ -20,9 +20,13 @@ const styles = StyleSheet.create({
   container: {
     width: '100%',
     marginVertical: 12,
+    
   },
   input: {
     backgroundColor: theme.colors.surface,
+    opacity: 0.85,
+    
+    
   },
   error: {
     fontSize: 14,

@@ -45,7 +45,7 @@ export default ({navigation}) => {
   const apiUrl = 'http://proj.ruppin.ac.il/bgroup10/PROD/api/Match/calculateTouristBetweenGuides/' + TouristId
   const apiGetGuidesUrl = 'http://proj.ruppin.ac.il/bgroup10/PROD/api/Guide/TopMatchGuides'
 
-  console.warn(TouristId)
+
 
 //load the font before loading the whole page
   useEffect(() => {
@@ -128,7 +128,7 @@ export default ({navigation}) => {
            }
     
           }
-          console.warn(result)
+          //console.warn(result)
           setTopThreeGuides(result)
           
            },

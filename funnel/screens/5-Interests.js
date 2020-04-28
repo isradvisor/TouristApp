@@ -301,13 +301,13 @@ export default ({navigation}) => {
         
       })
         .then(res => {
-         console.warn('res=', JSON.stringify(res));
+        // console.warn('res=', JSON.stringify(res));
           return res.json()
         })
         .then(
           //results = row affected in DB & tourist ID
           (result) => {
-           console.warn("fetch POST= ", JSON.stringify(result));
+           //console.warn("fetch POST= ", JSON.stringify(result));
            navigation.navigate('MatchScreen', {TouristId: result[0], profile: profile})
   
            },

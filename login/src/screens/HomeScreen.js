@@ -1,5 +1,5 @@
-import React, { memo, useState } from 'react';
-import { Text, Alert} from 'react-native'
+import React, { memo, useState, useRef, useEffect } from 'react';
+import { Text, Alert, View, Animated} from 'react-native'
 import Background from '../components/Background';
 import Logo from '../components/Logo';
 import Header from '../components/Header';
@@ -11,6 +11,34 @@ import * as Google from "expo-google-app-auth";
 import AnimatedLoader from "react-native-animated-loader";
  
 
+const FadeInView = (props) => {
+
+  const fadeAnim = useRef(new Animated.Value(0)).current  // Initial value for opacity: 0
+  
+
+  useEffect(() =>{
+
+    Animated.timing(
+      fadeAnim,
+      {
+        toValue: 1,
+        duration: 2000,
+      }
+    ).start();
+  }, [])
+ 
+  return (
+    <Animated.View                 // Special animatable View
+      style={{
+        ...props.style,
+        opacity: fadeAnim,         // Bind opacity to animated value
+      }}
+    >
+      {props.children}
+    </Animated.View>
+  );
+}
+
 const HomeScreen = ({ navigation }) => {
   
 
@@ -18,10 +46,12 @@ const IOS_CLIENT_ID = "369112967382-tqc9ttloirgp9ne76rfmbdc3upmv26kf.apps.google
 const ANDROID_CLIENT_ID = "369112967382-gbahqts3s171d0p3uo3bceq1dedfq8ap.apps.googleusercontent.com";
 const apiUrlFacebook = 'http://proj.ruppin.ac.il/bgroup10/PROD/api/Tourist/FacebookUser';
 const apiUrlGoogle = 'http://proj.ruppin.ac.il/bgroup10/PROD/api/Tourist/GoogleUser';
+
+
 const appId = '2490345164547632';
 const [isLoading, setIsLoading] = useState(false);
 
-//login with google
+//signin with google
 const signInWithGoogle = async () => {
   setIsLoading(true)
   try {
@@ -35,7 +65,7 @@ const signInWithGoogle = async () => {
      // console.warn("LoginScreen.js.js 21 | ", result);
       
       const temp = result;
-     
+
        const profile = {
         FirstName: temp.user.givenName,
         LastName: temp.user.familyName,
@@ -79,11 +109,14 @@ const signInWithGoogle = async () => {
 
                 case 1:
 
-                  StopLoadingProccessWithNavigate(CloseLoading, profile);
+                  StopLoadingProccessWithNavigate(CloseLoading, profile, result);
                   
                 break;
+                
                 case 2:
-                  StopLoadingProccessWithNavigate(CloseLoading, profile);
+                  
+                StopLoadingProccessWithNavigate(CloseLoading, profile, result);
+                
                 break;
 
                     default:
@@ -97,43 +130,59 @@ const signInWithGoogle = async () => {
                     )
                     break;
           }})
-      navigation.navigate('Dashboard', { profile: profile })
+
 
     } else {
       return { cancelled: true };
     }
   } catch (e) {
     console.warn('LoginScreen.js.js 30 | Error with login', e);
+    setIsLoading(false)
     return { error: true };
   }
 };
 //funciton that create call back - loading and after navigation
-const StopLoadingProccessWithNavigate = async (CloseLoading,  profile) =>{
-  CloseLoading(profile);
+const StopLoadingProccessWithNavigate = async (CloseLoading,  profile, caseResult) =>{
+  
+  CloseLoading(profile, caseResult);
 }
 
 //loading timer
-const CloseLoading = (profile) =>{
+const CloseLoading = (profile, caseResult) =>{
   setTimeout(() => { 
   setIsLoading(false);
  }, 1500);
- navigateTo(profile);
+ navigateTo(profile, caseResult);
 }
 
 
 //navigation to next page with all the details of the user
-const navigateTo = (profile) =>{
+const navigateTo = (profile, caseResult) =>{
+
  
  setTimeout(() => { 
-  Alert.alert(
-    'Welcome!',
-    'You sign in successfully! enjoy your trip!',
-    [
-      {text: 'OK'},
-    ],
-    { cancelable: false }
-  )
-  navigation.navigate('Dashboard', { profile: profile });
+  if(caseResult == 1){
+    Alert.alert(
+      'Welcome!',
+      'Just finish the Regsitration and we are all set!',
+      [
+        {text: 'OK'},
+      ],
+      { cancelable: false }
+    )
+  }
+  else{
+    Alert.alert(
+      'Welcome!',
+      'You sign in successfully! enjoy your trip!',
+      [
+        {text: 'OK'},
+      ],
+      { cancelable: false }
+    )
+  }
+  
+  navigation.navigate(caseResult == 1? 'RegisterScreen' : 'Dashboard', { profile: profile });
   }, 1500);
 }
 
@@ -151,12 +200,16 @@ const logInWithFacebook = async () =>{
       const response = await fetch(`https://graph.facebook.com/me?access_token=${token}&fields=id,name,email,about,picture`);
     
        const temp = await response.json();
-      
+       const splitName = temp.name.split(' ')
+
        const profile = {
-        FirstName: temp.name,
+        FirstName: splitName[0],
+        LastName: LastNameConverter(splitName),
         Email: temp.email,
         ProfilePic: temp.picture.data.url,
       }
+
+      console.warn(profile)
 
 
       //fetch to db
@@ -196,13 +249,13 @@ const logInWithFacebook = async () =>{
                 case 1:
                   Alert.alert(
                     'Welcome!',
-                    'You sign in successfully! enjoy your trip!',
+                    'Just finish the Regsitration and we are all set!',
                     [
                       {text: 'OK'},
                     ],
                     { cancelable: false }
                   )
-                navigation.navigate('Dashboard', { profile: profile })
+                navigation.navigate('RegisterScreen', { profile: profile })
                 break;
 
                 case 2:
@@ -234,7 +287,7 @@ const logInWithFacebook = async () =>{
           (error) => {
             console.warn("err post=", error);
           });
-      navigation.navigate('Dashboard', { profile: profile })
+
 
     } else {
       // type === 'cancel'
@@ -243,10 +296,25 @@ const logInWithFacebook = async () =>{
     alert(`Facebook Login Error: ${message}`);
   }
 }
+
+//LastName converter for facebook users
+const LastNameConverter = (splitOfFacebookNames) =>{
+  const temp = [];
+  for (let index = 1; index < splitOfFacebookNames.length; index++) {
+     temp.push(splitOfFacebookNames[index]);
+    
+  }
+  
+  return temp.toString().replace(',', ' ');
+}
   return(
 <Background>
-    <Logo />
-    <Header>Welcome To IsraVisor</Header>
+  {/* <FadeInView>
+  <Logo />
+  </FadeInView> */}
+    
+    <FadeInView>
+    <Header>Welcome To IsraAdvisor</Header>
     {isLoading &&  <AnimatedLoader
         visible={isLoading}
         overlayColor="rgba(255,255,255,0.75)"
@@ -254,29 +322,14 @@ const logInWithFacebook = async () =>{
         source={require("../../../assets/loading.json")}
         speed={1}
       />}
-    <Paragraph>
+    <Paragraph >
       Let's start create your trip in Israel!
     </Paragraph>
-    
-    <Button mode="contained" 
-       style={{ backgroundColor: '#4b9fd6', color: 'white'}}
-      onPress={() => navigation.navigate('LoginScreen')}
-    >
-      Log in
-    </Button>
+    </FadeInView>
+      <View style={{height: '25%'}}>
 
-    <Button 
-      mode="outlined" 
-      style={{ backgroundColor: '#3b5998', color: 'white'}}
-      onPress={logInWithFacebook}
-      >
-     
-    <FontAwesome name="facebook" size={20} color="white" styleIcon={{marginRight: 10}}></FontAwesome>
-    
-    <Text style={{color: 'white'}}>   Sign in With Facebook</Text>
-    </Button>
-
-
+      </View>
+      <FadeInView>
     <Button
       mode="outlined"
       onPress={signInWithGoogle}
@@ -286,13 +339,38 @@ const logInWithFacebook = async () =>{
     <Text style={{color: 'white'}}>     Sign in With Google</Text>
     </Button>
 
+    </FadeInView>
+
+      <FadeInView>
+    <Button 
+      mode="outlined" 
+      style={{ backgroundColor: '#3b5998', color: 'white', }}
+      onPress={logInWithFacebook}
+      >
+     
+    <FontAwesome name="facebook" size={20} color="white" styleIcon={{marginRight: 10}}></FontAwesome>
+    
+    <Text style={{color: 'white'}}>   Sign in With Facebook</Text>
+    </Button>
+    </FadeInView>
+<FadeInView style={{flexDirection: "row", }}> 
+    <Button mode="contained" 
+       style={{ backgroundColor: '#4b9fd6', color: 'white', width: '43.5%', marginRight: '1%'}}
+      onPress={() => navigation.navigate('LoginScreen')}
+    >
+      Log in
+    </Button>
+
     
     <Button
       mode="outlined"
       onPress={() => navigation.navigate('RegisterScreen')}
+      style={{width: '43.5%', marginLeft: '1%'}}
     >
        <Text style={{color: '#4b9fd6'}}>Sign Up</Text>
     </Button>
+
+    </FadeInView>
   </Background>
   )
   

@@ -20,6 +20,8 @@ import  moment  from  "moment";
 import RNPickerSelect from 'react-native-picker-select';
 
 const RegisterScreen = ({ navigation }) => {
+
+  const googleFacebookAccount = navigation.getParam('profile');
   const [firstName, setFirstName] = useState({ value: '', error: '' });
   const [lastName, setLastName] = useState({ value: '', error: '' });
   const [email, setEmail] = useState({ value: '', error: '' });
@@ -35,15 +37,23 @@ const RegisterScreen = ({ navigation }) => {
   const [languageChosen, setLanguageChosen] = useState('')
 
 
-  const apiUrl = 'http://proj.ruppin.ac.il/bgroup10/PROD/api/Tourist/Register'
+
+  const apiSignUpUrl = 'http://proj.ruppin.ac.il/bgroup10/PROD/api/Tourist/Register'
+  const apiGFSignUpFirstTimeUrl = 'http://proj.ruppin.ac.il/bgroup10/PROD/api/Tourist/GoogleFacebookSignUpFirstTime'
   const languageApiUrl = 'http://proj.ruppin.ac.il/bgroup10/PROD/api/Language';
 
   //on load the screen - get all the languages from DB
   useEffect(() => {
     
    getFromDB(); 
-   
+   if(googleFacebookAccount != undefined){
+    setFirstName({ value: googleFacebookAccount.FirstName, error: '' });
+    setLastName({ value: googleFacebookAccount.LastName, error: '' });
+    setEmail({ value: googleFacebookAccount.Email, error: '' })
+   }
+
     }, [])
+
 
     //get all languages
     const getFromDB = () =>{
@@ -139,18 +149,40 @@ const handleConfirm = date => {
     //if the validation ok, he will turn to this path of registration
     else{
       
-     const user = {
-        FirstName: firstName.value,
-        LastName: lastName.value,
-        Email: email.value,
-        PasswordTourist: password.value,
-        Gender: gender,
-        YearOfBirth: birthdate,
-        LanguageCode: languageChosen
+      if(googleFacebookAccount == undefined){
+          const user = {
+                FirstName: firstName.value,
+                LastName: lastName.value,
+                Email: email.value,
+                PasswordTourist: password.value,
+                Gender: gender,
+                YearOfBirth: birthdate,
+                LanguageCode: languageChosen
+              }
+              fetchToDB(user, apiSignUpUrl)
+      }else{
+          const user = {
+            FirstName: firstName.value,
+            LastName: lastName.value,
+            Email: email.value,
+            PasswordTourist: password.value,
+            Gender: gender,
+            YearOfBirth: birthdate,
+            LanguageCode: languageChosen
+          }
+          fetchToDB(user, apiGFSignUpFirstTimeUrl)
       }
+     
 
+      
+    }
+  };
+
+
+  //POST or PUT - depence on if the user Sign up with google or facebook account, or new sign up
+ const fetchToDB = (user, apiUrl) =>{
       fetch(apiUrl, {
-        method: 'POST',
+        method: googleFacebookAccount == undefined ?'POST' : 'PUT',
         body: JSON.stringify(user),
         headers: new Headers({
           'Content-type': 'application/json; charset=UTF-8' //very important to add the 'charset=UTF-8'!!!!
@@ -181,7 +213,7 @@ const handleConfirm = date => {
                   ],
                   { cancelable: false }
                 )
-                setIsLoading(flase)
+                setIsLoading(false)
                 break;
 
                 case 2:
@@ -218,7 +250,7 @@ const handleConfirm = date => {
             setIsLoading(false)
           });
     }
-
+  
     
 //funciton that create call back - loading and after navigation
 const StopLoadingProccessWithNavigate = async (CloseLoading,  profile) =>{
@@ -236,7 +268,7 @@ const CloseLoading = (profile) =>{
 
 //navigation to next page with all the details of the user
 const navigateTo = (profile) =>{
- 
+
  setTimeout(() => { 
   Alert.alert(
     'Welcome!',
@@ -251,7 +283,7 @@ const navigateTo = (profile) =>{
 }
 
     
-  };
+  
 
 //checked or unchecked function for the Gender
   const toggleGender = (id) =>{
@@ -280,10 +312,10 @@ if(id== 2 && !femaleChecked){
       >
       <BackButton goBack={() => navigation.navigate('HomeScreen')} />
 
-      <View style={{alignSelf: 'center', marginTop: 50}}>
-         <Logo />
+      <View style={{ marginTop: 100}}>
+         {/* <Logo /> */}
       </View>
-      <Header>Create Account</Header>
+      <Header style={{alignSelf: 'center'}}>Create Account</Header>
       
       {isLoading &&  <AnimatedLoader
         visible={isLoading}
@@ -296,25 +328,27 @@ if(id== 2 && !femaleChecked){
       <TextInput
         label="First Name"
         returnKeyType="next"
-        value={firstName.value}
-        onChangeText={text => setFirstName({ value: text, error: '' })}
+        value={googleFacebookAccount == undefined? firstName.value : googleFacebookAccount.FirstName}
+        onChangeText={text =>  setFirstName({ value: text, error: '' })}
         error={!!firstName.error}
         errorText={firstName.error}
+        disabled={googleFacebookAccount == undefined? false : true}
       />
 
       <TextInput
         label="Last Name"
         returnKeyType="next"
-        value={lastName.value}
-        onChangeText={text => setLastName({ value: text, error: '' })}
+        value={googleFacebookAccount == undefined? lastName.value : googleFacebookAccount.LastName}
+        onChangeText={text =>  setLastName({ value: text, error: '' })}
         error={!!lastName.error}
         errorText={lastName.error}
+        disabled={googleFacebookAccount == undefined? false : true}
       />
 
       <TextInput
         label="Email"
         returnKeyType="next"
-        value={email.value}
+        value={googleFacebookAccount == undefined? email.value : googleFacebookAccount.Email}
         onChangeText={text => setEmail({ value: text, error: '' })}
         error={!!email.error}
         errorText={email.error}
@@ -322,6 +356,7 @@ if(id== 2 && !femaleChecked){
         autoCompleteType="email"
         textContentType="emailAddress"
         keyboardType="email-address"
+        disabled={googleFacebookAccount == undefined? false : true}
       />
 
       <TextInput
@@ -344,11 +379,12 @@ if(id== 2 && !femaleChecked){
         secureTextEntry
       />
 
-        <View style={{fontSize: 16, paddingVertical: 12, paddingHorizontal: 10, borderWidth: 1, borderColor: 'gray', borderRadius: 4, color: 'black', paddingRight: 30, backgroundColor: 'white', marginTop: 20}}>          
+        <View style={{fontSize: 16, paddingVertical: 12, paddingHorizontal: 10, borderWidth: 1, borderColor: 'gray', borderRadius: 4, color: 'black', paddingRight: 30, backgroundColor: 'white', marginTop: 20, width: '60%', alignSelf: 'center'}}>          
          <RNPickerSelect
             onValueChange={(value) => setLanguageChosen(value)}
             items={languages}
-            placeholder={{label: 'Select a language',value: null,}}
+            placeholder={{label: 'Select a language',value: null}}
+            
           />
         </View>
 
