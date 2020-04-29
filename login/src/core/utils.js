@@ -14,7 +14,7 @@ export const passwordValidator = password => {
 };
 
 export const nameValidator = name => {
-  if (!name || name.length <= 0) return 'Name cannot be empty.';
+  if (!name || name.length <= 0 ) return 'Name cannot be empty.';
 
   return '';
 };

@@ -116,7 +116,7 @@ const handleConfirm = date => {
     const confirmPassError = passwordValidator(confirmPass.value);
 
 
-    if (emailError || passwordError || nameError || lastNameError || password.value != confirmPass.value || gender == '') {
+    if (emailError || passwordError || nameError || lastNameError || password.value != confirmPass.value || gender == '' || birthdate == null || languageChosen == '') {
       setFirstName({ ...firstName, error: nameError });
       setLastName({ ...lastName, error: lastNameError });
       setEmail({ ...email, error: emailError });
@@ -142,34 +142,47 @@ const handleConfirm = date => {
           { cancelable: false }
         )
       }
+      if( birthdate == null){
+        Alert.alert(
+          'Error',
+          'Please set your BirthDate',
+          [
+            {text: 'OK'},
+          ],
+          { cancelable: false }
+        )
+      }
+      if(languageChosen == ''){
+        Alert.alert(
+          'Error',
+          'Please set your native language',
+          [
+            {text: 'OK'},
+          ],
+          { cancelable: false }
+        )
+      }
+      
       
       return;
     }
     
     //if the validation ok, he will turn to this path of registration
     else{
-      
+      const user = {
+        FirstName: firstName.value,
+        LastName: lastName.value,
+        Email: email.value,
+        PasswordTourist: password.value,
+        Gender: gender,
+        YearOfBirth: birthdate,
+        LanguageCode: languageChosen
+      }
       if(googleFacebookAccount == undefined){
-          const user = {
-                FirstName: firstName.value,
-                LastName: lastName.value,
-                Email: email.value,
-                PasswordTourist: password.value,
-                Gender: gender,
-                YearOfBirth: birthdate,
-                LanguageCode: languageChosen
-              }
+          
               fetchToDB(user, apiSignUpUrl)
       }else{
-          const user = {
-            FirstName: firstName.value,
-            LastName: lastName.value,
-            Email: email.value,
-            PasswordTourist: password.value,
-            Gender: gender,
-            YearOfBirth: birthdate,
-            LanguageCode: languageChosen
-          }
+         
           fetchToDB(user, apiGFSignUpFirstTimeUrl)
       }
      
@@ -418,7 +431,7 @@ if(id== 2 && !femaleChecked){
           />
             }
             iconContainerStyle={{alignSelf: 'flex-start', flexDirection: 'row'}}
-            title={birthdate == null ?"    BirthDate" : JSON.stringify(moment(birthdate).format('DD-MM-YYYY'))}
+            title={birthdate == null ?"    BirthDate" : '  '+ moment(birthdate).format('DD-MM-YYYY')}
             buttonStyle={{ width: '78%', backgroundColor: 'white', alignSelf: 'center', marginLeft: 10, marginVertical: 12, borderRadius: 7}}
             titleStyle={{color: 'black'}}
             onPress={showDatePicker}

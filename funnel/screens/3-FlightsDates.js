@@ -1,12 +1,13 @@
 import React, {useState, useRef, useEffect } from 'react';
-import { Animated, Text, View, StyleSheet, Alert} from 'react-native';
+import { Animated, Text, View, StyleSheet, Alert, Modal, TouchableOpacity} from 'react-native';
 import * as Font from 'expo-font';
 import AnimatedProgressWheel from 'react-native-progress-wheel';
 import { Button } from 'react-native-elements';
 import  moment  from  "moment";
 import DateRangePicker from "react-native-daterange-picker";
-import DateTimePickerModal from "react-native-modal-datetime-picker";
+import MonthPicker from 'react-native-month-picker';
 
+//fade in view animation
 const FadeInView = (props) => {
 
   const fadeAnim = useRef(new Animated.Value(0)).current  // Initial value for opacity: 0
@@ -35,7 +36,7 @@ const FadeInView = (props) => {
 }
 
 
-// You can then use your `FadeInView` in place of a `View` in your components:
+
 export default ({navigation}) => {
 
   const profile = navigation.getParam('profile');
@@ -47,28 +48,24 @@ export default ({navigation}) => {
   const todayDate = moment();
   const [showText, setShowText] = useState(false)
   const [esitmateMonth, setEstimateMonth] = useState(todayDate);
-  const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
   const [showBtnContinue, setShowBtnContinue] = useState(false)
+  const [isOpen, toggleOpen] = useState(false);
+
 
  const apiUrl = 'http://proj.ruppin.ac.il/bgroup10/PROD/api/Tourist/FlightsDates'
 
  //show date picker
  const showDatePicker = () => {
+  toggleOpen(true)
   setShowText(false)
-  setDatePickerVisibility(true);
   setStartDate(null)
   setEndDate(null)
 };
 
-//hide date picker
-const hideDatePicker = () => {
-  setDatePickerVisibility(false);
-};
 
 //on confirm press
 const handleConfirm = date => {
   setEstimateMonth(date)
-  hideDatePicker();
   setShowBtnContinue(true);
 };
  //function that set up the dates that picked by the user
@@ -132,7 +129,7 @@ const handleConfirm = date => {
       Email: profile.Email,
       FromDate: startDate,
       ToDate: endDate,
-      EstimateDate: moment(esitmateMonth).format('YYYY-MM-DD')
+      EstimateDate: moment(esitmateMonth).format('YYYY-MM')
     }
     //console.warn(user)
     fetchToDB(user)
@@ -165,7 +162,7 @@ const handleConfirm = date => {
     })
     .then(
       (result) => {
-      //console.warn("fetch POST= ", JSON.stringify(result));
+     // console.warn("fetch POST= ", JSON.stringify(result));
 
     //list from fetch:
     //0 = db error
@@ -243,10 +240,10 @@ const handleConfirm = date => {
               minDate={todayDate}
               
             >
-              {showText && <Text style={styles.pickDatetxt}>Pick Dates</Text>}
+              {showText && <View style={{marginBottom: 50, borderWidth: 5, borderColor: '#2196f3', backgroundColor: '#2196f3',borderRadius: 25}}><Text style={styles.pickDatetxt}>Pick Dates</Text></View>}
             </DateRangePicker>
             <Button
-            title="I dont know yet"
+            title="Pick estimate month"
             type="outline"
             buttonStyle={styles.dontKnowBtn}
             titleStyle={{color: 'white'}}
@@ -264,13 +261,29 @@ const handleConfirm = date => {
             titleStyle={{color: 'white'}}
             onPress={fetchAndContinue}
           />}
-        <DateTimePickerModal
-          isVisible={isDatePickerVisible}
-          mode="date"
-          onConfirm={handleConfirm}
-          onCancel={hideDatePicker}
-          headerTextIOS='Pick an estimate date'
-        />
+          {/* its test */}
+          <Modal
+              transparent
+              animationType="fade"
+              visible={isOpen}
+          >
+        <View style={styles.contentContainer}>
+          <View style={styles.content}>
+            <MonthPicker
+              selectedDate={esitmateMonth || new Date()}
+              onMonthChange={change => handleConfirm(change)}
+              minDate={new Date(moment())}
+              maxDate={moment('01-2100', 'MM-YYYY')}
+              
+            />
+            <TouchableOpacity
+              style={styles.confirmButton}
+              onPress={() => toggleOpen(false)}>
+              <Text>Confirm</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </View>
   )
 }
@@ -300,9 +313,12 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   pickDatetxt: {
-    marginBottom: 50,
+    
     fontWeight: "bold",
-    fontSize: 20
+    fontSize: 20,
+    color: 'white'
+    
+
   },
   continueBtn: {
     backgroundColor: '#ade6d8', 
@@ -312,7 +328,44 @@ const styles = StyleSheet.create({
     borderColor: '#ade6d8', 
     borderRadius: 10,
     alignSelf: 'center'
-  }
+  },
+  input: {
+    backgroundColor: 'white',
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderWidth: 0.5,
+    borderRadius: 5,
+    width: '100%',
+    marginVertical: 6,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    borderRadius: 50
+  },
+  inputText: {
+    fontSize: 16,
+    fontWeight: '500',
+  },
+  contentContainer: {
+    flexDirection: 'column',
+    justifyContent: 'center',
+    height: '100%',
+    backgroundColor: 'rgba(0,0,0,0.5)',
+  },
+  content: {
+    backgroundColor: '#fff',
+    marginHorizontal: 20,
+    marginVertical: 70,
+  },
+  confirmButton: {
+    borderWidth: 0.5,
+    padding: 15,
+    margin: 10,
+    borderRadius: 5,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   
   
 })

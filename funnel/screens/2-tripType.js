@@ -153,7 +153,7 @@ export default ({navigation}) => {
         <View style={styles.firstRawView  }>
           <TouchableOpacity style={styles.viewInsideRaw} onPress={() => onTripTypePress('Couple')}>
                 <Image
-                          source={ require('../pictures/couple.png' )}
+                          source={ require('../pictures/couplen.png' )}
                           style={tripType == 'Couple'? styles.imageActive: styles.imageStyle}
                           PlaceholderContent={<ActivityIndicator style={{backgroundColor: 'white'}}/>}
                           containerStyle={{borderRadius: 50}}
@@ -163,7 +163,7 @@ export default ({navigation}) => {
           </TouchableOpacity>
           <TouchableOpacity style={styles.viewInsideRaw}  onPress={() => onTripTypePress('Solo')}>
                 <Image
-                          source={ require('../pictures/solo.png' )}
+                          source={ require('../pictures/solon.png' )}
                           style={tripType == 'Solo'? styles.imageActive: styles.imageStyle}                
                           PlaceholderContent={<ActivityIndicator style={{backgroundColor: 'white'}}/>}
                           containerStyle={{borderRadius: 50}}
@@ -176,7 +176,7 @@ export default ({navigation}) => {
       <View style={styles.secondRawView}>
           <TouchableOpacity style={styles.viewInsideRaw} onPress={() => onTripTypePress('Family')}>
             <Image
-                      source={ require('../pictures/family.jpeg' )}
+                      source={ require('../pictures/familyn.png' )}
                       style={tripType == 'Family'? styles.imageActive: styles.imageStyle}
                       PlaceholderContent={<ActivityIndicator style={{backgroundColor: 'white'}}/>}
                       containerStyle={{borderRadius: 50}}
@@ -187,7 +187,7 @@ export default ({navigation}) => {
 
           <TouchableOpacity style={styles.viewInsideRaw} onPress={() => onTripTypePress('Friends')}>
               <Image
-                      source={ require('../pictures/friends.jpeg' )}
+                      source={ require('../pictures/friendsn.png' )}
                       style={tripType == 'Friends'? styles.imageActive: styles.imageStyle}
                       PlaceholderContent={<ActivityIndicator style={{backgroundColor: 'white'}}/>}
                       containerStyle={{borderRadius: 50}}
@@ -242,7 +242,7 @@ const styles = StyleSheet.create({
     marginRight: '10%', 
     borderRadius: 30, 
     alignSelf: 'center',
-    borderWidth: 5, borderColor: '#ade6d8',
+    borderWidth: 2, borderColor: '#ade6d8',
 
   },
   label: {

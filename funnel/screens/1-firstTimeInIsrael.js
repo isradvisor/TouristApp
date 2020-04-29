@@ -90,7 +90,7 @@ export default ({navigation}) => {
                              
                 Alert.alert(
                   'Shalom!',
-                  "Let's move on! Going to match you a local guide according to the things you like and prefer!",
+                  "Let's move on!",
                   [
                     {text: 'OK', onPress: () => navigation.navigate('TripType', {profile: profile})}, 
                   ],

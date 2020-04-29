@@ -173,7 +173,7 @@ const navigateTo = (profile) =>{
     <Background>
       <BackButton goBack={() => navigation.navigate('HomeScreen')} />
 
-      <Logo />
+      {/* <Logo /> */}
 
       <Header>Welcome back</Header>
         {isLoading &&  <AnimatedLoader

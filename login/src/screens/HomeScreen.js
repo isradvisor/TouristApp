@@ -209,9 +209,6 @@ const logInWithFacebook = async () =>{
         ProfilePic: temp.picture.data.url,
       }
 
-      console.warn(profile)
-
-
       //fetch to db
       fetch(apiUrlFacebook, {
         method: 'POST',

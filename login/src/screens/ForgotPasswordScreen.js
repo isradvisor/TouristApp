@@ -1,5 +1,5 @@
 import React, { memo, useState } from 'react';
-import { Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { Text, StyleSheet, TouchableOpacity, Keyboard, TouchableWithoutFeedback  } from 'react-native';
 import { emailValidator } from '../core/utils';
 import Background from '../components/Background';
 import BackButton from '../components/BackButton';
@@ -25,10 +25,11 @@ const ForgotPasswordScreen = ({ navigation }) => {
   };
 
   return (
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
     <Background>
       <BackButton goBack={() => navigation.navigate('LoginScreen')} />
 
-      <Logo />
+      {/* <Logo /> */}
 
       <Header>Restore Password</Header>
 
@@ -56,6 +57,7 @@ const ForgotPasswordScreen = ({ navigation }) => {
         <Text style={styles.label}>← Back to login</Text>
       </TouchableOpacity>
     </Background>
+    </TouchableWithoutFeedback>
   );
 };
 
@@ -66,6 +68,7 @@ const styles = StyleSheet.create({
   },
   button: {
     marginTop: 12,
+    backgroundColor: '#4b9fd6'
   },
   label: {
     color: theme.colors.white,
