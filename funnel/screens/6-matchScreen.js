@@ -173,7 +173,7 @@ export default ({navigation}) => {
                       topThreeGuides.map((t, i) => {
                         return (
 
-                        <TouchableOpacity key={i} onPress={() => console.warn(t.FirstName, t.LastName)}>
+                        <TouchableOpacity key={i} onPress={() => navigation.navigate('GuideProfile',{t:t})}>
                           <ListItem
                             key={i}
                             leftAvatar={{
