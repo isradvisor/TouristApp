@@ -1,7 +1,6 @@
 import React, { memo, useState, useRef, useEffect } from 'react';
 import { Text, Alert, View, Animated} from 'react-native'
 import Background from '../components/Background';
-import Logo from '../components/Logo';
 import Header from '../components/Header';
 import Button from '../components/Button';
 import Paragraph from '../components/Paragraph';
@@ -306,9 +305,6 @@ const LastNameConverter = (splitOfFacebookNames) =>{
 }
   return(
 <Background>
-  {/* <FadeInView>
-  <Logo />
-  </FadeInView> */}
     
     <FadeInView>
     <Header>Welcome To IsraAdvisor</Header>

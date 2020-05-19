@@ -1,7 +1,6 @@
 import React, { memo, useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert} from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Alert} from 'react-native';
 import Background from '../components/Background';
-import Logo from '../components/Logo';
 import Header from '../components/Header';
 import Button from '../components/Button';
 import TextInput from '../components/TextInput';
@@ -287,11 +286,11 @@ const navigateTo = (profile) =>{
     'Welcome!',
     'You sign in successfully! enjoy your trip!',
     [
-      {text: 'OK'},
+      {text: 'OK', onPress: () => navigation.navigate('Dashboard', { profile: profile })},
     ],
     { cancelable: false }
   )
-  navigation.navigate('Dashboard', { profile: profile });
+  
   }, 2500);
 }
 
@@ -317,18 +316,19 @@ if(id== 2 && !femaleChecked){
     
     <Background>
 
-
-      <ScrollView 
-      style={{width: '100%', paddingVertical: 20, }}
-      contentContainerStyle={{ flexGrow: 1,justifyContent: "space-between"}}
-      showsVerticalScrollIndicator={false}
-      >
       <BackButton goBack={() => navigation.navigate('HomeScreen')} />
 
-      <View style={{ marginTop: 100}}>
-         {/* <Logo /> */}
-      </View>
-      <Header style={{alignSelf: 'center'}}>Create Account</Header>
+      
+      <View 
+      style={{width: '100%' , paddingVertical: 20, justifyContent: 'center', position: 'absolute', marginTop: '-18%' }}
+      contentContainerStyle={{ flexGrow: 1,justifyContent: "space-between"}}
+      >
+
+        <View style={{ alignSelf: 'center', width: '65%'}}>
+            <Header >Create Account</Header>
+        </View>
+  
+      
       
       {isLoading &&  <AnimatedLoader
         visible={isLoading}
@@ -401,7 +401,7 @@ if(id== 2 && !femaleChecked){
           />
         </View>
 
-          <View style={{flex: 1, flexDirection: 'row'}}>
+          <View style={{flex: 0, flexDirection: 'row'}}>
             <Text style={{color: 'white', fontWeight: 'bold', alignSelf: 'center', fontSize: 18}}>Gender:</Text>
             <CheckBox
               title='Male'
@@ -462,7 +462,7 @@ if(id== 2 && !femaleChecked){
       </View>
       
      
-      </ScrollView>
+      </View>
 
     </Background>
     
@@ -472,7 +472,8 @@ if(id== 2 && !femaleChecked){
 const styles = StyleSheet.create({
   label: {
     color: theme.colors.white,
-    marginBottom: 100
+    marginBottom: 100,
+    
   },
   button: {
     marginTop: 24,
@@ -480,6 +481,7 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     marginTop: 4,
+    alignSelf: 'center'
   },
   link: {
     fontWeight: 'bold',

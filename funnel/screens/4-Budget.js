@@ -45,6 +45,8 @@ export default ({navigation}) => {
   const [showVolume, setShowVolume] = useState(false)
   const [disabledSlider, setDisabledSlider] = useState(false)
   const [calculateType, setCalculateType] = useState('')
+  const [dailyActiveBtn, setDailyActiveBtn] = useState(false);
+  const [tripActiveBtn, setTripActiveBtn] = useState(false);
 
  const apiUrl = 'http://proj.ruppin.ac.il/bgroup10/PROD/api/Tourist/Budget'
 
@@ -70,6 +72,8 @@ export default ({navigation}) => {
 
     //on daily press
 const dailyPress = () =>{
+setDailyActiveBtn(true) 
+setTripActiveBtn(false) 
 setShowVolume(true)
 setMaximum(10000)
 setBudgetValue(0)
@@ -77,6 +81,8 @@ setCalculateType('$ per day')
 }
   //on whole trip press
 const tripPress = () =>{
+  setTripActiveBtn(true)
+  setDailyActiveBtn(false)
   setShowVolume(true)
   setMaximum(50000)
   setBudgetValue(0)
@@ -193,7 +199,7 @@ const fetchToDB = (user) =>{
         <Button
             title="Daily Calculate"
             type="outline"
-            buttonStyle={styles.dontKnowBtn}
+            buttonStyle={!dailyActiveBtn? styles.dontKnowBtn : styles.dontKnowBtnActive}
             titleStyle={{color: 'white'}}
             onPress={dailyPress}
           />
@@ -201,7 +207,7 @@ const fetchToDB = (user) =>{
         <Button
             title="Trip Calculate"
             type="outline"
-            buttonStyle={styles.dontKnowBtn}
+            buttonStyle={!tripActiveBtn? styles.dontKnowBtn : styles.dontKnowBtnActive}
             titleStyle={{color: 'white'}}
             onPress={tripPress}
           />
@@ -256,7 +262,6 @@ const fetchToDB = (user) =>{
             title="Continue"
             type="outline"
             buttonStyle={styles.continueBtn}
-            titleStyle={{color: 'white'}}
             onPress={fetchAndContinue}
         />}
        </View>
@@ -310,6 +315,16 @@ minusBtn:{
     width: 150, 
     height: 50, 
     borderColor: '#2196f3', 
+    borderRadius: 10,
+    margin: 20
+  },
+
+  dontKnowBtnActive:{
+    backgroundColor: '#b5d5ef', 
+    marginBottom: 20, 
+    width: 150, 
+    height: 50, 
+    borderColor: '#b5d5ef', 
     borderRadius: 10,
     margin: 20
   },

@@ -88,15 +88,7 @@ export default ({navigation}) => {
 
               case 1:
                              
-                Alert.alert(
-                  'Shalom!',
-                  "Let's move on!",
-                  [
-                    {text: 'OK', onPress: () => navigation.navigate('TripType', {profile: profile})}, 
-                  ],
-                  { cancelable: false }
-                )
-               
+                navigation.navigate('TripType', {profile: profile})
               break;
                 default:
 

@@ -46,10 +46,10 @@ export default ({navigation}) => {
   const [endDate, setEndDate] = useState(null);
   const [displayedDate, setDisplayDate] = useState(moment());
   const todayDate = moment();
-  const [showText, setShowText] = useState(false)
   const [esitmateMonth, setEstimateMonth] = useState(todayDate);
   const [showBtnContinue, setShowBtnContinue] = useState(false)
   const [isOpen, toggleOpen] = useState(false);
+ 
 
 
  const apiUrl = 'http://proj.ruppin.ac.il/bgroup10/PROD/api/Tourist/FlightsDates'
@@ -57,7 +57,6 @@ export default ({navigation}) => {
  //show date picker
  const showDatePicker = () => {
   toggleOpen(true)
-  setShowText(false)
   setStartDate(null)
   setEndDate(null)
 };
@@ -202,6 +201,7 @@ const handleConfirm = date => {
       });
  }
 
+ 
   return (
     <View style={{flex: 1, alignItems: 'center'}}>
         <View style={{marginTop: '15%'}}>
@@ -222,13 +222,6 @@ const handleConfirm = date => {
         </FadeInView>
         <FadeInView style={{ flex: 0.8}}>
           <View style={{flex: 0.8}}>
-          <Button
-            title="I know my dates"
-            type="outline"
-            buttonStyle={styles.knowDatesBtn}
-            titleStyle={{color: 'white'}}
-            onPress={() => setShowText(true)}
-          />
           
         <View style={{flex: 1, alignItems: "center", justifyContent: "center"}}>
             <DateRangePicker
@@ -240,7 +233,7 @@ const handleConfirm = date => {
               minDate={todayDate}
               
             >
-              {showText && <View style={{marginBottom: 50, borderWidth: 5, borderColor: '#2196f3', backgroundColor: '#2196f3',borderRadius: 25}}><Text style={styles.pickDatetxt}>Pick Dates</Text></View>}
+           <View style={styles.knowDatesBtn}><Text style={{color: 'white', fontSize: 18, alignSelf: 'center'}}>I know my dates</Text></View>
             </DateRangePicker>
             <Button
             title="Pick estimate month"
@@ -258,10 +251,9 @@ const handleConfirm = date => {
             title="Continue"
             type="outline"
             buttonStyle={styles.continueBtn}
-            titleStyle={{color: 'white'}}
             onPress={fetchAndContinue}
           />}
-          {/* its test */}
+
           <Modal
               transparent
               animationType="fade"
@@ -303,6 +295,13 @@ const styles = StyleSheet.create({
     height: 50, 
     borderColor: '#2196f3', 
     borderRadius: 10,
+    color: 'white', 
+    marginBottom: '43%',
+    justifyContent: 'center',
+    
+    
+
+    
   },
   dontKnowBtn: {
     backgroundColor: '#2196f3', 
