@@ -3,9 +3,11 @@ import { Animated, Text, View, StyleSheet,  TouchableOpacity, Alert,TouchableHig
 import * as Font from 'expo-font';
 import AnimatedProgressWheel from 'react-native-progress-wheel';
 import ImageView from 'react-native-image-view';
-import { Button } from 'react-native-elements';
+import { Button, Badge } from 'react-native-elements';
 import {MaterialIcons, AntDesign} from '@expo/vector-icons'
 import Modal from 'react-native-modal';
+import * as Animatable from 'react-native-animatable';
+
 
 //Fade in animation
 const FadeInView = (props) => {
@@ -399,6 +401,7 @@ export default ({navigation}) => {
         
         <View style={styles.bottomView}>
         {imageViewer.length > 0 && 
+        <Animatable.View useNativeDriver={true} animation="tada" iterationCount={4} direction="alternate">
         <View style={{justifyContent: 'flex-start'}}>
         <Button
           icon={
@@ -413,6 +416,7 @@ export default ({navigation}) => {
           buttonStyle={styles.galleryBtn}
         />
         </View>
+        </Animatable.View>
        }
         
       {imageViewer.length >= 4 && <View style={{flex: 1,}}>
@@ -420,13 +424,23 @@ export default ({navigation}) => {
             title="Continue"
             type="outline"
             buttonStyle={styles.continueBtn}
-            titleStyle={{color: 'white'}}
             onPress={fetchAndContinue}
-            containerStyle={{marginRight: '24%'}}
+            containerStyle={{marginRight: '21%'}}
         /> 
         </View>}
         
-
+        {imageViewer.length > 0 && 
+        <View style={{justifyContent: 'flex-end'}}>
+         <Badge
+            value={imageViewer.length}
+            status="primary"
+            textStyle={{fontSize: 20, fontWeight: 'bold'}}
+            containerStyle={{ position: 'absolute', top: -4, right: -4 , alignSelf: 'flex-end', marginRight: 20, marginTop: 13}}
+            badgeStyle={{height: 40, width: 40, borderRadius: 100,}}
+         />
+        </View>
+      
+       }
      
         </View>
        
@@ -533,6 +547,7 @@ textImages:{
     backgroundColor: "white",
     borderRadius: 20,
     padding: 35,
+    width: '90%',
     alignItems: "center",
     shadowColor: "#000",
     shadowOffset: {
@@ -554,12 +569,14 @@ textImages:{
   textStyle: {
     color: "white",
     fontWeight: "bold",
-    textAlign: "center"
+    textAlign: "center",
+    fontSize: 18
   },
 
   modalText: {
     marginBottom: 15,
-    textAlign: "center"
+    textAlign: "center",
+    fontSize: 24
   },
 
   ViewOfDeleteIcon: {
@@ -584,13 +601,15 @@ textImages:{
 
   bottomView: {
     width: '100%', 
-    flexDirection: 'row',  
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     marginTop: 40
   },
 
   galleryBtn: {
     backgroundColor: '#f2f2f2', 
-    alignSelf: 'flex-start'
+    alignSelf: 'flex-start',
+    
   },
 })
 
