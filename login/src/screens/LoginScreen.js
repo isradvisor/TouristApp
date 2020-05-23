@@ -102,8 +102,8 @@ const CloseLoading = (profile) =>{
 //navigation to next page with all the details of the user
 const navigateTo = (profile) =>{
   
-  setTimeout(() => { 
-    navigation.navigate('MyTabs', { profile: profile });;
+  setTimeout(() => {
+    navigation.navigate('MyTabs', { screen: 'MyProfile',params:{ profile: profile }}); 
    }, 2500);
  }
 

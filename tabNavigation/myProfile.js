@@ -11,9 +11,8 @@ const bacckgroundPic ={
 }
 
 
-const MyProfile = ({ route,navigation }) => {
+const MyProfile = ({ route }) => {
     const profile = route.params.profile;
-    console.warn(profile)
     return (
         <View>
             <ImageBackground 
@@ -21,8 +20,20 @@ const MyProfile = ({ route,navigation }) => {
             style={{width:'100%',height:735}}
             >
             <View style={styles.mainbody}>
-                <Image style={styles.imgProfile} source={profilePic}/>
-                <Text style={styles.name}>neil givol</Text>
+            {profile.ProfilePic !== null ?
+                        <Image
+                            style={styles.imgProfile}
+                            source={{
+                                uri: profile.ProfilePic
+                            }}
+                        /> :
+                        <Image
+                            style={styles.imgProfile}
+                            source={require('../assets/user.png')}
+
+                        />
+                    }
+                <Text style={styles.name}>{profile.FirstName} {profile.LastName}</Text>
             </View>
             <View>
             <MaterialCommunityIcons style={styles.icons} name="bell" color='white' size={32} />
