@@ -181,10 +181,10 @@ const HomeScreen = ({ navigation }) => {
           { cancelable: false }
         )
       }
-      navigation.navigate('MyTabs', { screen: 'MyProfile', params: { profile: profile } });
+      
 
 
-      navigation.navigate(caseResult == 1 ? 'RegisterScreen' : 'MyTabs', { screen: 'MyProfile'}, { params: { profile: profile } });
+      navigation.navigate(caseResult == 1 ? 'RegisterScreen' : 'MyTabs', { screen: 'MyProfile',  params: { profile: profile } });
     }, 1500);
   }
 
