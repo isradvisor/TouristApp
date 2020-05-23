@@ -34,11 +34,11 @@ const FadeInView = (props) => {
 
 
 // You can then use your `FadeInView` in place of a `View` in your components:
-export default ({navigation}) => {
+export default ({route,navigation}) => {
 
     
-  const TouristId = navigation.getParam('TouristId');
-  const profile = navigation.getParam('profile');
+  const TouristId = route.params.TouristId;
+  const profile = route.params.profile;
   const [fontLoaded, setFontLoaded] = useState(false);
   const [topThreeGuides, setTopThreeGuides] = useState([])
 
@@ -159,7 +159,7 @@ export default ({navigation}) => {
 
         </View>
         <FadeInView style={styles.fadeTitle} duration={4000}>
-            {fontLoaded && <Text style={styles.title}>Ok {profile.FirstName}!</Text> }
+            {fontLoaded && <Text style={styles.title}>Ok {profile.profile.FirstName}!</Text> }
         </FadeInView>
         <FadeInView style={styles.fadeTitle} duration={5000}>
           {fontLoaded && <Text style={styles.title}>Now After we builed{"\n"}your profile, let's pick{"\n"}an expert that will help{"\n"}you to build your trip</Text> }
@@ -170,27 +170,33 @@ export default ({navigation}) => {
                 <FadeInView style={styles.fadeTitle} duration={4000}>
                 <Card title="IT'S A MATCH!" titleStyle={styles.matchTtile}>
                     {
-                      topThreeGuides.map((t, i) => {
+                      topThreeGuides.map((guide, i) => {
                         return (
 
-                        <TouchableOpacity key={i} onPress={() => navigation.navigate('GuideProfile',{t:t})}>
+                        <TouchableOpacity key={i} onPress={() => navigation.navigate('GuideProfile',{guide:guide})}>
                           <ListItem
                             key={i}
                             leftAvatar={{
-                            title: t.FirstName,
-                            source: { uri: t.ProfilePic },
+                            title: guide.FirstName,
+                            source: { uri: guide.ProfilePic },
                             size: 'medium',
                             resizeMode: "cover",
                           }}
                           badge={{
-                            value: t.Percents.toFixed(2) + '%', 
+                            value: guide.Percents.toFixed(2) + '%', 
                             badgeStyle: styles.badge,
                             }}
                           bottomDivider
-                          title={t.FirstName}
-                          subtitle={t.LastName}
+                          title={guide.FirstName}
+                          subtitle={guide.LastName}
                           chevron
-                          rightElement={<Button title={' Friend '+ "\n" +'Request'} titleStyle={{fontSize: 14}} containerStyle={{marginLeft: 20}}/>}
+                          rightElement={
+                          <Button
+                             title={' Friend '+ "\n" +'Request'}
+                              titleStyle={{fontSize: 14}} 
+                              containerStyle={{marginLeft: 20}}
+                              onPress={() => navigation.navigate('MyTabs',{profile:profile})}
+                              />}
                         />
                         </TouchableOpacity>
                         );

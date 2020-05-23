@@ -33,9 +33,9 @@ const FadeInView = (props) => {
 
 
 // You can then use your `FadeInView` in place of a `View` in your components:
-export default ({navigation}) => {
+export default ({route,navigation}) => {
 
-  const profile = navigation.getParam('profile');
+  const profile = route.params.profile;
   const [fontLoaded, setFontLoaded] = useState(false)
   const currentProgressPer = 15;
   const [tripType, setTripType] = useState('');
@@ -73,9 +73,10 @@ export default ({navigation}) => {
 
       //fetch to db
       const user = {
-        Email: profile.Email,
+        Email: profile.profile.Email,
         TripType: tripType
       }
+      
    
   fetch(apiUrl, {
     method: 'POST',

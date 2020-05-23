@@ -18,9 +18,9 @@ import {Foundation} from '@expo/vector-icons'
 import  moment  from  "moment";
 import RNPickerSelect from 'react-native-picker-select';
 
-const RegisterScreen = ({ navigation }) => {
+const RegisterScreen = ({ route,navigation }) => {
 
-  const googleFacebookAccount = navigation.getParam('profile');
+  const googleFacebookAccount = route.params;
   const [firstName, setFirstName] = useState({ value: '', error: '' });
   const [lastName, setLastName] = useState({ value: '', error: '' });
   const [email, setEmail] = useState({ value: '', error: '' });

@@ -34,10 +34,10 @@ import AppIntroSlider from 'react-native-app-intro-slider';
   }
 ];
 
-const Dashboard = ({ navigation }) => {
+const Dashboard = ({ route,navigation }) => {
 
   
-  const profile = navigation.getParam('profile');
+  const profile = route.params;
   const [showRealApp, setShowRealApp]= useState(false)
 
  const _renderItem = ({ item }) => {

@@ -34,9 +34,9 @@ const FadeInView = (props) => {
 
 
 // You can then use your `FadeInView` in place of a `View` in your components:
-export default ({navigation}) => {
+export default ({route,navigation}) => {
 
-  const profile = navigation.getParam('profile');  
+  const profile = route.params.profile;
   const [fontLoaded, setFontLoaded] = useState(false)
   const currentProgressPer = 57;
   const [maximum, setMaximum] = useState(10000)
@@ -105,7 +105,7 @@ if(!checked){
 const fetchAndContinue = () =>{
   if(!checked){
     const user = {
-      Email:  profile.Email,
+      Email:  profile.profile.Email,
       Budget: budgetValue + calculateType
     }
     fetchToDB(user)
@@ -113,7 +113,7 @@ const fetchAndContinue = () =>{
   }
   else{
     const user = {
-      Email: profile.Email,
+      Email: profile.profile.Email,
       Budget: 'Unlimited budget'
   }
   fetchToDB(user)

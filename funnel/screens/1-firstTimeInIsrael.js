@@ -34,9 +34,9 @@ const FadeInView = (props) => {
 
 
 // You can then use your `FadeInView` in place of a `View` in your components:
-export default ({navigation}) => {
+export default ({route,navigation}) => {
 
-    const profile = navigation.getParam('profile');
+    const profile = route.params.profile;
     const [fontLoaded, setFontLoaded] = useState(false)
     const vibrationDuration = 100;
     const apiUrl = 'http://proj.ruppin.ac.il/bgroup10/PROD/api/Tourist/FirstTimeInIsrael'
@@ -50,7 +50,7 @@ export default ({navigation}) => {
 
         //fetch to db
         const user = {
-          Email: profile.Email,
+          Email: profile.profile.Email,
           FirstTimeInIsrael: boolean
         }
      
@@ -128,7 +128,7 @@ useEffect(() => {
   return (
     <View style={{flex: 1, alignItems: 'center'}}>
       <FadeInView style={{  marginTop: 150}}>
-  {fontLoaded && <Text style={{fontSize: 28, textAlign: 'center', fontFamily: 'ComicNeue-Bold'}}>{profile.FirstName}{"\n"} is it your First Time In Israel?</Text> }
+  {fontLoaded && <Text style={{fontSize: 28, textAlign: 'center', fontFamily: 'ComicNeue-Bold'}}>{profile.profile.FirstName}{"\n"} is it your First Time In Israel?</Text> }
       </FadeInView>
       <FadeInView style={{ marginTop: 50, justifyContent: 'center'}}>
 

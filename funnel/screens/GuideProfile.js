@@ -13,13 +13,13 @@ import { sendEmail } from "../components/SendEmail";
 
 
 
-export default function GuideProdile({ navigation }) {
+export default function GuideProfile({ route,navigation }) {
 
-    const t = navigation.getParam('t');
-
+    const guide = route.params.guide;
+    
     const send = () => {
         sendEmail(
-            t.Email,
+            guide.Email,
             '',
             ''
         ).then(() => {
@@ -33,10 +33,10 @@ export default function GuideProdile({ navigation }) {
         let phoneNumber = '';
 
         if (Platform.OS === 'android') {
-            phoneNumber = 'tel:${' + t.Phone + '}';
+            phoneNumber = 'tel:${' + guide.Phone + '}';
         }
         else {
-            phoneNumber = 'telprompt:${' + t.Phone + '}';
+            phoneNumber = 'telprompt:${' + guide.Phone + '}';
         }
 
         Linking.openURL(phoneNumber);
@@ -58,11 +58,11 @@ export default function GuideProdile({ navigation }) {
             >
 
                 <View style={styles.headerColumn}>
-                    {t.ProfilePic !== "" ?
+                    {guide.ProfilePic !== "" ?
                         <Image
                             style={styles.userImage}
                             source={{
-                                uri: t.ProfilePic
+                                uri: guide.ProfilePic
                             }}
                         /> :
                         <Image
@@ -71,7 +71,7 @@ export default function GuideProdile({ navigation }) {
 
                         />
                     }
-                    <Text style={styles.userNameText}>{t.FirstName} {t.LastName}</Text>
+                    <Text style={styles.userNameText}>{guide.FirstName} {guide.LastName}</Text>
                     <View style={styles.userAddressRow}>
                         <View>
                             <Icon
@@ -88,7 +88,7 @@ export default function GuideProdile({ navigation }) {
                     </View>
                 </View>
             </ImageBackground>
-            {t.Phone !== "" &&
+            {guide.Phone !== "" &&
                 <View style={styles.contactRow}>
                     <View style={styles.contactColumn}>
                         <Icon
@@ -97,7 +97,7 @@ export default function GuideProdile({ navigation }) {
                             iconStyle={styles.contactIcon}
                             onPress={dialCall}
                         />
-                        <Text style={styles.contactText}>{t.Phone}</Text>
+                        <Text style={styles.contactText}>{guide.Phone}</Text>
                     </View>
                     <View style={styles.contactNameColumn}>
                         <Text style={styles.contactNameText}>work</Text>
@@ -114,13 +114,13 @@ export default function GuideProdile({ navigation }) {
                         iconStyle={styles.contactIcon}
                         onPress={send}
                     />
-                    <Text style={styles.contactText}>{t.Email}</Text>
+                    <Text style={styles.contactText}>{guide.Email}</Text>
                 </View>
                 <View style={styles.contactNameColumn}>
                     <Text style={styles.contactNameText}>personal</Text>
                 </View>
             </View>
-            {t.DescriptionGuide !== "" &&
+            {guide.DescriptionGuide !== "" &&
                 <View>
                     <View style={styles.separator} />
                     <View style={styles.aboutMeRow}>
@@ -130,7 +130,7 @@ export default function GuideProdile({ navigation }) {
                     </View>
                     <View style={styles.aboutMeRow}>
                         <View>
-                            <Text style={styles.AboutMeText}>{t.DescriptionGuide}</Text>
+                            <Text style={styles.AboutMeText}>{guide.DescriptionGuide}</Text>
                         </View>
                     </View>
                 </View>

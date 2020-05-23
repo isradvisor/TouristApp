@@ -37,9 +37,9 @@ const FadeInView = (props) => {
 
 
 
-export default ({navigation}) => {
+export default ({route,navigation}) => {
 
-  const profile = navigation.getParam('profile');
+  const profile = route.params.profile;
   const [fontLoaded, setFontLoaded] = useState(false)
   const currentProgressPer = 33;
   const [startDate, setStartDate] = useState(null);
@@ -125,7 +125,7 @@ const handleConfirm = date => {
     setEndDate(null)
 
     const user = {
-      Email: profile.Email,
+      Email: profile.profile.Email,
       FromDate: startDate,
       ToDate: endDate,
       EstimateDate: moment(esitmateMonth).format('YYYY-MM')
@@ -136,7 +136,7 @@ const handleConfirm = date => {
   else{
 
     const user = {
-      Email: profile.Email,
+      Email: profile.profile.Email,
       FromDate: moment(startDate).format('YYYY-MM-DD'),
       ToDate: moment(endDate).format('YYYY-MM-DD'),
       EstimateDate: null
