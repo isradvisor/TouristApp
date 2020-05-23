@@ -195,7 +195,7 @@ export default ({route,navigation}) => {
                              title={' Friend '+ "\n" +'Request'}
                               titleStyle={{fontSize: 14}} 
                               containerStyle={{marginLeft: 20}}
-                              onPress={() => navigation.navigate('MyTabs',{profile:profile})}
+                              onPress={() =>  navigation.navigate('MyTabs', { screen: 'MyProfile', params: { profile: profile }})}
                               />}
                         />
                         </TouchableOpacity>

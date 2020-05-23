@@ -11,7 +11,7 @@ const bacckgroundPic ={
 }
 
 
-const MyProfile = ({ route }) => {
+const MyProfile = ({ route,navigation }) => {
     const profile = route.params.profile;
     return (
         <View>
@@ -44,8 +44,8 @@ const MyProfile = ({ route }) => {
             <Text style={styles.lableItem}>edit Profile</Text>
             </View>
             <View style={{marginTop:30}}>
-            <MaterialCommunityIcons style={styles.icons} name="logout" color='white' size={32} />
-            <Text style={styles.lableItem}>log out</Text>
+            <MaterialCommunityIcons onPress={()=>navigation.navigate('HomeScreen')} style={styles.icons} name="logout" color='white' size={32} />
+            <Text onPress={()=>navigation.navigate('HomeScreen')} style={styles.lableItem}>log out</Text>
             </View>
             </ImageBackground>
            
