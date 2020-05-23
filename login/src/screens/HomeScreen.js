@@ -181,11 +181,11 @@ const HomeScreen = ({ navigation }) => {
           { cancelable: false }
         )
       }
-      
+     
+      caseResult == 1 ? navigation.navigate('RegisterScreen',{profile:profile}):
+      navigation.navigate('MyTabs', { screen: 'MyProfile', params: { profile: profile } })},1500); 
 
 
-      navigation.navigate(caseResult == 1 ? 'RegisterScreen' : 'MyTabs', { screen: 'MyProfile',  params: { profile: profile } });
-    }, 1500);
   }
 
 
@@ -266,7 +266,7 @@ const HomeScreen = ({ navigation }) => {
                     ],
                     { cancelable: false }
                   )
-                  navigation.navigate('MyTabs', { profile: profile })
+                  navigation.navigate('MyTabs', { screen: 'MyProfile', params: { profile: profile } })
                   break;
 
                 default:
