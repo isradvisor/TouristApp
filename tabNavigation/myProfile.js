@@ -11,7 +11,9 @@ const bacckgroundPic ={
 }
 
 
-const MyProfile = ({ navigation }) => {
+const MyProfile = ({ route,navigation }) => {
+    const profile = route.params.profile;
+    console.warn(profile)
     return (
         <View>
             <ImageBackground 

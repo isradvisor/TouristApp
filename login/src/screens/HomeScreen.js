@@ -181,7 +181,7 @@ const navigateTo = (profile, caseResult) =>{
     )
   }
   
-  navigation.navigate(caseResult == 1? 'RegisterScreen' : 'Dashboard', { profile: profile });
+  navigation.navigate(caseResult == 1? 'RegisterScreen' : 'MyTabs', { profile: profile });
   }, 1500);
 }
 
@@ -263,7 +263,7 @@ const logInWithFacebook = async () =>{
                     ],
                     { cancelable: false }
                   )
-                navigation.navigate('Dashboard', { profile: profile })
+                navigation.navigate('MyTabs', { profile: profile })
                 break;
 
                     default:
