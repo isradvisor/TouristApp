@@ -288,7 +288,7 @@ export default ({route,navigation}) => {
       }
 
       const user = {
-        Email: profile.profile.Email,
+        Email: profile.Email,
         Hobbies: idHobbiesListForDB,
         Expertises : idExpertiseListForDB
       }

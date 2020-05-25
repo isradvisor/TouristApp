@@ -159,7 +159,7 @@ export default ({route,navigation}) => {
 
         </View>
         <FadeInView style={styles.fadeTitle} duration={4000}>
-            {fontLoaded && <Text style={styles.title}>Ok {profile.profile.FirstName}!</Text> }
+            {fontLoaded && <Text style={styles.title}>Ok {profile.FirstName}!</Text> }
         </FadeInView>
         <FadeInView style={styles.fadeTitle} duration={5000}>
           {fontLoaded && <Text style={styles.title}>Now After we builed{"\n"}your profile, let's pick{"\n"}an expert that will help{"\n"}you to build your trip</Text> }
@@ -195,7 +195,7 @@ export default ({route,navigation}) => {
                              title={' Friend '+ "\n" +'Request'}
                               titleStyle={{fontSize: 14}} 
                               containerStyle={{marginLeft: 20}}
-                              onPress={() =>  navigation.navigate('MyTabs', { screen: 'MyProfile', params: { profile: profile }})}
+                              onPress={() =>  navigation.navigate('MyTabs', { screen: 'MyProfileStack',params:{ screen:'MyProfile',params:{profile: profile},},})}
                               />}
                         />
                         </TouchableOpacity>

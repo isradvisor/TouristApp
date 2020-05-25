@@ -73,7 +73,7 @@ export default ({route,navigation}) => {
 
       //fetch to db
       const user = {
-        Email: profile.profile.Email,
+        Email: profile.Email,
         TripType: tripType
       }
       

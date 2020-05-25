@@ -125,7 +125,7 @@ const handleConfirm = date => {
     setEndDate(null)
 
     const user = {
-      Email: profile.profile.Email,
+      Email: profile.Email,
       FromDate: startDate,
       ToDate: endDate,
       EstimateDate: moment(esitmateMonth).format('YYYY-MM')
@@ -136,7 +136,7 @@ const handleConfirm = date => {
   else{
 
     const user = {
-      Email: profile.profile.Email,
+      Email: profile.Email,
       FromDate: moment(startDate).format('YYYY-MM-DD'),
       ToDate: moment(endDate).format('YYYY-MM-DD'),
       EstimateDate: null

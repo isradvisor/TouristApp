@@ -50,7 +50,7 @@ export default ({route,navigation}) => {
 
         //fetch to db
         const user = {
-          Email: profile.profile.Email,
+          Email: profile.Email,
           FirstTimeInIsrael: boolean
         }
      
@@ -128,7 +128,7 @@ useEffect(() => {
   return (
     <View style={{flex: 1, alignItems: 'center'}}>
       <FadeInView style={{  marginTop: 150}}>
-  {fontLoaded && <Text style={{fontSize: 28, textAlign: 'center', fontFamily: 'ComicNeue-Bold'}}>{profile.profile.FirstName}{"\n"} is it your First Time In Israel?</Text> }
+  {fontLoaded && <Text style={{fontSize: 28, textAlign: 'center', fontFamily: 'ComicNeue-Bold'}}>{profile.FirstName}{"\n"} is it your First Time In Israel?</Text> }
       </FadeInView>
       <FadeInView style={{ marginTop: 50, justifyContent: 'center'}}>
 

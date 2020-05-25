@@ -103,7 +103,7 @@ const CloseLoading = (profile) =>{
 const navigateTo = (profile) =>{
   
   setTimeout(() => {
-    navigation.navigate('MyTabs', { screen: 'MyProfile',params:{ profile: profile }}); 
+    navigation.navigate('MyTabs', { screen: 'MyProfileStack',params:{ screen:'MyProfile',params:{profile: profile},},}); 
    }, 2500);
  }
 

@@ -105,7 +105,7 @@ if(!checked){
 const fetchAndContinue = () =>{
   if(!checked){
     const user = {
-      Email:  profile.profile.Email,
+      Email:  profile.Email,
       Budget: budgetValue + calculateType
     }
     fetchToDB(user)
@@ -113,7 +113,7 @@ const fetchAndContinue = () =>{
   }
   else{
     const user = {
-      Email: profile.profile.Email,
+      Email: profile.Email,
       Budget: 'Unlimited budget'
   }
   fetchToDB(user)

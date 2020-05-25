@@ -17,14 +17,15 @@ import {
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
 import * as React from 'react';
 import { Text, View } from 'react-native';
 import MyProfile from "./tabNavigation/myProfile";
 import MainExplore from "./tabNavigation/explore/mainExplore";
 import CityExplore from "./tabNavigation/explore/cityExplore";
 import Attractions from "./tabNavigation/explore/attractions";
-
+import Chat from './tabNavigation/chat';
+import EditProfile from './tabNavigation/editProfile';
+import { FontAwesome } from '@expo/vector-icons';
 
 function MyTrip() {
   return (
@@ -33,13 +34,7 @@ function MyTrip() {
     </View>
   );
 }
-function Chat() {
-  return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text>Chat!</Text>
-    </View>
-  );
-}
+
 const Stack = createStackNavigator();
 
 function MyStack() {
@@ -58,6 +53,7 @@ function MyStack() {
         <Stack.Screen name="MatchScreen" component={MatchScreen} />
         <Stack.Screen name="GuideProfile" component={GuideProfile} />
         <Stack.Screen name="MyTabs" component={MyTabs} />
+       
       </Stack.Navigator>
   );
 }
@@ -74,26 +70,34 @@ function MyExploreStack() {
   );
 }
 
- 
+const ProfileStack = createStackNavigator();
 
+function MyProfileStack() {
+  return (
+      <ProfileStack.Navigator initialRouteName="MyProfile" headerMode="none" >
+        <ProfileStack.Screen name="MyProfile" component={MyProfile} />
+        <ProfileStack.Screen name="EditProfile" component={EditProfile} />
+      </ProfileStack.Navigator>
+  );
+}
 
   const Tab = createBottomTabNavigator();
 
   function MyTabs() {
     return (
         <Tab.Navigator
-          initialRouteName="MyProfile"
+          initialRouteName="MyProfileStack"
           tabBarOptions={{
             activeTintColor: '#e91e63',
           }}
         >
           <Tab.Screen
-            name="MyProfile"
-            component={MyProfile}
+            name="MyProfileStack"
+            component={MyProfileStack}
             options={{
               tabBarLabel: 'Profile',
               tabBarIcon: ({ color, size }) => (
-                <MaterialCommunityIcons name="account" color={color} size={size} />
+                <FontAwesome name="user" color={color} size={size} />
               ),
             }}
           />
@@ -103,7 +107,7 @@ function MyExploreStack() {
             options={{
               tabBarLabel: 'Chat',
               tabBarIcon: ({ color, size }) => (
-                <MaterialCommunityIcons name="chat" color={color} size={size} />
+                <FontAwesome name="comment" color={color} size={size} />
               ),
             }}
           />
@@ -113,7 +117,7 @@ function MyExploreStack() {
             options={{
               tabBarLabel: 'My Trip',
               tabBarIcon: ({ color, size }) => (
-                <MaterialCommunityIcons name="map" color={color} size={size} />
+                <FontAwesome name="map" color={color} size={size} />
               ),
             }}
           />
@@ -124,7 +128,7 @@ function MyExploreStack() {
             options={{
               tabBarLabel: 'Explore',
               tabBarIcon: ({ color, size }) => (
-                <MaterialCommunityIcons name="bell" color={color} size={size} />
+                <FontAwesome name="search" color={color} size={size} />
               ),
             }}
           />

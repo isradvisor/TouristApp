@@ -5,6 +5,8 @@ import { Feather } from '@expo/vector-icons';
 const CityExplore = ({ route, navigation }) => {
 
     const { item } = route.params;
+
+    const [isLiked, setIsLiked] = useState(false);
     
 
     const [data, setData] = useState([
