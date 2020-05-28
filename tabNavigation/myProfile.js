@@ -1,56 +1,90 @@
-import { Text, View, StyleSheet, Image, ImageBackground } from 'react-native';
-import React from 'react';
+import { Text, View, StyleSheet, Image, ImageBackground, Animated } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
 import { FontAwesome } from '@expo/vector-icons';
 
-const profilePic = {
-    uri: 'https://scontent.fhfa1-2.fna.fbcdn.net/v/t1.0-9/10689695_727899903913303_8982095541983094130_n.jpg?_nc_cat=107&_nc_sid=174925&_nc_ohc=adxwDCZJgNoAX8cA4dG&_nc_ht=scontent.fhfa1-2.fna&oh=664cba17afaeeab055c0502f9c40ae80&oe=5EE83530'
-}
+
 const bacckgroundPic = {
     uri: 'https://c1.wallpaperflare.com/preview/25/631/792/dead-sea-salt-israel.jpg'
+}
+
+const FadeInView = (props) => {
+
+    const fadeAnim = useRef(new Animated.Value(0)).current  // Initial value for opacity: 0
+
+
+    useEffect(() => {
+
+        Animated.timing(
+            fadeAnim,
+            {
+                toValue: 1,
+                duration: 2000,
+            }
+        ).start();
+    }, [])
+
+    return (
+        <Animated.View                 // Special animatable View
+            style={{
+                ...props.style,
+                opacity: fadeAnim,         // Bind opacity to animated value
+            }}
+        >
+            {props.children}
+        </Animated.View>
+    );
 }
 
 
 const MyProfile = ({ route, navigation }) => {
     const profile = route.params.profile;
+    const [fontLoaded, setFontLoaded] = useState(false)
     return (
         <View>
-            <ImageBackground
-                source={bacckgroundPic}
-                style={{ width: '100%', height: 735 }}
-            >
-                <View style={styles.mainbody}>
-                    {profile.ProfilePic !== null ?
-                        <Image
-                            style={styles.imgProfile}
-                            source={{
-                                uri: profile.ProfilePic
-                            }}
-                        /> :
-                        <Image
-                            style={styles.imgProfile}
-                            source={require('../assets/user.png')}
+            <FadeInView>
+                {fontLoaded && <Text style={{ fontSize: 28, textAlign: 'center', fontFamily: 'ComicNeue-Bold' }}>{profile.FirstName}{"\n"} is it your First Time In Israel?</Text>}
+            </FadeInView>
+            <FadeInView >
+                <ImageBackground
+                    source={bacckgroundPic}
+                    style={{ width: '100%', height: 735 }}
+                >
+                    <View style={styles.mainbody}>
+                        {profile.ProfilePic == null || !profile.hasOwnProperty('ProfilePic') ?
 
-                        />
-                    }
-                    <Text style={styles.name}>{profile.FirstName} {profile.LastName}</Text>
-                </View>
-                <View>
-                    <FontAwesome style={styles.icons} name="bell" color='white' size={32} />
-                    <Text style={styles.lableItem}>notifications</Text>
-                </View>
-                <View style={{ marginTop: 30 }}>
-                    <FontAwesome style={styles.icons} name="edit" color='white' size={32} />
-                    <Text onPress={() => navigation.navigate('EditProfile',{profile:profile})}
-                        style={styles.lableItem}>
-                        edit Profile
+                            <Image
+                                style={styles.imgProfile}
+                                source={require('../assets/user.png')}
+
+                            />
+                            :
+                            <Image
+                                style={styles.imgProfile}
+                                source={{
+                                    uri: profile.ProfilePic
+                                }}
+                            />
+
+                        }
+                        <Text style={styles.name}>{profile.FirstName} {profile.LastName}</Text>
+                    </View>
+                    <View>
+                        <FontAwesome style={styles.icons} name="bell" color='white' size={32} />
+                        <Text style={styles.lableItem}>notifications</Text>
+                    </View>
+                    <View style={{ marginTop: 30 }}>
+                        <FontAwesome style={styles.icons} name="edit" color='white' size={32} />
+                        <Text onPress={() => navigation.navigate('EditProfile', { profile: profile })}
+                            style={styles.lableItem}>
+                            edit Profile
                         </Text>
-                </View>
-                <View style={{ marginTop: 30 }}>
-                    <FontAwesome onPress={() => navigation.navigate('HomeScreen')} style={styles.icons} name="sign-out" color='white' size={32} />
-                    <Text onPress={() => navigation.navigate('HomeScreen')} style={styles.lableItem}>log out</Text>
-                </View>
-            </ImageBackground>
-
+                    </View>
+                    <View style={{ marginTop: 30 }}>
+                        <FontAwesome onPress={() => navigation.navigate('HomeScreen')} style={styles.icons} name="sign-out" color='white' size={32} />
+                        <Text onPress={() => navigation.navigate('HomeScreen')} style={styles.lableItem}>log out</Text>
+                    </View>
+                </ImageBackground>
+            </FadeInView>
 
         </View>
     );

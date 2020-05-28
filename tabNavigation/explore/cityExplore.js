@@ -57,14 +57,14 @@ const CityExplore = ({ route, navigation }) => {
 
                 <TouchableOpacity onPress={GoBackToHomePage} style={{
                     position: 'absolute', left: 20, top: 40,
-                    backgroundColor: '#ff6200', padding: 10, borderRadius: 40
+                    backgroundColor: '#66b3ff', padding: 10, borderRadius: 40
                 }}>
                     <Feather name='arrow-left' sise={24} color='#fff' />
                 </TouchableOpacity>
 
                 <TouchableOpacity style={{
                     position: 'absolute', right: 20, top: 40,
-                    backgroundColor: '#ff6200', padding: 10, borderRadius: 40
+                    backgroundColor: '#66b3ff', padding: 10, borderRadius: 40
                 }}>
                     <Feather name='heart' sise={24} color='#fff' />
                 </TouchableOpacity>
