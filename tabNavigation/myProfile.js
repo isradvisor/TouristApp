@@ -1,6 +1,7 @@
 import { Text, View, StyleSheet, Image, ImageBackground, Animated } from 'react-native';
 import React, { useState, useEffect, useRef } from 'react';
 import { FontAwesome } from '@expo/vector-icons';
+import { sendEmail } from '../funnel/components/SendEmail';
 
 
 const bacckgroundPic = {
@@ -37,6 +38,17 @@ const FadeInView = (props) => {
 
 
 const MyProfile = ({ route, navigation }) => {
+
+    const send = () => {
+        sendEmail(
+            'IsraAdisor@gmail.com',
+            '',
+            ''
+        ).then(() => {
+            console.log('Our email successful provided to device mail ');
+        });
+    }
+
     const profile = route.params.profile;
     const [fontLoaded, setFontLoaded] = useState(false)
     return (
@@ -69,19 +81,19 @@ const MyProfile = ({ route, navigation }) => {
                         <Text style={styles.name}>{profile.FirstName} {profile.LastName}</Text>
                     </View>
                     <View>
-                        <FontAwesome style={styles.icons} name="bell" color='white' size={32} />
-                        <Text style={styles.lableItem}>notifications</Text>
+                        <FontAwesome onPress={send} style={styles.icons} name="envelope" color='white' size={32} />
+                        <Text onPress={send} style={styles.lableItem}>Contact Us</Text>
                     </View>
                     <View style={{ marginTop: 30 }}>
                         <FontAwesome style={styles.icons} name="edit" color='white' size={32} />
                         <Text onPress={() => navigation.navigate('EditProfile', { profile: profile })}
                             style={styles.lableItem}>
-                            edit Profile
+                            Edit Profile
                         </Text>
                     </View>
                     <View style={{ marginTop: 30 }}>
                         <FontAwesome onPress={() => navigation.navigate('HomeScreen')} style={styles.icons} name="sign-out" color='white' size={32} />
-                        <Text onPress={() => navigation.navigate('HomeScreen')} style={styles.lableItem}>log out</Text>
+                        <Text onPress={() => navigation.navigate('HomeScreen')} style={styles.lableItem}>Log Out</Text>
                     </View>
                 </ImageBackground>
             </FadeInView>

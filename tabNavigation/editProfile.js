@@ -6,12 +6,8 @@ import {
     Text,
     View,
     TouchableOpacity,
-
 } from 'react-native';
 import { Input } from 'react-native-elements';
-
-
-
 
 
 export default function EditProfile({ route, navigation }) {

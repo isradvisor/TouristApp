@@ -23,6 +23,8 @@ import MyProfile from "./tabNavigation/myProfile";
 import MainExplore from "./tabNavigation/explore/mainExplore";
 import CityExplore from "./tabNavigation/explore/cityExplore";
 import Attractions from "./tabNavigation/explore/attractions";
+import Resturants from "./tabNavigation/explore/resturants";
+import Hotels from "./tabNavigation/explore/hotels";
 import Chat from './tabNavigation/chat';
 import EditProfile from './tabNavigation/editProfile';
 import { FontAwesome } from '@expo/vector-icons';
@@ -66,6 +68,8 @@ function MyExploreStack() {
         <ExploreStack.Screen name="MainExplore" component={MainExplore} />
         <ExploreStack.Screen name="CityExplore" component={CityExplore} />
         <ExploreStack.Screen name="Attractions" component={Attractions} />
+        <ExploreStack.Screen name="Resturants" component={Resturants} />
+        <ExploreStack.Screen name="Hotels" component={Hotels} />
       </ExploreStack.Navigator>
   );
 }
