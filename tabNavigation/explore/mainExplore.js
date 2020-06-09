@@ -1,16 +1,55 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     StyleSheet, Text, View, Image, ImageBackground, ScrollView,
-    TouchableOpacity, FlatList, TextInput,
+    TouchableOpacity, FlatList, TextInput, AsyncStorage, ActivityIndicator
 } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { Card, Divider } from 'react-native-elements';
+import { ScrollView as GestureHandlerScrollView } from 'react-native-gesture-handler'
+
 
 
 
 
 
 const MainExplore = ({ navigation }) => {
+    const [profile, setProfile] = useState(null)
+    const [myWeather, setMyWeather] = useState(null)
+    const [isLoading, setIsLoading] = useState(true)
+
+
+    useEffect(() => {
+        readUserData();
+        readWeatherDataData();
+    }, [])
+
+
+    const readUserData = async () => {
+        try {
+            await AsyncStorage.getItem('user').then((value) => {
+                const data = JSON.parse(value);
+                setIsLoading(false)
+                setProfile(data)
+            });
+        }
+        catch (e) {
+            console.warn('failed to fetch data')
+
+        }
+    }
+    const readWeatherDataData = async () => {
+        try {
+            await AsyncStorage.getItem('weather').then((value) => {
+                const data = JSON.parse(value);
+                setIsLoading(false);
+                setMyWeather(data);
+            });
+        }
+        catch (e) {
+            console.warn('failed to fetch data')
+
+        }
+    }
 
     const image = {
         uri: 'https://cdn.pixabay.com/photo/2016/12/10/14/20/landscape-1897362_960_720.jpg'
@@ -93,85 +132,126 @@ const MainExplore = ({ navigation }) => {
             cityNameApi: 'Nazareth'
         },
     ])
-    return (
-        <View>
-            <View>
-                <ImageBackground
-                    source={image}
-                    style={{ width: '100%', height: 270 }}
-                    imageStyle={{ borderBottomRightRadius: 65 }}
-                >
-                    <View style={styles.DarkOvelay}></View>
-                    <View style={styles.SearchContainer}>
-                        <Text style={styles.UserGreet}>Hi Neil</Text>
-                        <Text style={styles.UserText}>Where would you like to go today</Text>
+    if (profile !== null || myWeather !== null) {
+        return (
+            <View style={{flexGrow:1,height:'100%'}}>
+                <View>
+                    <ImageBackground
+                        source={image}
+                        style={{ width: '100%', height: 270 }}
+                        imageStyle={{ borderBottomRightRadius: 65 }}
+                    >
+                        <View style={styles.DarkOvelay}></View>
+                        <View style={styles.SearchContainer}>
+                            <Text style={styles.UserGreet}>Hi {profile.FirstName} </Text>
+                            <Text style={styles.UserText}>Where would you like to go today</Text>
+                        </View>
+                        <View>
+                            <TextInput
+                                style={styles.SearchBox}
+                                placeholder='Search Destination'
+                                placeholderTextColor='#666'
+                            >
+                            </TextInput>
+                            <Feather name='search' size={22} color='#666' style={
+                                { position: 'absolute', top: 25, right: 60, opacity: 0.6 }} />
+                        </View>
+
+
+                    </ImageBackground>
+
+                </View>
+
+                <ScrollView>
+                    <View style={{ padding: 20 }}>
+                        <Text style={{ fontSize: 22, fontWeight: 'bold' }}>
+                            Top Cities
+                       </Text>
                     </View>
                     <View>
-                        <TextInput
-                            style={styles.SearchBox}
-                            placeholder='Search Destination'
-                            placeholderTextColor='#666'
-                        >
-                        </TextInput>
-                        <Feather name='search' size={22} color='#666' style={
-                            { position: 'absolute', top: 25, right: 60, opacity: 0.6 }} />
+                        <ScrollView>
+                            <FlatList
+                                horizontal={true}
+                                data={gallery}
+                                renderItem={({ item }) => {
+                                    return (
+                                        <View style={{ paddingVertical: 20, paddingLeft: 16 }}>
+                                            <TouchableOpacity onPress={() => navigation.navigate('CityExplore', { item: item })}>
+                                                <Image source={item.image} style={{
+                                                    width: 150,
+                                                    marginRight: 8, height: 320, borderRadius: 10
+                                                }} />
+                                                <View style={styles.imageOverlay}></View>
+                                                <Feather name='map-pin' size={16} color='white'
+                                                    style={styles.imageLocationIcon} />
+                                                <Text style={styles.imageText}>{item.title}</Text>
+                                            </TouchableOpacity>
+                                        </View>
+                                    )
+                                }}
+                            />
+                        </ScrollView>
+
+                    </View>
+                    <View>
+                        <ScrollView>
+                            <FlatList
+                                horizontal={true}
+                                data={myWeather}
+                                renderItem={({ item }) => {
+                                    let time;
+
+                                    // Create a new date from the passed date time
+                                    let date = new Date(item.dt * 1000);
+
+                                    // Hours part from the timestamp
+                                    let hours = date.getHours();
+
+                                    // Minutes part from the timestamp
+                                    let minutes = "0" + date.getMinutes();
+
+                                    time = hours + ':' + minutes.substr(-2);
+                                    return (
+                                        <Card containerStyle={styles.card}>
+                                            <Text style={styles.notes}>{item.name}</Text>
+
+                                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                <Image style={{ width: 100, height: 100 }} source={{ uri: 'https://openweathermap.org/img/w/' + (item.weather[0].icon) + '.png' }} />
+                                                <Text style={styles.time}>{time}</Text>
+                                            </View>
+
+                                            <Divider style={{ backgroundColor: '#dfe6e9', marginVertical: 20 }} />
+
+                                            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                                                <Text style={styles.notes}>{item.weather[0].description}</Text>
+                                                <Text style={styles.notes}>{Math.round(item.main.temp * 10) / 10}&#8451;</Text>
+                                            </View>
+                                        </Card>
+                                    )
+                                }}
+                            />
+                        </ScrollView>
                     </View>
 
-
-                </ImageBackground>
-                
+                </ScrollView>
             </View>
+        )
+    }
+    else {
+        return (
+            <ActivityIndicator
+                animating={true}
+                style={{
+                    flex: 1,
+                    alignItems: 'center',
+                    justifyContent: 'center',
 
-            <ScrollView>
-                <View style={{ padding: 20 }}>
-                    <Text style={{ fontSize: 22, fontWeight: 'bold' }}>
-                        Top Cities
-               </Text>
-                </View>
-                <View>
-                    <FlatList
-                        horizontal={true}
-                        data={gallery}
-                        renderItem={({ item }) => {
-                            return (
-                                <View style={{ paddingVertical: 20, paddingLeft: 16 }}>
-                                    <TouchableOpacity onPress={() => navigation.navigate('CityExplore', { item: item })}>
-                                        <Image source={item.image} style={{
-                                            width: 150,
-                                            marginRight: 8, height: 320, borderRadius: 10
-                                        }} />
-                                        <View style={styles.imageOverlay}></View>
-                                        <Feather name='map-pin' size={16} color='white'
-                                            style={styles.imageLocationIcon} />
-                                        <Text style={styles.imageText}>{item.title}</Text>
-                                    </TouchableOpacity>
-                                </View>
-                            )
-                        }}
-                    />
-                </View>
-                <View>
-                <Card containerStyle={styles.card}>
-				<Text style={styles.notes}>haifa</Text>
-				
-				<View style={{flexDirection:'row', justifyContent:'space-between', alignItems:'center'}}>
-					<Image style={{width:100, height:100}} source={{uri:'https://cdn3.iconfinder.com/data/icons/symbol-1-1/36/12-512.png'}} />
-					<Text style={styles.time}>10:00</Text>
-				</View>
-
-				<Divider style={{ backgroundColor: '#dfe6e9', marginVertical:20}} />
-				
-				<View style={{flexDirection:'row', justifyContent:'space-between'}}>
-					<Text style={styles.notes}>light rain</Text>
-					<Text style={styles.notes}>15.5&#8451;</Text>
-				</View>
-			</Card>
-              
-                </View>
-
-            </ScrollView>
-        </View>
-    );
+                    height: 80
+                }}
+                size="large"
+            />
+        );
+    }
 }
 
 const styles = StyleSheet.create({
@@ -181,20 +261,23 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
     },
-    card:{
-		backgroundColor:'rgba(56, 172, 236, 1)',
-		borderWidth:0,
-		borderRadius:20
-	},
-	time:{
-		fontSize:38,
-		color:'#fff'
-	},
-	notes: {
-		fontSize: 18,
-		color:'#fff',
-		textTransform:'capitalize'
-	},
+    card: {
+        backgroundColor: 'rgba(56, 172, 236, 1)',
+        borderWidth: 0,
+        borderRadius: 20,
+        width: 350,
+        height: 210
+
+    },
+    time: {
+        fontSize: 38,
+        color: '#fff'
+    },
+    notes: {
+        fontSize: 18,
+        color: '#fff',
+        textTransform: 'capitalize'
+    },
     DarkOvelay: {
         position: 'absolute',
         top: 0,

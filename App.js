@@ -1,3 +1,4 @@
+import React,{useEffect} from 'react';
 import { createAppContainer } from 'react-navigation';
 import firstTimeInIsrael from './funnel/screens/1-firstTimeInIsrael';
 import TripType from './funnel/screens/2-tripType';
@@ -17,8 +18,7 @@ import {
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
-import * as React from 'react';
-import { Text, View } from 'react-native';
+import { Text, View,AsyncStorage } from 'react-native';
 import MyProfile from "./tabNavigation/myProfile";
 import MainExplore from "./tabNavigation/explore/mainExplore";
 import CityExplore from "./tabNavigation/explore/cityExplore";
@@ -28,6 +28,35 @@ import Hotels from "./tabNavigation/explore/hotels";
 import Chat from './tabNavigation/chat';
 import EditProfile from './tabNavigation/editProfile';
 import { FontAwesome } from '@expo/vector-icons';
+
+
+//http://api.openweathermap.org/data/2.5/group?id=524901,703448,2643743&units=metric
+
+
+  fetch('http://api.openweathermap.org/data/2.5/group?id=293397,281184,294801,293322,295721,295277,7117228,294098&units=metric&appid=821ab800e4695da1b165f622f586a636', {
+    method: 'GET',
+    headers: new Headers({
+        'Content-type': 'application/json; charset=UTF-8' //very important to add the 'charset=UTF-8'!!!!
+    })
+  })
+    .then(res => {
+        return res.json()
+    })
+    .then((result) => {
+      try {
+         AsyncStorage.setItem(
+          'weather',
+         JSON.stringify(result.list)
+        );
+      } catch (error) {
+        // Error saving data
+        console.warn('error : ',error)
+      };
+        (error) => {
+            console.warn("err post=", error);
+        };
+    })
+
 
 function MyTrip() {
   return (

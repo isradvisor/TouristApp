@@ -47,24 +47,48 @@ const CityExplore = ({ route, navigation }) => {
     // get specific data from the api and based on the city and type of search(resturants,hotels...etc)
     const getDataAndContinue = (item) => {
         setIsLoading(true)
-        fetch('https://www.triposo.com/api/20200405/poi.json?tag_labels=' + (item.apiName) + '&location_id=' + (myData.cityNameApi) + '&order_by=-score&count=100&fields=score,intro,location_id,name,images,tags,properties&account=FOBIVROX&token=znghja9mhtwjjt5gsc8jydhayg07gkqz', {
-            method: 'GET',
-            headers: new Headers({
-                'Content-type': 'application/json; charset=UTF-8' //very important to add the 'charset=UTF-8'!!!!
+        if (item.name=='Attractions') {
+            fetch('https://www.triposo.com/api/20200405/poi.json?tag_labels=beaches|dancing|zoos|museums|exploringnature|poitype-Park|poitype-Shopping_centre&location_id=' + (myData.cityNameApi) + '&order_by=-score&count=100&fields=score,intro,location_id,name,images,tags,properties&account=FOBIVROX&token=znghja9mhtwjjt5gsc8jydhayg07gkqz', {
+                method: 'GET',
+                headers: new Headers({
+                    'Content-type': 'application/json; charset=UTF-8' //very important to add the 'charset=UTF-8'!!!!
+                })
             })
-        })
-            .then(res => {
-                return res.json()
+                .then(res => {
+                    return res.json()
+                })
+                .then((result) => {
+                    const myApiData = result.results;
+                    StopLoadingProccessWithNavigate(CloseLoading, myApiData,item);
+    
+                    (error) => {
+                        console.warn("err post=", error);
+                        setIsLoading(false)
+                    };
+                })
+            
+        } else {
+            fetch('https://www.triposo.com/api/20200405/poi.json?tag_labels=' + (item.apiName) + '&location_id=' + (myData.cityNameApi) + '&order_by=-score&count=100&fields=score,intro,location_id,name,images,tags,properties&account=FOBIVROX&token=znghja9mhtwjjt5gsc8jydhayg07gkqz', {
+                method: 'GET',
+                headers: new Headers({
+                    'Content-type': 'application/json; charset=UTF-8' //very important to add the 'charset=UTF-8'!!!!
+                })
             })
-            .then((result) => {
-                const myApiData = result.results;
-                StopLoadingProccessWithNavigate(CloseLoading, myApiData,item);
-
-                (error) => {
-                    console.warn("err post=", error);
-                    setIsLoading(false)
-                };
-            })
+                .then(res => {
+                    return res.json()
+                })
+                .then((result) => {
+                    const myApiData = result.results;
+                    StopLoadingProccessWithNavigate(CloseLoading, myApiData,item);
+    
+                    (error) => {
+                        console.warn("err post=", error);
+                        setIsLoading(false)
+                    };
+                })
+            
+        }
+      
 
 
     }

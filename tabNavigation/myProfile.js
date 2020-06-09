@@ -1,4 +1,4 @@
-import { Text, View, StyleSheet, Image, ImageBackground, Animated } from 'react-native';
+import { Text, View, StyleSheet, Image, ImageBackground, Animated,AsyncStorage } from 'react-native';
 import React, { useState, useEffect, useRef } from 'react';
 import { FontAwesome } from '@expo/vector-icons';
 import { sendEmail } from '../funnel/components/SendEmail';
@@ -38,6 +38,26 @@ const FadeInView = (props) => {
 
 
 const MyProfile = ({ route, navigation }) => {
+    const profile = route.params.profile;
+    const [fontLoaded, setFontLoaded] = useState(false)
+    
+
+    useEffect(()=>{
+        _storeData()
+    },[])
+
+    
+     const _storeData = async () => {
+        try {
+          await AsyncStorage.setItem(
+            'user',
+           JSON.stringify(profile)
+          );
+        } catch (error) {
+          // Error saving data
+          console.warn('error : ',error)
+        }
+      };
 
     const send = () => {
         sendEmail(
@@ -49,8 +69,7 @@ const MyProfile = ({ route, navigation }) => {
         });
     }
 
-    const profile = route.params.profile;
-    const [fontLoaded, setFontLoaded] = useState(false)
+  
     return (
         <View>
             <FadeInView>
