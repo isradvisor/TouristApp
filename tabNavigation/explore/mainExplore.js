@@ -134,7 +134,7 @@ const MainExplore = ({ navigation }) => {
     ])
     if (profile !== null || myWeather !== null) {
         return (
-            <View style={{flexGrow:1,height:'100%'}}>
+            <View style={{ flexGrow: 1, height: '100%' }}>
                 <View>
                     <ImageBackground
                         source={image}
@@ -174,6 +174,7 @@ const MainExplore = ({ navigation }) => {
                                 horizontal={true}
                                 data={gallery}
                                 renderItem={({ item }) => {
+
                                     return (
                                         <View style={{ paddingVertical: 20, paddingLeft: 16 }}>
                                             <TouchableOpacity onPress={() => navigation.navigate('CityExplore', { item: item })}>
@@ -199,6 +200,7 @@ const MainExplore = ({ navigation }) => {
                                 horizontal={true}
                                 data={myWeather}
                                 renderItem={({ item }) => {
+
                                     let time;
 
                                     // Create a new date from the passed date time
@@ -212,7 +214,7 @@ const MainExplore = ({ navigation }) => {
 
                                     time = hours + ':' + minutes.substr(-2);
                                     return (
-                                        <Card containerStyle={styles.card}>
+                                        <Card containerStyle={styles.card} key={item.id} >
                                             <Text style={styles.notes}>{item.name}</Text>
 
                                             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -229,6 +231,7 @@ const MainExplore = ({ navigation }) => {
                                         </Card>
                                     )
                                 }}
+                                keyExtractor={item => item.id.toString()}
                             />
                         </ScrollView>
                     </View>

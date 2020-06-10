@@ -42,7 +42,6 @@ const resturants = ({ route, navigation }) => {
 
                 </Right>
             </Header>
-            <Content>
                 <FlatList
                     data={myApiData}
                     renderItem={({ item }) => {
@@ -99,8 +98,9 @@ const resturants = ({ route, navigation }) => {
                         );
                     }
                     }
+                    keyExtractor={item => item.id.toString()}
+
                 />
-            </Content>
         </Container>
     );
 }

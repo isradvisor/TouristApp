@@ -99,6 +99,7 @@ const attractions = ({ route, navigation }) => {
                         );
                     }
                     }
+                    keyExtractor={item => item.id.toString()}
                 />
             </Content>
         </Container>

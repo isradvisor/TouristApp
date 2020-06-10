@@ -95,6 +95,7 @@ const hotels = ({ route, navigation }) => {
                         );
                     }
                     }
+                    keyExtractor={item => item.id.toString()}
                 />
             </Content>
         </Container>
