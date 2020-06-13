@@ -2,7 +2,8 @@ import React, {useState, useRef, useEffect } from 'react';
 import { Animated, Text, View, StyleSheet, TouchableOpacity} from 'react-native';
 import * as Font from 'expo-font';
 import AnimatedProgressWheel from 'react-native-progress-wheel';
-import { Card, ListItem, Button } from 'react-native-elements'
+import { Card, ListItem, Button } from 'react-native-elements';
+import firebaseSvc from '../../services/firebaseSDK';
 
 
 const FadeInView = (props) => {
@@ -44,6 +45,30 @@ export default ({route,navigation}) => {
 
   const apiUrl = 'http://proj.ruppin.ac.il/bgroup10/PROD/api/Match/calculateTouristBetweenGuides/' + TouristId
   const apiGetGuidesUrl = 'http://proj.ruppin.ac.il/bgroup10/PROD/api/Guide/TopMatchGuides'
+
+
+  const onPressCreate = async (profile,guide) => {
+    sinupData(profile,guide)
+  }
+
+   const sinupData = (profile,guide)=>{
+    const user = {
+      name: profile.FirstName + ' ' + profile.LastName,
+      email: profile.Email,
+      password: profile.PasswordTourist,
+    }
+  firebaseSvc.createAccount(user,guide).then((solve)=>{
+      console.log('this is sinup data==>  '+JSON.stringify(solve))
+  }).catch((fail)=>{
+    console.log('not getting data.....................')
+  })
+    //navigation.navigate('MyTabs', { screen: 'MyProfileStack',params:{ screen:'MyProfile',params:{profile: profile,guide:guide},},})
+    navigation.navigate('MyTabs', { screen: 'Chat',params:{user:user, guide:guide},})
+     AsyncStorage.clear();
+
+
+
+  }
 
 
 
@@ -195,7 +220,8 @@ export default ({route,navigation}) => {
                              title={' Friend '+ "\n" +'Request'}
                               titleStyle={{fontSize: 14}} 
                               containerStyle={{marginLeft: 20}}
-                              onPress={() =>  navigation.navigate('MyTabs', { screen: 'MyProfileStack',params:{ screen:'MyProfile',params:{profile: profile},},})}
+                              onPress={() => onPressCreate(profile,guide)}
+                              //onPress={() =>  navigation.navigate('MyTabs', { screen: 'MyProfileStack',params:{ screen:'MyProfile',params:{profile: profile},},})}
                               />}
                         />
                         </TouchableOpacity>
@@ -248,5 +274,4 @@ title: {
 
 
 })
-
 

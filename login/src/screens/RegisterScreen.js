@@ -380,6 +380,7 @@ if(id== 2 && !femaleChecked){
         error={!!password.error}
         errorText={password.error}
         secureTextEntry
+
       />
 
       <TextInput

@@ -39,6 +39,7 @@ const FadeInView = (props) => {
 
 const MyProfile = ({ route, navigation }) => {
     const profile = route.params.profile;
+    //const ProfileTourist = AsyncStorage.getItem('ProfileTourist');
     const [fontLoaded, setFontLoaded] = useState(false)
     
 

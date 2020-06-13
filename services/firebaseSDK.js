@@ -51,13 +51,9 @@ class FirebaseSvc {
     }
 
     login = async (user) => {
-            try {
-              await AsyncStorage.removeItem('idChatTourist');
-              await AsyncStorage.removeItem('GuideUser');
-              await AsyncStorage.removeItem('idChatGuide');
-            } catch (error) {
-             // Error removing
-            }
+        let guideID = '';
+        let asyTour = '';
+        let GuideUser = '';
         const output = await firebase.auth().signInWithEmailAndPassword(user.email, user.password)
             .then(async result => {
                 let user = result.user;
@@ -68,39 +64,44 @@ class FirebaseSvc {
                         .then(function (querySnapshot) {
                             querySnapshot.forEach(function (doc) {
                                 console.log(doc.id);
-                                         AsyncStorage.setItem('idChatTourist',JSON.stringify(user.uid));
+                                asyTour = user.uid
                                 const currentdata = doc.data()
                                 console.log("--------------")
                                 console.log(currentdata.guideEmail)
                                 console.log("--------------")
                                 let guideEmail = currentdata.guideEmail;
-                                 firebase.firestore().collection('users').get()
-                                .then( (res) => {
-                                    console.log("Start Search guideUID")
-                                    for (let i = 0; i < res.docs.length; i++) {
-                                        const element = res.docs[i];
-                                        if (element.data().email == guideEmail) {
-                                            console.log("Found GuideUID")
-                                            console.log(element.data().id)
-                                            let GuideUser = {
-                                                _id:element.data().id,
-                                                name:element.data().name,
-                                                avatar:""
+                                firebase.firestore().collection('users').get()
+                                    .then((res) => {
+                                         //AsyncStorage.removeItem('messagesTourist');
+                                             AsyncStorage.removeItem('idChatTourist');
+                                             AsyncStorage.removeItem('GuideUser');
+                                             AsyncStorage.removeItem('idChatGuide');
+                                        console.log("Start Search guideUID")
+                                        for (let i = 0; i < res.docs.length; i++) {
+                                            const element = res.docs[i];
+                                            if (element.data().email == guideEmail) {
+                                                console.log("Found GuideUID")
+                                                console.log("First")
+                                                console.log(element.data().id)
+                                                 GuideUser = {
+                                                    _id: element.data().id,
+                                                    name: element.data().name,
+                                                    avatar: ""
+                                                }
+                                                guideID = element.data().id
                                             }
-                                            AsyncStorage.setItem('GuideUser',JSON.stringify(GuideUser));
-                                             AsyncStorage.setItem('idChatGuide',JSON.stringify(element.data().id));
-                                             this.setState({
-                                                 groupID:`${element.data().id}-${user.uid}`
-                                             })
                                         }
-                                    }
-                                })
+                                        console.log("GUIDEID",guideID);
+                                        console.log("GuideDetails",GuideUser);
+                                        console.log("TouristID",asyTour);
+                                        AsyncStorage.setItem('idChatTourist',JSON.stringify(asyTour))
+                                        AsyncStorage.setItem('GuideUser',JSON.stringify(GuideUser))
+                                        AsyncStorage.setItem('idChatGuide',JSON.stringify(guideID))
+                                    })
                             })
                         })
                 }
             })
-
-
     }
 
 

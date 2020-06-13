@@ -199,8 +199,7 @@ const HomeScreen = ({ navigation }) => {
       });
       if (type === 'success') {
         // Get the user's name using Facebook's Graph API
-        const response = await fetch(`https://graph.facebook.com/me?access_token=${token}&fields=id,name,email,about,picture`);
-
+        const response = await fetch(`https://graph.facebook.com/me?access_token=${token}&fields=id,name,email,about,picture.type(large)`); 
         const temp = await response.json();
         const splitName = temp.name.split(' ')
 

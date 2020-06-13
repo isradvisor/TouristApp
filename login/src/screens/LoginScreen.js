@@ -10,7 +10,7 @@ import { theme } from '../core/theme';
 import { emailValidator, passwordValidator } from '../core/utils';
 import { CheckBox } from 'react-native-elements'
 import AnimatedLoader from "react-native-animated-loader";
-
+import firebaseSvc from '../../../services/firebaseSDK';
 const LoginScreen = ({ navigation }) => {
   
   const [email, setEmail] = useState({ value: '', error: '' }); 
@@ -71,6 +71,7 @@ const LoginScreen = ({ navigation }) => {
           }
           else{
             StopLoadingProccessWithNavigate(CloseLoading, profile);
+            
            }
         },
         
@@ -101,11 +102,18 @@ const CloseLoading = (profile) =>{
 
 //navigation to next page with all the details of the user
 const navigateTo = (profile) =>{
-  
+    const user = {
+        email:profile.Email,
+        password:profile.PasswordTourist
+    }
+    //AsyncStorage.clear();
+    AsyncStorage.setItem('ProfileTourist',JSON.stringify(profile));
+    firebaseSvc.login(user);
   setTimeout(() => {
     navigation.navigate('MyTabs', { screen: 'MyProfileStack',params:{ screen:'MyProfile',params:{profile: profile},},}); 
    }, 2500);
  }
+
 
 //remember me function
  const toggleRememberMe = () => {
@@ -233,7 +241,7 @@ const navigateTo = (profile) =>{
       </Button>
 
       <View style={styles.row}>
-        <Text style={styles.label}>Don’t have an account? </Text>
+        <Text style={styles.label}>Donâ€™t have an account? </Text>
         <TouchableOpacity onPress={() => navigation.navigate('RegisterScreen')}>
           <Text style={styles.link}>Sign up</Text>
         </TouchableOpacity>
