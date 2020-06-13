@@ -6,11 +6,16 @@ import {
     Text,
     View,
     TouchableOpacity,
+    TouchableHighlight
 } from 'react-native';
-import { Input } from 'react-native-elements';
 import {
     emailValidator
   } from '../login/src/core/utils';
+  import Modal from 'react-native-modal';
+  import TextInput from '../login/src/components/TextInput';
+  import { Avatar } from 'react-native-elements'
+  import { MaterialIcons } from '@expo/vector-icons'; 
+  import * as ImagePicker from 'expo-image-picker';
 
 export default function EditProfile({ route, navigation }) {
 
@@ -19,28 +24,56 @@ export default function EditProfile({ route, navigation }) {
     const [firstName, setFirstName] = useState({ value: '', error: '' });
     const [lastName, setLastName] = useState({ value: '', error: '' });
     const [email, setEmail] = useState({ value: '', error: '' });
+    const [modalVisible, setModalVisible] = useState(false);
+    const [errorFromDB, setErrorFromDB] = useState(false)
+    const [counter, setCounter] = useState(0)
+    const [oldEmail, setOldEmail] = useState('')
+    const [imageUri, setImageUri] = useState('')
 
     const apiUrl = 'http://proj.ruppin.ac.il/bgroup10/PROD/api/Tourist/EditProfile'
+    const apiUploadPic = 'http://proj.ruppin.ac.il/bgroup10/PROD/api/Tourist/UploadPicture'
 
     const updateToDB = () =>{
-
+        setOldEmail(email.value)
         const emailError = emailValidator(email.value);
 
         if (emailError){
             setEmail({ ...email, error: emailError });
+            
             return;
         }
 
         //if the validation ok, he will turn to this path of update
         else{
-            const user = {
-                Email: profile.Email,
-                SecondEmail: email.value,
-                FirstName: firstName.value,
-                LastName: lastName.value
+            
+            if(counter == 0){
+                const user = {
+                    Email: profile.Email,
+                    SecondEmail: email.value,
+                    FirstName: firstName.value,
+                    LastName: lastName.value
+                }
+                
+                fetchToDB(user, apiUrl);
+                setCounter(1)
             }
-            console.warn(user)
-            fetch(apiUrl, {
+            else{
+                const user = {
+                    Email: oldEmail,
+                    SecondEmail: email.value,
+                    FirstName: firstName.value,
+                    LastName: lastName.value
+                }
+                
+                fetchToDB(user, apiUrl);
+                setCounter(1)
+            }
+        }
+        }
+
+        const fetchToDB = (user, api) =>{
+            
+            fetch(api, {
             method: 'PUT',
             body: JSON.stringify(user),
             headers: new Headers({
@@ -59,11 +92,35 @@ export default function EditProfile({ route, navigation }) {
             //list from fetch:
             //0 = db error
             //1= fetch succeeded
+
+            if(result == 1){
+                setModalVisible(true)
+            }
+            else{
+                setModalVisible(true)
+                setErrorFromDB(true)
+            }
               })
         }
-           
 
-    }
+        const UploadImage = async () =>{
+            let result = await ImagePicker.launchImageLibraryAsync({
+                allowsEditing: true,
+                aspect: [4, 3],
+              });
+          
+              console.log(result);
+          
+              if (!result.cancelled) {
+                setImageUri(result.uri );
+                const user = {
+                    Email: email.value,
+                    ProfilePic: result.uri
+                }
+                fetchToDB(user, apiUploadPic)
+              }
+        };
+       
 
     return (
         <View style={styles.headerContainer}>
@@ -76,26 +133,31 @@ export default function EditProfile({ route, navigation }) {
                 <View style={styles.headerColumn}>
                     {profile.ProfilePic == null || !profile.hasOwnProperty('ProfilePic') ?
 
-                        <Image
-                            style={styles.userImage}
-                            source={require('../assets/user.png')}
-
+                        <Avatar
+                            rounded
+                            source={imageUri== ''? require('../assets/user.png') : {uri: imageUri}}
+                            size='xlarge'
+                            avatarStyle={styles.userImage}
                         />
                         :
-                        <Image
-                            style={styles.userImage}
+                        <Avatar
+                            rounded
                             source={{
                                 uri: profile.ProfilePic
                             }}
-                        />
-
+                            size='xlarge'
+                            avatarStyle={styles.userImage}
+                            />
                     }
+                    <TouchableOpacity onPress={UploadImage}>
+                    <MaterialIcons name="edit" size={28} color="black" style={{marginTop: 15}} />
+                    </TouchableOpacity>
                     <Text style={styles.userNameText}>{profile.FirstName} {profile.LastName} </Text>
                 </View>
             </View>
             <View style={styles.body}>
             <View style={styles.input}>
-                <Input
+                <TextInput
                     label="First Name"
                     labelStyle={styles.color}
                     returnKeyType="next"
@@ -106,7 +168,7 @@ export default function EditProfile({ route, navigation }) {
                 />
             </View>
             <View style={styles.input}>
-                <Input
+                <TextInput
                     label="Last Name"
                     labelStyle={styles.color}
                     returnKeyType="next"
@@ -118,7 +180,7 @@ export default function EditProfile({ route, navigation }) {
                 />
             </View>
             <View style={styles.input}>
-                <Input
+                <TextInput
                     label="Email"
                     labelStyle={styles.color}
                     returnKeyType="next"
@@ -146,7 +208,33 @@ export default function EditProfile({ route, navigation }) {
             </TouchableOpacity>
 
             </View>
-            
+            <View style={styles.centeredView}>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        animationInTiming={2000}
+        animationOut={'slideOutDown'}
+        animationOutTiming={2000}
+      >
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            {!errorFromDB? <Text style={styles.modalText}>Update Succeeded!</Text> : <Text style={styles.modalText}>Error to update, please try again.</Text>}
+
+            <TouchableHighlight
+              style={{ ...styles.openButton, backgroundColor: "#2196F3" }}
+              onPress={() => {
+                setModalVisible(!modalVisible);
+              }}
+            >
+              <Text style={styles.textStyle}>OK</Text>
+            </TouchableHighlight>
+          </View>
+        </View>
+      </Modal>
+              
+      
+    </View>
         </View>
     );
 }
@@ -182,6 +270,7 @@ const styles = StyleSheet.create({
                 alignItems: 'center',
                 elevation: 1,
                 marginTop: -1,
+                marginTop: 50
             },
             android: {
                 alignItems: 'center',
@@ -194,13 +283,9 @@ const styles = StyleSheet.create({
     },
 
     userImage: {
-        borderRadius: 85,
-        borderWidth: 3,
-        borderColor: '#e6f2ff',
-        height: 150,
         marginBottom: 15,
         marginTop: 30,
-        width: 150,
+
     },
     userNameText: {
         color: '#4da6ff',
@@ -208,6 +293,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         paddingBottom: 8,
         textAlign: 'center',
+        marginTop: 20
     },
     input: {
         marginTop: 20,
@@ -237,9 +323,49 @@ const styles = StyleSheet.create({
         
 
     },
-    
-
-
-
-
+    centeredView: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        marginTop: 22
+      },
+      modalView: {
+        margin: 20,
+        backgroundColor: "white",
+        borderRadius: 20,
+        padding: 35,
+        width: '90%',
+        alignItems: "center",
+        shadowColor: "#000",
+        shadowOffset: {
+          width: 0,
+          height: 2
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5
+      },
+      modalText: {
+        marginBottom: 15,
+        textAlign: "center",
+        fontSize: 24
+      },
+      openButton: {
+        backgroundColor: "#F194FF",
+        borderRadius: 20,
+        padding: 10,
+        elevation: 2
+      },
+      textStyle: {
+        color: "white",
+        fontWeight: "bold",
+        textAlign: "center",
+        fontSize: 18
+      },
+      icon: {
+        backgroundColor: '#ccc',
+        position: 'absolute',
+        right: 0,
+        bottom: 0
+       }
 })
