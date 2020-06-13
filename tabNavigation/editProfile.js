@@ -8,7 +8,9 @@ import {
     TouchableOpacity,
 } from 'react-native';
 import { Input } from 'react-native-elements';
-
+import {
+    emailValidator
+  } from '../login/src/core/utils';
 
 export default function EditProfile({ route, navigation }) {
 
@@ -17,6 +19,51 @@ export default function EditProfile({ route, navigation }) {
     const [firstName, setFirstName] = useState({ value: '', error: '' });
     const [lastName, setLastName] = useState({ value: '', error: '' });
     const [email, setEmail] = useState({ value: '', error: '' });
+
+    const apiUrl = 'http://proj.ruppin.ac.il/bgroup10/PROD/api/Tourist/EditProfile'
+
+    const updateToDB = () =>{
+
+        const emailError = emailValidator(email.value);
+
+        if (emailError){
+            setEmail({ ...email, error: emailError });
+            return;
+        }
+
+        //if the validation ok, he will turn to this path of update
+        else{
+            const user = {
+                Email: profile.Email,
+                SecondEmail: email.value,
+                FirstName: firstName.value,
+                LastName: lastName.value
+            }
+            console.warn(user)
+            fetch(apiUrl, {
+            method: 'PUT',
+            body: JSON.stringify(user),
+            headers: new Headers({
+              'Content-type': 'application/json; charset=UTF-8' //very important to add the 'charset=UTF-8'!!!!
+            })
+            
+          })
+            .then(res => {
+             console.warn('res=', JSON.stringify(res));
+              return res.json()
+            })
+            .then(
+              (result) => {
+              console.warn("fetch POST= ", JSON.stringify(result));
+        
+            //list from fetch:
+            //0 = db error
+            //1= fetch succeeded
+              })
+        }
+           
+
+    }
 
     return (
         <View style={styles.headerContainer}>
@@ -52,7 +99,7 @@ export default function EditProfile({ route, navigation }) {
                     label="First Name"
                     labelStyle={styles.color}
                     returnKeyType="next"
-                    value={profile.FirstName}
+                    value={firstName.value}
                     onChangeText={text => setFirstName({ value: text, error: '' })}
                     error={!!firstName.error}
                     errorText={firstName.error}
@@ -63,7 +110,7 @@ export default function EditProfile({ route, navigation }) {
                     label="Last Name"
                     labelStyle={styles.color}
                     returnKeyType="next"
-                    value={profile.LastName}
+                    value={lastName.value}
                     onChangeText={text => setLastName({ value: text, error: '' })}
                     error={!!lastName.error}
                     errorText={lastName.error}
@@ -75,7 +122,7 @@ export default function EditProfile({ route, navigation }) {
                     label="Email"
                     labelStyle={styles.color}
                     returnKeyType="next"
-                    value={profile.Email}
+                    value={email.value}
                     onChangeText={text => setEmail({ value: text, error: '' })}
                     error={!!email.error}
                     errorText={email.error}
@@ -87,7 +134,10 @@ export default function EditProfile({ route, navigation }) {
                 />
             </View>
 
-            <TouchableOpacity style={styles.buttonHeader}>
+            <TouchableOpacity 
+            style={styles.buttonHeader}
+            onPress={updateToDB}
+            >
                 <View style={styles.button}>
                     <Text style={styles.buttonText}>
                         Update
