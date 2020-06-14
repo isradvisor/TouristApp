@@ -114,7 +114,7 @@ export default function EditProfile({ route, navigation }) {
               if (!result.cancelled) {
                 setImageUri(result.uri );
                 const user = {
-                    Email: email.value,
+                    Email: profile.Email,
                     ProfilePic: result.uri
                 }
                 fetchToDB(user, apiUploadPic)
@@ -149,8 +149,9 @@ export default function EditProfile({ route, navigation }) {
                             avatarStyle={styles.userImage}
                             />
                     }
-                    <TouchableOpacity onPress={UploadImage}>
-                    <MaterialIcons name="edit" size={28} color="black" style={{marginTop: 15}} />
+                    <TouchableOpacity onPress={UploadImage} style={{marginTop: 15, width:56,
+                    height:56,position:'absolute',right:70,top:50,backgroundColor:'white',borderRadius:45,zIndex:20,alignItems:'center',justifyContent:'center'}} >
+                    <MaterialIcons name="edit" size={28} color="black"/>
                     </TouchableOpacity>
                     <Text style={styles.userNameText}>{profile.FirstName} {profile.LastName} </Text>
                 </View>
@@ -296,7 +297,7 @@ const styles = StyleSheet.create({
         marginTop: 20
     },
     input: {
-        marginTop: 20,
+        marginTop: 10,
         marginLeft: 50,
         marginRight: 50,
     },
@@ -304,7 +305,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#66b3ff',
         paddingVertical: 12,
         paddingHorizontal: 25,
-        borderRadius: 25
+        borderRadius: 25,
     },
     buttonText: {
         color: 'white',

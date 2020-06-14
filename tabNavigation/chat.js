@@ -49,43 +49,67 @@ export default class Chat extends Component {
         //     },
         //   ],
         // })
+        this.retrieveData()
+        this.check();
 
     }
     componentWillMount(){
-        this.retrieveData()
     }
 
 
-
+componentWillUnmount(){
+    this.GetMessages();
+}
+check = async () =>{
+    let arr = [];
+    let groupChatId = `${this.state.guideID}-${this.state.touristID}`
+   let d = firebaseSvc.try();
+   d.collection('messages')
+    .doc(groupChatId)
+    .collection(groupChatId).onSnapshot(
+        snapshot => {
+            snapshot.docChanges().forEach(change => {
+                if (change.type === 'added') {
+                    arr.push(change.doc.data())
+                }
+            })
+          console.log('arrrrrr',arr)
+        },
+        err => {
+        }
+        )
+}
     GetMessages = async () => {
+        // this.setState({
+        //     messages:[]
+        // })
         const tour = await AsyncStorage.getItem('ProfileTourist');
         let ProfileTourist = JSON.parse(tour);
         this.setState({
             ProfileTourist:ProfileTourist
         })
         const messages2 = await AsyncStorage.getItem('messagesTourist');
-        console.log("2",messages2);
         console.log(this.state.guideID);
         console.log(this.state.touristID);
         firebaseSvc.getListHistory(this.state.touristID, this.state.guideID);
         const messagesStore = await AsyncStorage.getItem('messagesTourist');
-        console.log("1",messagesStore);
         let messagesParse = JSON.parse(messagesStore)
         const GuideUser = await AsyncStorage.getItem('GuideUser');
         let GuideUserParse = JSON.parse(GuideUser);
         let mes = [];
         if (messagesParse !== null) {
-            for (let i = messagesParse.length - 1; i >= 0; i--) {
+            console.log("messageParse",messagesParse)
+            for (let i = 0; i<messagesParse.length; i++) {
                 const element = messagesParse[i];
-                let g = moment(Number(element.timestamp)).format('ll')
+                let g = moment(Number(element.timestamp)).format('LLL')
                 let item = '';
-                if (element.idFrom == this.state.touristID) {
+                if (element.idFrom !== this.state.touristID) {
                     item = {
-                        _id: element.idFrom,
+                        _id: element.idTo,
                         text: element.content,
                         createdAt: g,
                         user: {
-                            _id: element.idTo,
+                            _id: element.idFrom,
                             avatar: GuideUserParse.avatar,
                             name: GuideUserParse.name
                         }
@@ -93,22 +117,22 @@ export default class Chat extends Component {
                 }
                 else {
                     item = {
-                        _id: element.idFrom,
+                        _id: element.idTo,
                         text: element.content,
                         createdAt: g,
                         user: {
-                            _id: element.idTo,
+                            _id: element.idFrom,
                             avatar: "",
                             name: ProfileTourist.FirstName + ' ' + ProfileTourist.LastName
                         }
                     }
                 }
-    
                 mes.push(item);
             }
             this.setState({
                 messages: mes
             })
+
         }
         else{
 
@@ -116,6 +140,7 @@ export default class Chat extends Component {
       
 
     }
+
     retrieveData = async () => {
         try {
             const value = await AsyncStorage.getItem('idChatTourist');
@@ -157,24 +182,31 @@ export default class Chat extends Component {
 
     onSend(messages = []) {
         let m = [];
+        let message = '';
         for (let i = 0; i < this.state.messages.length; i++) {
             const element = this.state.messages[i];
             m.push(element)
         }
-        m.push(messages);
 
         console.log('all', m);
         for (let i = 0; i < messages.length; i++) {
             const { text, user } = messages[i];
-            const message = {
+             message = {
                 text,
                 user,
                 createdAt: this.timestamp,
             };
-            console.log('one', this.timestamp)
             this.onSendMessage(message.text)
+            m.push(message);
         }
-        this.GetMessages();
+        this.setState({
+            messages:m
+        })
+        // this.setState(previousState => ({
+        //     messages: GiftedChat.append(previousState.messages, message),
+        //   }))
+
+        //this.GetMessages();
 
 
     }
@@ -183,13 +215,13 @@ export default class Chat extends Component {
     render() {
         return (
             <GiftedChat
-            isAnimated
+            scrollToBottom={true}
+            //scrollToBottomOffset={0}
+            inverted ={false}
                 messages={this.state.messages}
-                placeholder
                 onSend={messages => this.onSend(messages)}
                 user={{
                     _id: this.state.touristID,
-                    id: this.state.touristID,
                     name: this.state.ProfileTourist.FirstName + ' ' + this.state.ProfileTourist.LastName
                 }}
             />
