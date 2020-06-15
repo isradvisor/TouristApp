@@ -30,7 +30,7 @@ export default class Chat extends Component {
             guideID: '',
             touristID: '',
             messages: [],
-            ProfileTourist:""
+            ProfileTourist: ""
         }
     }
     componentDidMount() {
@@ -50,56 +50,63 @@ export default class Chat extends Component {
         //   ],
         // })
         this.retrieveData()
-        this.check();
+        //this.check();
 
     }
-    componentWillMount(){
+    componentWillMount() {
     }
 
 
-componentWillUnmount(){
-    this.GetMessages();
-}
-check = async () =>{
-    let arr = [];
-    let groupChatId = `${this.state.guideID}-${this.state.touristID}`
-   let d = firebaseSvc.try();
-   d.collection('messages')
-    .doc(groupChatId)
-    .collection(groupChatId).onSnapshot(
-        snapshot => {
-            snapshot.docChanges().forEach(change => {
-                if (change.type === 'added') {
-                    arr.push(change.doc.data())
+    componentWillUnmount() {
+        //this.GetMessages();
+    }
+ Î
+    check = async () => {
+        let arr = [];
+        let groupChatId = `${this.state.guideID}-${this.state.touristID}`
+        let d = firebaseSvc.try();
+        d.collection('messages')
+            .doc(groupChatId)
+            .collection(groupChatId).onSnapshot(
+                async (snapshot) => {
+                    snapshot.docChanges().forEach(change => {
+                        if (change.type === 'added') {
+                            arr.push(change.doc.data())
+                        }
+                    })
+                    console.log('arr', arr)
+
+                    await this.AddMessages(arr);
                 }
-            })
-          console.log('arrrrrr',arr)
-        },
-        err => {
-        }
-        )
-}
+            )
+    }
     GetMessages = async () => {
-        // this.setState({
-        //     messages:[]
-        // })
         const tour = await AsyncStorage.getItem('ProfileTourist');
         let ProfileTourist = JSON.parse(tour);
+        console.log("TouristProfile", ProfileTourist);
         this.setState({
-            ProfileTourist:ProfileTourist
+            ProfileTourist: ProfileTourist
         })
-        const messages2 = await AsyncStorage.getItem('messagesTourist');
         console.log(this.state.guideID);
         console.log(this.state.touristID);
-        firebaseSvc.getListHistory(this.state.touristID, this.state.guideID);
-        const messagesStore = await AsyncStorage.getItem('messagesTourist');
-        let messagesParse = JSON.parse(messagesStore)
+        //await firebaseSvc.getListHistory(this.state.touristID, this.state.guideID);
+        await this.check();
+    }
+
+
+    AddMessages = async (array) => {
+        console.log("12345")
+        //const messagesStore = await AsyncStorage.getItem('messagesTourist');
+        let messagesParse = array
+        console.log('messagesParse', messagesParse)
+        console.warn(messagesParse);
+
         const GuideUser = await AsyncStorage.getItem('GuideUser');
         let GuideUserParse = JSON.parse(GuideUser);
         let mes = [];
         if (messagesParse !== null) {
-            console.log("messageParse",messagesParse)
-            for (let i = 0; i<messagesParse.length; i++) {
+            console.log("messageParse", messagesParse)
+            for (let i = 0; i < messagesParse.length; i++) {
                 const element = messagesParse[i];
                 let g = moment(Number(element.timestamp)).format('LLL')
                 let item = '';
@@ -123,7 +130,7 @@ check = async () =>{
                         user: {
                             _id: element.idFrom,
                             avatar: "",
-                            name: ProfileTourist.FirstName + ' ' + ProfileTourist.LastName
+                            name: ""
                         }
                     }
                 }
@@ -134,13 +141,10 @@ check = async () =>{
             })
 
         }
-        else{
+        else {
 
         }
-      
-
     }
-
     retrieveData = async () => {
         try {
             const value = await AsyncStorage.getItem('idChatTourist');
@@ -191,7 +195,7 @@ check = async () =>{
         console.log('all', m);
         for (let i = 0; i < messages.length; i++) {
             const { text, user } = messages[i];
-             message = {
+            message = {
                 text,
                 user,
                 createdAt: this.timestamp,
@@ -200,7 +204,7 @@ check = async () =>{
             m.push(message);
         }
         this.setState({
-            messages:m
+            messages: m
         })
         // this.setState(previousState => ({
         //     messages: GiftedChat.append(previousState.messages, message),
@@ -215,9 +219,9 @@ check = async () =>{
     render() {
         return (
             <GiftedChat
-            scrollToBottom={true}
-            //scrollToBottomOffset={0}
-            inverted ={false}
+                scrollToBottom={true}
+                //scrollToBottomOffset={0}
+                inverted={false}
                 messages={this.state.messages}
                 onSend={messages => this.onSend(messages)}
                 user={{

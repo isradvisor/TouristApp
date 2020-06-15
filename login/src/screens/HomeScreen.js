@@ -8,6 +8,10 @@ import * as Facebook from 'expo-facebook';
 import { FontAwesome, AntDesign } from '@expo/vector-icons'
 import * as Google from "expo-google-app-auth";
 import AnimatedLoader from "react-native-animated-loader";
+import { Notifications } from 'expo';
+import * as Permissions from 'expo-permissions';
+import Constants from 'expo-constants';
+
 
 
 const FadeInView = (props) => {
@@ -49,6 +53,8 @@ const HomeScreen = ({ navigation }) => {
 
   const appId = '2490345164547632';
   const [isLoading, setIsLoading] = useState(false);
+  
+
 
   //signin with google
   const signInWithGoogle = async () => {

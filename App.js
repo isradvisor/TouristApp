@@ -14,7 +14,7 @@ import {
   ForgotPasswordScreen,
   Dashboard,
 } from './login/src/screens';
-
+import myTrip from './tabNavigation/myTrip';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -28,6 +28,7 @@ import Hotels from "./tabNavigation/explore/hotels";
 import Chat from './tabNavigation/chat';
 import EditProfile from './tabNavigation/editProfile';
 import { FontAwesome } from '@expo/vector-icons';
+
 
 
 //http://api.openweathermap.org/data/2.5/group?id=524901,703448,2643743&units=metric
@@ -58,13 +59,13 @@ import { FontAwesome } from '@expo/vector-icons';
     })
 
 
-function MyTrip() {
-  return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text>My Trip!</Text>
-    </View>
-  );
-}
+// function MyTrip() {
+//   return (
+//     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+//       <Text>My Trip!</Text>
+//     </View>
+//   );
+// }
 
 const Stack = createStackNavigator();
 
@@ -146,7 +147,7 @@ function MyProfileStack() {
           />
           <Tab.Screen
             name="MyTrip"
-            component={MyTrip}
+            component={myTrip}
             options={{
               tabBarLabel: 'My Trip',
               tabBarIcon: ({ color, size }) => (

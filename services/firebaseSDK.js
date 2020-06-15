@@ -356,28 +356,35 @@ class FirebaseSvc {
             this.groupChatId = `${guideID}-${touristID}`
         }
         // Get history and listen new data added
-      await firebase.firestore()
+    let d =  await firebase.firestore()
             .collection('messages')
             .doc(this.groupChatId)
             .collection(this.groupChatId)
             .onSnapshot(
-                snapshot => {
-                    snapshot.docChanges().forEach(change => {
+             async(snapshot) => {
+                 snapshot.docChanges().forEach((change) => {
                         if (change.type === 'added') {
                             arr.push(change.doc.data())
+                            this.listMessage.push(change.doc.data())
                         }
                     })
-                    AsyncStorage.setItem(
+                     AsyncStorage.setItem(
                         'messagesTourist',
                         JSON.stringify(arr)
                     );
-                    return arr;
-                },
-                err => {
+                    console.log("555666")
+                    //return arr;
                 }
                 )
+                .then(async(r)=> console.log('f',this.listMessage))
 
+
+                console.log('endOfFunction',d)
     }
+
+
+
+
 }
 
 

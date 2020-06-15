@@ -4,6 +4,9 @@ import * as Font from 'expo-font';
 import AnimatedProgressWheel from 'react-native-progress-wheel';
 import { Card, ListItem, Button } from 'react-native-elements';
 import firebaseSvc from '../../services/firebaseSDK';
+import { Notifications } from 'expo';
+import * as Permissions from 'expo-permissions';
+import Constants from 'expo-constants';
 
 
 const FadeInView = (props) => {
