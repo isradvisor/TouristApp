@@ -59,20 +59,50 @@ export default ({route,navigation}) => {
       name: profile.FirstName + ' ' + profile.LastName,
       email: profile.Email,
       password: profile.PasswordTourist,
+      URL:profile.ProfilePic
+
     }
-  firebaseSvc.createAccount(user,guide).then((solve)=>{
-      console.log('this is sinup data==>  '+JSON.stringify(solve))
-  }).catch((fail)=>{
-    console.log('not getting data.....................')
-  })
+    postStatus(user,guide);
+  // firebaseSvc.createAccount(user,guide).then((solve)=>{
+  //     console.log('this is sinup data==>  '+JSON.stringify(solve))
+  // }).catch((fail)=>{
+  //   console.log('not getting data.....................')
+  // })
     //navigation.navigate('MyTabs', { screen: 'MyProfileStack',params:{ screen:'MyProfile',params:{profile: profile,guide:guide},},})
-    navigation.navigate('MyTabs', { screen: 'Chat',params:{user:user, guide:guide},})
-     AsyncStorage.clear();
+    navigation.navigate('MyTabs', { screen: 'MyProfileStack',params:{ screen:'MyProfile',params:{profile: profile,guide:guide},},});    
+  //  AsyncStorage.clear();
 
 
 
   }
 
+  const postStatus = (user,guide)=>{
+    fetch('http://proj.ruppin.ac.il/bgroup10/PROD/api/BuildTrip/AddRequest', {
+      method: 'POST',
+      body: JSON.stringify({
+          GuideEmail:guide.Email,
+          TouristEmail:user.email,
+          Status:'send request'
+      }),
+      headers: new Headers({
+        'Content-type': 'application/json; charset=UTF-8' //very important to add the 'charset=UTF-8'!!!!
+      })
+      
+    })
+      .then(res => {
+       //console.warn('res=', JSON.stringify(res));
+        return res.json()
+      })
+      .then(
+        (result) => {
+            console.log(result);
+        //console.warn("fetch POST= ", JSON.stringify(result));
+         },
+
+        (error) => {
+          console.warn("err post=", error);
+        });
+  }
 
 
 //load the font before loading the whole page

@@ -1,5 +1,5 @@
-import React, { memo, useState, useRef, useEffect } from 'react';
-import { Text, Alert, View, Animated } from 'react-native'
+import React, { memo, useState, useRef, useEffect,componentWillMount } from 'react';
+import { Text, Alert, View, Animated, AsyncStorage } from 'react-native'
 import Background from '../components/Background';
 import Header from '../components/Header';
 import Button from '../components/Button';
@@ -7,10 +7,10 @@ import Paragraph from '../components/Paragraph';
 import * as Facebook from 'expo-facebook';
 import { FontAwesome, AntDesign } from '@expo/vector-icons'
 import * as Google from "expo-google-app-auth";
-import AnimatedLoader from "react-native-animated-loader";
-import { Notifications } from 'expo';
-import * as Permissions from 'expo-permissions';
-import Constants from 'expo-constants';
+
+import firebaseSvc from '../../../services/firebaseSDK';
+
+
 
 
 
@@ -50,10 +50,22 @@ const HomeScreen = ({ navigation }) => {
   const apiUrlFacebook = 'http://proj.ruppin.ac.il/bgroup10/PROD/api/Tourist/FacebookUser';
   const apiUrlGoogle = 'http://proj.ruppin.ac.il/bgroup10/PROD/api/Tourist/GoogleUser';
 
+  
+
+
+
+
 
   const appId = '2490345164547632';
   const [isLoading, setIsLoading] = useState(false);
-  
+  const [profile, setProfile] = useState(null)
+
+
+
+
+
+
+
 
 
   //signin with google
@@ -77,6 +89,8 @@ const HomeScreen = ({ navigation }) => {
           Email: temp.user.email,
           ProfilePic: temp.user.photoUrl,
         }
+        //AsyncStorage.setItem('googleFacebookAccount',JSON.stringify(profile));
+
 
         //fetch to db
         fetch(apiUrlGoogle, {
@@ -142,7 +156,6 @@ const HomeScreen = ({ navigation }) => {
         return { cancelled: true };
       }
     } catch (e) {
-      console.warn('LoginScreen.js.js 30 | Error with login', e);
       setIsLoading(false)
       return { error: true };
     }
@@ -164,8 +177,7 @@ const HomeScreen = ({ navigation }) => {
 
   //navigation to next page with all the details of the user
   const navigateTo = (profile, caseResult) => {
-
-
+    
     setTimeout(() => {
       if (caseResult == 1) {
         Alert.alert(
@@ -178,6 +190,15 @@ const HomeScreen = ({ navigation }) => {
         )
       }
       else {
+        getTourist(profile.Email);
+        AsyncStorage.setItem('ProfileTourist',JSON.stringify(profile));
+
+        const user = {
+          email:profile.Email,
+          password:profile.PasswordTourist
+      }
+        //firebaseSvc.login(user);
+    
         Alert.alert(
           'Welcome!',
           'You sign in successfully! enjoy your trip!',
@@ -187,9 +208,10 @@ const HomeScreen = ({ navigation }) => {
           { cancelable: false }
         )
       }
-     
-      caseResult == 1 ? navigation.navigate('RegisterScreen',{profile:profile}):
-      navigation.navigate('MyTabs', { screen: 'MyProfileStack',params:{ screen:'MyProfile',params:{profile: profile},},})},1500); 
+
+      caseResult == 1 ? navigation.navigate('RegisterScreen', { profile: profile }) :
+        navigation.navigate('MyTabs', { screen: 'MyProfileStack', params: { screen: 'MyProfile', params: { profile: profile }, }, })
+    }, 1500);
 
 
   }
@@ -205,7 +227,7 @@ const HomeScreen = ({ navigation }) => {
       });
       if (type === 'success') {
         // Get the user's name using Facebook's Graph API
-        const response = await fetch(`https://graph.facebook.com/me?access_token=${token}&fields=id,name,email,about,picture.type(large)`); 
+        const response = await fetch(`https://graph.facebook.com/me?access_token=${token}&fields=id,name,email,about,picture.type(large)`);
         const temp = await response.json();
         const splitName = temp.name.split(' ')
 
@@ -215,6 +237,7 @@ const HomeScreen = ({ navigation }) => {
           Email: temp.email,
           ProfilePic: temp.picture.data.url,
         }
+        //AsyncStorage.setItem('googleFacebookAccount',JSON.stringify(profile));
 
         //fetch to db
         fetch(apiUrlFacebook, {
@@ -271,7 +294,8 @@ const HomeScreen = ({ navigation }) => {
                     ],
                     { cancelable: false }
                   )
-                  navigation.navigate('MyTabs', { screen: 'MyProfileStack',params:{ screen:'MyProfile',params:{profile: profile},},})
+                  getTourist(profile.Email);
+                  navigation.navigate('MyTabs', { screen: 'MyProfileStack', params: { screen: 'MyProfile', params: { profile: profile }, }, })
                   break;
 
                 default:
@@ -301,6 +325,31 @@ const HomeScreen = ({ navigation }) => {
     }
   }
 
+  const getTourist = (email) =>{
+
+    fetch('http://proj.ruppin.ac.il/bgroup10/PROD/api/Tourist?email=' + email, {
+      method: 'GET',
+      headers: new Headers({
+        'Content-type': 'application/json; charset=UTF-8' //very important to add the 'charset=UTF-8'!!!!
+      })
+      
+    })
+      .then(res => {
+       //console.warn('res=', JSON.stringify(res));
+        return res.json()
+      })
+      .then(
+        (result) => {
+          AsyncStorage.setItem('googleFacebookAccount',JSON.stringify(result));
+
+        //console.warn("fetch POST= ", JSON.stringify(result));
+         },
+
+        (error) => {
+          console.warn("err post=", error);
+        });
+  }
+
   //LastName converter for facebook users
   const LastNameConverter = (splitOfFacebookNames) => {
     const temp = [];
@@ -316,13 +365,13 @@ const HomeScreen = ({ navigation }) => {
 
       <FadeInView>
         <Header>Welcome To IsraAdvisor</Header>
-        {isLoading && <AnimatedLoader
+        {/* {isLoading && <AnimatedLoader
           visible={isLoading}
           overlayColor="rgba(255,255,255,0.75)"
           animationStyle={{ width: 100, height: 100 }}
           source={require("../../../assets/loading.json")}
           speed={1}
-        />}
+        />} */}
         <Paragraph >
           Let's start create your trip in Israel!
     </Paragraph>

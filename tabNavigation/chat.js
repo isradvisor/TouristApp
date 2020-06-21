@@ -53,18 +53,13 @@ export default class Chat extends Component {
         //this.check();
 
     }
-    componentWillMount() {
-    }
-
-
-    componentWillUnmount() {
-        //this.GetMessages();
-    }
- Î
+    
+ 
     check = async () => {
         let arr = [];
         let groupChatId = `${this.state.guideID}-${this.state.touristID}`
-        let d = firebaseSvc.try();
+        console.warn(groupChatId)
+        let d = firebaseSvc.connect();
         d.collection('messages')
             .doc(groupChatId)
             .collection(groupChatId).onSnapshot(
@@ -74,16 +69,20 @@ export default class Chat extends Component {
                             arr.push(change.doc.data())
                         }
                     })
-                    console.log('arr', arr)
+                    console.warn('arr', arr)
 
                     await this.AddMessages(arr);
                 }
             )
     }
     GetMessages = async () => {
-        const tour = await AsyncStorage.getItem('ProfileTourist');
+        let tour = await AsyncStorage.getItem('ProfileTourist');
+        if (tour== undefined) {
+            tour = await AsyncStorage.getItem('googleFacebookAccount');
+            
+        } 
         let ProfileTourist = JSON.parse(tour);
-        console.log("TouristProfile", ProfileTourist);
+        console.warn("TouristProfile", ProfileTourist);
         this.setState({
             ProfileTourist: ProfileTourist
         })
@@ -112,7 +111,7 @@ export default class Chat extends Component {
                 let item = '';
                 if (element.idFrom !== this.state.touristID) {
                     item = {
-                        _id: element.idTo,
+                        _id: i,
                         text: element.content,
                         createdAt: g,
                         user: {
@@ -124,7 +123,7 @@ export default class Chat extends Component {
                 }
                 else {
                     item = {
-                        _id: element.idTo,
+                        _id: i,
                         text: element.content,
                         createdAt: g,
                         user: {
@@ -151,6 +150,7 @@ export default class Chat extends Component {
             const value2 = await AsyncStorage.getItem('idChatGuide');
 
             if (value !== null || value2 !== null) {
+                console.warn(value,value2)
                 // We have data!!
                 this.setState({
                     guideID: JSON.parse(value2),
@@ -220,6 +220,8 @@ export default class Chat extends Component {
         return (
             <GiftedChat
                 scrollToBottom={true}
+                showAvatarForEveryMessage={true}
+                showUserAvatar={true}
                 //scrollToBottomOffset={0}
                 inverted={false}
                 messages={this.state.messages}

@@ -1,5 +1,5 @@
 import React, { memo, useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Alert,AsyncStorage } from 'react-native';
 import Background from '../components/Background';
 import Header from '../components/Header';
 import Button from '../components/Button';
@@ -52,9 +52,9 @@ const RegisterScreen = ({ route, navigation }) => {
     _notificationSubscription = Notifications.addListener(_handleNotification);
     getFromDB();
     if (googleFacebookAccount != undefined) {
-      setFirstName({ value: googleFacebookAccount.FirstName, error: '' });
-      setLastName({ value: googleFacebookAccount.LastName, error: '' });
-      setEmail({ value: googleFacebookAccount.Email, error: '' })
+      setFirstName({ value: googleFacebookAccount.profile.FirstName, error: '' });
+      setLastName({ value: googleFacebookAccount.profile.LastName, error: '' });
+      setEmail({ value: googleFacebookAccount.profile.Email, error: '' })
     }
 
   }, [])
@@ -89,7 +89,7 @@ const RegisterScreen = ({ route, navigation }) => {
   };
 
   const _handleNotification = notification => {
-    Vibration.vibrate();
+    //Vibration.vibrate();
     console.log(notification);
     setNotification(notification)
   };
@@ -239,7 +239,8 @@ const RegisterScreen = ({ route, navigation }) => {
         PasswordTourist: password.value,
         Gender: gender,
         YearOfBirth: birthdate,
-        LanguageCode: languageChosen
+        LanguageCode: languageChosen,
+        Token:expoPushToken
       }
       if (googleFacebookAccount == undefined) {
 
@@ -344,7 +345,8 @@ const RegisterScreen = ({ route, navigation }) => {
 
   //navigation to next page with all the details of the user
   const navigateTo = (profile) => {
-
+  AsyncStorage.setItem('ProfileTourist',JSON.stringify(profile));
+  console.warn('save item',profile);
     setTimeout(() => {
       navigation.navigate('Dashboard', { profile: profile })
       sendPushNotification();
@@ -399,7 +401,7 @@ const RegisterScreen = ({ route, navigation }) => {
         <TextInput
           label="First Name"
           returnKeyType="next"
-          value={googleFacebookAccount == undefined ? firstName.value : googleFacebookAccount.FirstName}
+          value={googleFacebookAccount == undefined ? firstName.value : googleFacebookAccount.profile.FirstName}
           onChangeText={text => setFirstName({ value: text, error: '' })}
           error={!!firstName.error}
           errorText={firstName.error}
@@ -409,7 +411,7 @@ const RegisterScreen = ({ route, navigation }) => {
         <TextInput
           label="Last Name"
           returnKeyType="next"
-          value={googleFacebookAccount == undefined ? lastName.value : googleFacebookAccount.LastName}
+          value={googleFacebookAccount == undefined ? lastName.value : googleFacebookAccount.profile.LastName}
           onChangeText={text => setLastName({ value: text, error: '' })}
           error={!!lastName.error}
           errorText={lastName.error}
@@ -419,7 +421,7 @@ const RegisterScreen = ({ route, navigation }) => {
         <TextInput
           label="Email"
           returnKeyType="next"
-          value={googleFacebookAccount == undefined ? email.value : googleFacebookAccount.Email}
+          value={googleFacebookAccount == undefined ? email.value : googleFacebookAccount.profile.Email}
           onChangeText={text => setEmail({ value: text, error: '' })}
           error={!!email.error}
           errorText={email.error}
