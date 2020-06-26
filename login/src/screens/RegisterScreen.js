@@ -1,5 +1,5 @@
 import React, { memo, useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Alert,AsyncStorage } from 'react-native';
 import Background from '../components/Background';
 import Header from '../components/Header';
 import Button from '../components/Button';
@@ -53,9 +53,9 @@ const RegisterScreen = ({ route, navigation }) => {
    const _notificationSubscription = Notifications.addListener(_handleNotification);
     getFromDB();
     if (googleFacebookAccount != undefined) {
-      setFirstName({ value: googleFacebookAccount.FirstName, error: '' });
-      setLastName({ value: googleFacebookAccount.LastName, error: '' });
-      setEmail({ value: googleFacebookAccount.Email, error: '' })
+      setFirstName({ value: googleFacebookAccount.profile.FirstName, error: '' });
+      setLastName({ value: googleFacebookAccount.profile.LastName, error: '' });
+      setEmail({ value: googleFacebookAccount.profile.Email, error: '' })
     }
 
   }, [])
@@ -90,7 +90,7 @@ const RegisterScreen = ({ route, navigation }) => {
   };
 
   const _handleNotification = notification => {
-    Vibration.vibrate();
+    //Vibration.vibrate();
     console.log(notification);
     setNotification(notification)
   };
@@ -240,7 +240,8 @@ const RegisterScreen = ({ route, navigation }) => {
         PasswordTourist: password.value,
         Gender: gender,
         YearOfBirth: birthdate,
-        LanguageCode: languageChosen
+        LanguageCode: languageChosen,
+        Token:expoPushToken
       }
       if (googleFacebookAccount == undefined) {
 
@@ -345,7 +346,8 @@ const RegisterScreen = ({ route, navigation }) => {
 
   //navigation to next page with all the details of the user
   const navigateTo = (profile) => {
-
+  AsyncStorage.setItem('ProfileTourist',JSON.stringify(profile));
+  console.warn('save item',profile);
     setTimeout(() => {
       navigation.navigate('Dashboard', { profile: profile })
       sendPushNotification();

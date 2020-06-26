@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { Text, View, ImageBackground, StyleSheet} from 'react-native';
+import { Text, Alert, View, ImageBackground, StyleSheet, FlatList, TouchableOpacity, Image } from 'react-native';
+//import WeeklyCalendar from 'react-native-weekly-calendar';
 
 //import WeeklyCalendar from 'react-native-weekly-calendar';
 
-
-const myTrip =()=>{
+const myTrip = () =>{
     const [myList, setMyList] = useState(false);
 
     const sampleEvents = [
@@ -35,12 +35,17 @@ const myTrip =()=>{
                     <Text style={styles.UserGreet}>My Israel Trip</Text>
                 </View>
             </ImageBackground>
+<<<<<<< HEAD
             {/* <View>
                 <WeeklyCalendar events={sampleEvents} style={{ height: 400 }} />
             </View> */}
+=======
+             {/* <WeeklyCalendar events={sampleEvents} style={{ height: 400 }} /> */}
+>>>>>>> e815a0c2f99cd45fb3c39bc491aed328eef45b18
         </View>
-    )
-}    
+    );
+
+}
 const styles = StyleSheet.create({
     container: {
         flex: 1,

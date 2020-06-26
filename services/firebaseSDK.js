@@ -40,18 +40,9 @@ class FirebaseSvc {
         // }
     }
 
-    try = () =>{
+    connect = () =>{
        return firebase.firestore()
            
-    }
-
-    authData = (email) => {
-        firebase
-            .database()
-            .ref('users')
-            .orderByChild('emailAddress')
-            .equalTo(email)
-            .once('value', snap => console.log('this is authantcation data==> ' + snap.val()))
     }
 
     login = async (user) => {
@@ -67,12 +58,8 @@ class FirebaseSvc {
                         .get()
                         .then(function (querySnapshot) {
                             querySnapshot.forEach(function (doc) {
-                                console.log(doc.id);
                                 asyTour = user.uid
                                 const currentdata = doc.data()
-                                console.log("--------------")
-                                console.log(currentdata.guideEmail)
-                                console.log("--------------")
                                 let guideEmail = currentdata.guideEmail;
                                 firebase.firestore().collection('users').get()
                                     .then((res) => {
@@ -80,24 +67,17 @@ class FirebaseSvc {
                                              AsyncStorage.removeItem('idChatTourist');
                                              AsyncStorage.removeItem('GuideUser');
                                              AsyncStorage.removeItem('idChatGuide');
-                                        console.log("Start Search guideUID")
                                         for (let i = 0; i < res.docs.length; i++) {
                                             const element = res.docs[i];
                                             if (element.data().email == guideEmail) {
-                                                console.log("Found GuideUID")
-                                                console.log("First")
-                                                console.log(element.data().id)
                                                  GuideUser = {
                                                     _id: element.data().id,
                                                     name: element.data().name,
-                                                    avatar: ""
+                                                    avatar: element.data().URL
                                                 }
                                                 guideID = element.data().id
                                             }
                                         }
-                                        console.log("GUIDEID",guideID);
-                                        console.log("GuideDetails",GuideUser);
-                                        console.log("TouristID",asyTour);
                                         AsyncStorage.setItem('idChatTourist',JSON.stringify(asyTour))
                                         AsyncStorage.setItem('GuideUser',JSON.stringify(GuideUser))
                                         AsyncStorage.setItem('idChatGuide',JSON.stringify(guideID))
@@ -109,47 +89,17 @@ class FirebaseSvc {
     }
 
 
-    addDetailsToChat = (touristUID, guideEmail) => {
-        //console.log("guideEmail",guideEmail);
-
-
-
-
-    }
-
-    loginData = () => {
-        return new Promise((resolve, reject) => {
-            firebase.auth().onAuthStateChanged(function (user) {
-                if (user) {
-                    //console.log("user: ", user);
-                    resolve(user)
-                    // User is signed in.
-                } else {
-                    // No user is signed in.
-                }
-            })
-        })
-    }
-
-    observeAuth = () => {
-        firebase.auth().onAuthStateChanged(this.onAuthStateChanged);
-    }
-    onAuthStateChanged = user => {
-        if (!user) {
-            try {
-                this.login(user);
-            } catch ({ message }) {
-                console.log("Failed:" + message)
-            }
-        } else {
-            console.log("Reusing auth...");
-        }
-    }
-
-
     createAccount = async (user, guide) => {
         let asyGuide = '';
         let asyTour = '';
+       let GuideParse = JSON.parse(guide);
+       console.warn('guid',GuideParse);
+       console.warn('user',user);
+
+        let URL = user.URL;
+        if(URL == "" || URL == null){
+            URL = "http://proj.ruppin.ac.il/bgroup10/PROD/Images/Default-welcomer.png"
+        }
         try {
            await AsyncStorage.removeItem('messagesTourist');
             await AsyncStorage.removeItem('idChatTourist');
@@ -162,32 +112,27 @@ class FirebaseSvc {
             firebase.auth()
                 .createUserWithEmailAndPassword(user.email, user.password)
                 .then(function (pass) {
-                    var userf = firebase.auth().currentUser;
-                    userf.updateProfile({ displayName: user.name })
-                        .then(function () {
+
                             firebase.firestore().collection("users").add({
                                 name: user.name,
                                 id: pass.user.uid,
                                 email: user.email,
                                 password: user.password,
-                                URL: "",
+                                URL: URL,
                                 type: "Tourist",
-                                guideEmail: guide.Email,
+                                guideEmail: GuideParse.Email,
                                 messages: [{ notificationId: "", number: 0 }]
                             })
                                 .then(function () {
                                     firebase.firestore().collection('users').get()
                                         .then((res) => {
-                                            console.log("Start Search guideUID")
                                             for (let i = 0; i < res.docs.length; i++) {
                                                 const element = res.docs[i];
-                                                if (element.data().email == guideEmail) {
-                                                    console.log("Found GuideUID")
-                                                    console.log(element.data().id)
+                                                if (element.data().id == GuideParse.chatId) {
                                                     let GuideUser = {
                                                         _id: element.data().id,
                                                         name: element.data().name,
-                                                        avatar: ""
+                                                        avatar: element.data().URL
                                                     }
                                                     asyGuide = element.data().id
                                                     asyTour = pass.user.uid
@@ -202,10 +147,7 @@ class FirebaseSvc {
                                 'idChatTourist',
                                 JSON.stringify(pass.user.uid)
                             );
-                        })
-                        .catch(function (error) {
-                            console.error("Error writing document: ", error);
-                        });
+                       
                     alert("User " + user.name + " was created successfully. Please login.")
                 }, function (error) {
                     console.warn("Error update displayName.");
@@ -213,20 +155,6 @@ class FirebaseSvc {
         }, function (error) {
             console.error("got error:" + typeof (error) + " string:" + error.message);
             alert("Create account failed. Error: " + error.message);
-        })
-    }
-
-
-    usersData = () => {
-        let all = []
-        return new Promise((resolve, reject) => {
-            var docRef = firebase.firestore().collection("messages")
-            docRef.get().then(function (querySnapshot) {
-                querySnapshot.forEach(function (doc) {
-                    all.push(doc.data())
-                }, resolve(all))
-            })
-            console.log("all", all);
         })
     }
 
@@ -238,34 +166,6 @@ class FirebaseSvc {
         });
     }
 
-    get uid() {
-        return (firebase.auth().currentUser || {}).uid;
-    }
-
-    get ref() {
-        return firebase.database().ref('chat_messages');
-    }
-
-    refOn = () => {
-        return new Promise((resolve, reject) => {
-            let cData = []
-            this.ref.on('child_added', function (snapshot) {
-                const { timestamp: numberStamp, text, user, name, femail, fid } = snapshot.val();
-                const { key: id } = snapshot;
-                const { key: _id } = snapshot;
-                const timestamp = new Date(numberStamp);
-                const message = {
-                    femail,
-                    fid,
-                    text,
-                    timestamp,
-                    user
-                };
-                cData.push(message)
-                resolve(cData)
-            })
-        })
-    }
 
     get timestamp() {
         return firebase.database.ServerValue.TIMESTAMP;
@@ -337,13 +237,6 @@ class FirebaseSvc {
         })
     });
 
-    // console.log("tour", touristID);
-        // console.log("guide", guideID);
-        // if (this.removeListener) {
-        //     this.removeListener()
-        // }
-        // // this.listMessage.length = 0
-
 
     getListHistory = async (touristID, guideID) => {
         let arr = [];
@@ -377,17 +270,8 @@ class FirebaseSvc {
                 }
                 )
                 .then(async(r)=> console.log('f',this.listMessage))
-
-
-                console.log('endOfFunction',d)
     }
-
-
-
-
 }
-
-
 
 
 

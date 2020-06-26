@@ -26,16 +26,28 @@ const MainExplore = ({ navigation }) => {
 
     const readUserData = async () => {
         try {
-            await AsyncStorage.getItem('user').then((value) => {
-                const data = JSON.parse(value);
-                setIsLoading(false)
-                setProfile(data)
+            await AsyncStorage.getItem('ProfileTourist').then(async(value) => {
+                if (value==null) {
+                    await AsyncStorage.getItem('googleFacebookAccount').then((value)=>{
+                        const data = JSON.parse(value);
+                        setProfile(data);
+                        console.warn("facebook/google:",data);
+                    })
+                } else {
+                    const data = JSON.parse(value);
+                    setProfile(data);
+                    console.warn("profile:",data);
+
+
+                }
+              
             });
         }
         catch (e) {
             console.warn('failed to fetch data')
 
         }
+        
     }
     const readWeatherDataData = async () => {
         try {
@@ -132,7 +144,7 @@ const MainExplore = ({ navigation }) => {
             cityNameApi: 'Nazareth'
         },
     ])
-    if (profile !== null || myWeather !== null) {
+    if (profile !== null && myWeather !== null) {
         return (
             <View style={{ flexGrow: 1, height: '100%' }}>
                 <View>
