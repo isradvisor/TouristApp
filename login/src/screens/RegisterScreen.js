@@ -42,6 +42,7 @@ const RegisterScreen = ({ route, navigation }) => {
 
 
 
+
   const apiSignUpUrl = 'http://proj.ruppin.ac.il/bgroup10/PROD/api/Tourist/Register'
   const apiGFSignUpFirstTimeUrl = 'http://proj.ruppin.ac.il/bgroup10/PROD/api/Tourist/GoogleFacebookSignUpFirstTime'
   const languageApiUrl = 'http://proj.ruppin.ac.il/bgroup10/PROD/api/Language';
@@ -49,7 +50,7 @@ const RegisterScreen = ({ route, navigation }) => {
   //on load the screen - get all the languages from DB
   useEffect(() => {
     registerForPushNotificationsAsync();
-    _notificationSubscription = Notifications.addListener(_handleNotification);
+   const _notificationSubscription = Notifications.addListener(_handleNotification);
     getFromDB();
     if (googleFacebookAccount != undefined) {
       setFirstName({ value: googleFacebookAccount.FirstName, error: '' });
@@ -399,7 +400,7 @@ const RegisterScreen = ({ route, navigation }) => {
         <TextInput
           label="First Name"
           returnKeyType="next"
-          value={googleFacebookAccount == undefined ? firstName.value : googleFacebookAccount.FirstName}
+          value={googleFacebookAccount == undefined ? firstName.value : googleFacebookAccount.profile.FirstName}
           onChangeText={text => setFirstName({ value: text, error: '' })}
           error={!!firstName.error}
           errorText={firstName.error}
@@ -409,7 +410,7 @@ const RegisterScreen = ({ route, navigation }) => {
         <TextInput
           label="Last Name"
           returnKeyType="next"
-          value={googleFacebookAccount == undefined ? lastName.value : googleFacebookAccount.LastName}
+          value={googleFacebookAccount == undefined ? lastName.value : googleFacebookAccount.profile.LastName}
           onChangeText={text => setLastName({ value: text, error: '' })}
           error={!!lastName.error}
           errorText={lastName.error}
@@ -419,7 +420,7 @@ const RegisterScreen = ({ route, navigation }) => {
         <TextInput
           label="Email"
           returnKeyType="next"
-          value={googleFacebookAccount == undefined ? email.value : googleFacebookAccount.Email}
+          value={googleFacebookAccount == undefined ? email.value : googleFacebookAccount.profile.Email}
           onChangeText={text => setEmail({ value: text, error: '' })}
           error={!!email.error}
           errorText={email.error}

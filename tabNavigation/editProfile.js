@@ -1,12 +1,12 @@
 import React, { useState } from 'react'
 import {
-    Image,
     Platform,
     StyleSheet,
     Text,
     View,
     TouchableOpacity,
-    TouchableHighlight
+    TouchableHighlight,
+    AsyncStorage
 } from 'react-native';
 import {
     emailValidator
@@ -29,11 +29,15 @@ export default function EditProfile({ route, navigation }) {
     const [counter, setCounter] = useState(0)
     const [oldEmail, setOldEmail] = useState('')
     const [imageUri, setImageUri] = useState('')
+    const [updatedUser, setUpdatedUser] = useState('');
 
     const apiUrl = 'http://proj.ruppin.ac.il/bgroup10/PROD/api/Tourist/EditProfile'
     const apiUploadPic = 'http://proj.ruppin.ac.il/bgroup10/PROD/api/Tourist/UploadPicture'
 
+
+    
     const updateToDB = () =>{
+        
         setOldEmail(email.value)
         const emailError = emailValidator(email.value);
 
@@ -53,22 +57,36 @@ export default function EditProfile({ route, navigation }) {
                     FirstName: firstName.value,
                     LastName: lastName.value
                 }
-                
+                setUpdatedUser(user)
                 fetchToDB(user, apiUrl);
                 setCounter(1)
             }
             else{
+                setUpdatedUser(user)
                 const user = {
                     Email: oldEmail,
                     SecondEmail: email.value,
                     FirstName: firstName.value,
                     LastName: lastName.value
                 }
-                
+                setUserInAsyncStorage(user);
                 fetchToDB(user, apiUrl);
                 setCounter(1)
+                
             }
         }
+        }
+
+        const setUserInAsyncStorage = async (user) =>{
+            try {
+                await AsyncStorage.setItem(
+                  'user',
+                 JSON.stringify(user)
+                );
+              } catch (error) {
+                // Error saving data
+                console.warn('error : ',error)
+              }
         }
 
         const fetchToDB = (user, api) =>{
@@ -103,6 +121,8 @@ export default function EditProfile({ route, navigation }) {
               })
         }
 
+       
+
         const UploadImage = async () =>{
             let result = await ImagePicker.launchImageLibraryAsync({
                 allowsEditing: true,
@@ -121,6 +141,31 @@ export default function EditProfile({ route, navigation }) {
               }
         };
        
+        const pressOk = () =>{
+            setModalVisible(!modalVisible);
+            const user = {
+                Email: updatedUser.SecondEmail,
+                FirstName: updatedUser.FirstName,
+                LastName: updatedUser.LastName,
+                ProfilePic: ''
+            }
+            
+           updatedUser != undefined && navigation.navigate('MyProfile',{profile: user});
+           
+        }
+
+        const getUpdatedData = async () =>{
+            try {
+                const temp =  JSON.parse( await AsyncStorage.getItem(
+                  'user'
+                ));
+
+               console.warn('temp = ', temp)
+              } catch (error) {
+                // Error saving data
+                console.warn('error : ',error)
+              }
+        }
 
     return (
         <View style={styles.headerContainer}>
@@ -159,18 +204,19 @@ export default function EditProfile({ route, navigation }) {
             <View style={styles.body}>
             <View style={styles.input}>
                 <TextInput
-                    label="First Name"
+                    label={firstName.value == ''?  profile.FirstName : "First Name"}
                     labelStyle={styles.color}
                     returnKeyType="next"
                     value={firstName.value}
                     onChangeText={text => setFirstName({ value: text, error: '' })}
                     error={!!firstName.error}
                     errorText={firstName.error}
+                    placeHolder={'text'}
                 />
             </View>
             <View style={styles.input}>
                 <TextInput
-                    label="Last Name"
+                    label={lastName.value == ''?  profile.LastName : "Last Name"}
                     labelStyle={styles.color}
                     returnKeyType="next"
                     value={lastName.value}
@@ -182,7 +228,7 @@ export default function EditProfile({ route, navigation }) {
             </View>
             <View style={styles.input}>
                 <TextInput
-                    label="Email"
+                    label={email.value == ''?  profile.Email : "Email"}
                     labelStyle={styles.color}
                     returnKeyType="next"
                     value={email.value}
@@ -225,7 +271,7 @@ export default function EditProfile({ route, navigation }) {
             <TouchableHighlight
               style={{ ...styles.openButton, backgroundColor: "#2196F3" }}
               onPress={() => {
-                setModalVisible(!modalVisible);
+                pressOk()
               }}
             >
               <Text style={styles.textStyle}>OK</Text>

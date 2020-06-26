@@ -38,16 +38,30 @@ const FadeInView = (props) => {
 
 
 const MyProfile = ({ route, navigation }) => {
+
     const profile = route.params.profile;
-    //const ProfileTourist = AsyncStorage.getItem('ProfileTourist');
     const [fontLoaded, setFontLoaded] = useState(false)
-    
+    const [userASData, setUserASData] = useState('')
+
+    console.warn("user: ", profile)
 
     useEffect(()=>{
         _storeData()
+        getUserAsyncStorageData();
+       
     },[])
-
     
+    const getUserAsyncStorageData = async () =>{
+        try {
+            setUserASData(JSON.parse( await AsyncStorage.getItem(
+              'user'
+            )));
+          } catch (error) {
+            // Error saving data
+            console.warn('error : ',error)
+          }
+    }
+
      const _storeData = async () => {
         try {
           await AsyncStorage.setItem(
@@ -82,7 +96,7 @@ const MyProfile = ({ route, navigation }) => {
                     style={{ width: '100%', height: 735 }}
                 >
                     <View style={styles.mainbody}>
-                        {profile.ProfilePic == null || !profile.hasOwnProperty('ProfilePic') ?
+                        {userASData.ProfilePic == null || !profile.hasOwnProperty('ProfilePic') ?
 
                             <Image
                                 style={styles.imgProfile}
@@ -93,12 +107,14 @@ const MyProfile = ({ route, navigation }) => {
                             <Image
                                 style={styles.imgProfile}
                                 source={{
-                                    uri: profile.ProfilePic
+                                    uri: userASData.ProfilePic != null && userASData.ProfilePic
                                 }}
                             />
 
                         }
-                        <Text style={styles.name}>{profile.FirstName} {profile.LastName}</Text>
+                        {userASData != undefined && <Text style={styles.name}>{userASData.FirstName} {userASData.LastName}</Text>
+                        }
+                        
                     </View>
                     <View>
                         <FontAwesome onPress={send} style={styles.icons} name="envelope" color='white' size={32} />

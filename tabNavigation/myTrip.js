@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Text, View, ImageBackground, StyleSheet} from 'react-native';
 
-import WeeklyCalendar from 'react-native-weekly-calendar';
+//import WeeklyCalendar from 'react-native-weekly-calendar';
 
 
 const myTrip =()=>{
@@ -35,9 +35,9 @@ const myTrip =()=>{
                     <Text style={styles.UserGreet}>My Israel Trip</Text>
                 </View>
             </ImageBackground>
-            <View>
+            {/* <View>
                 <WeeklyCalendar events={sampleEvents} style={{ height: 400 }} />
-            </View>
+            </View> */}
         </View>
     )
 }    
