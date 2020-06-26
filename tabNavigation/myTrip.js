@@ -35,13 +35,7 @@ const myTrip = () =>{
                     <Text style={styles.UserGreet}>My Israel Trip</Text>
                 </View>
             </ImageBackground>
-<<<<<<< HEAD
-            {/* <View>
-                <WeeklyCalendar events={sampleEvents} style={{ height: 400 }} />
-            </View> */}
-=======
-             {/* <WeeklyCalendar events={sampleEvents} style={{ height: 400 }} /> */}
->>>>>>> e815a0c2f99cd45fb3c39bc491aed328eef45b18
+
         </View>
     );
 

@@ -40,38 +40,17 @@ const FadeInView = (props) => {
 
 const MyProfile = ({ route, navigation }) => {
 
-    const profile = route.params.profile;
-    const [fontLoaded, setFontLoaded] = useState(false)
-    const [userASData, setUserASData] = useState('')
-
-    console.warn("user: ", profile)
-
-    useEffect(()=>{
-        _storeData()
-        getUserAsyncStorageData();
-       
-    },[])
     
-    const getUserAsyncStorageData = async () =>{
-        try {
-            setUserASData(JSON.parse( await AsyncStorage.getItem(
-              'user'
-            )));
-          } catch (error) {
-            // Error saving data
-            console.warn('error : ',error)
-          }
-    }
-
-     const _storeData = async () => {
-    //const profile = route.params.profile;
-    const [profile, setProfile] = useState(null)
     const [fontLoaded, setFontLoaded] = useState(false)
+    const [profile, setProfile] = useState(null)
     const [notifications, setNotification] = useState({});
     let data = null;
 
+
+  
     useEffect(() => {
         readUserData();
+        
     },[])
 
     const readUserData = async () => {
@@ -81,13 +60,12 @@ const MyProfile = ({ route, navigation }) => {
                     await AsyncStorage.getItem('googleFacebookAccount').then((value) => {
                         data = JSON.parse(value);
                         setProfile(data);
-
+                        
                     })
                 } else {
                     data = JSON.parse(value);
                     setProfile(data);
-
-
+                    
                 }
 
             }).then(() => {
@@ -100,7 +78,7 @@ const MyProfile = ({ route, navigation }) => {
         }
 
     }
-
+    readUserData();
     const _handleNotification = notification => {
         //Vibration.vibrate();
         setNotification(notification)
@@ -147,20 +125,18 @@ const MyProfile = ({ route, navigation }) => {
         });
     }
 
-<<<<<<< HEAD
-  
+    if (profile !== null) {
     return (
+        
         <View>
-            <FadeInView>
-                {fontLoaded && <Text style={{ fontSize: 28, textAlign: 'center', fontFamily: 'ComicNeue-Bold' }}>{profile.FirstName}{"\n"} is it your First Time In Israel?</Text>}
-            </FadeInView>
+      
             <FadeInView >
                 <ImageBackground
                     source={bacckgroundPic}
                     style={{ width: '100%', height: 735 }}
                 >
                     <View style={styles.mainbody}>
-                        {userASData.ProfilePic == null || !profile.hasOwnProperty('ProfilePic') ?
+                        {profile.ProfilePic == null || !profile.hasOwnProperty('ProfilePic') ?
 
                             <Image
                                 style={styles.imgProfile}
@@ -171,14 +147,13 @@ const MyProfile = ({ route, navigation }) => {
                             <Image
                                 style={styles.imgProfile}
                                 source={{
-                                    uri: userASData.ProfilePic != null && userASData.ProfilePic
+                                    uri: profile.ProfilePic
                                 }}
                             />
 
                         }
-                        {userASData != undefined && <Text style={styles.name}>{userASData.FirstName} {userASData.LastName}</Text>
-                        }
-                        
+                    <Text style={styles.name}>{profile.FirstName} {profile.LastName}</Text>
+ 
                     </View>
                     <View>
                         <FontAwesome onPress={send} style={styles.icons} name="envelope" color='white' size={32} />
@@ -189,44 +164,6 @@ const MyProfile = ({ route, navigation }) => {
                         <Text onPress={() => navigation.navigate('EditProfile', { profile: profile })}
                             style={styles.lableItem}>
                             Edit Profile
-=======
-    if (profile !== null) {
-        return (
-            <View>
-                <FadeInView >
-                    <ImageBackground
-                        source={bacckgroundPic}
-                        style={{ width: '100%', height: 735 }}
-                    >
-                        <View style={styles.mainbody}>
-                            {profile.ProfilePic == null || !profile.hasOwnProperty('ProfilePic') ?
-
-                                <Image
-                                    style={styles.imgProfile}
-                                    source={require('../assets/user.png')}
-
-                                />
-                                :
-                                <Image
-                                    style={styles.imgProfile}
-                                    source={{
-                                        uri: profile.ProfilePic
-                                    }}
-                                />
-
-                            }
-                            <Text style={styles.name}>{profile.FirstName} {profile.LastName}</Text>
-                        </View>
-                        <View>
-                            <FontAwesome onPress={send} style={styles.icons} name="envelope" color='white' size={32} />
-                            <Text onPress={send} style={styles.lableItem}>Contact Us</Text>
-                        </View>
-                        <View style={{ marginTop: 30 }}>
-                            <FontAwesome style={styles.icons} name="edit" color='white' size={32} />
-                            <Text onPress={() => navigation.navigate('EditProfile', { profile: profile })}
-                                style={styles.lableItem}>
-                                Edit Profile
->>>>>>> e815a0c2f99cd45fb3c39bc491aed328eef45b18
                         </Text>
                         </View>
                         <View style={{ marginTop: 30 }}>
@@ -238,23 +175,23 @@ const MyProfile = ({ route, navigation }) => {
 
             </View>
         );
-    } else {
-        return (
-            <ActivityIndicator
-                animating={true}
-                style={{
-                    flex: 1,
-                    alignItems: 'center',
-                    justifyContent: 'center',
-
-                    height: 80
-                }}
-                size="large"
-            />
-        );
-    }
-
-}
+                    } else {
+                        return (
+                            <ActivityIndicator
+                                animating={true}
+                                style={{
+                                    flex: 1,
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                
+                                    height: 80
+                                }}
+                                size="large"
+                            />
+                        );
+                    }
+                
+                }
 
 const styles = StyleSheet.create({
     mainbody: {
@@ -311,4 +248,4 @@ const styles = StyleSheet.create({
 
 })
 
-export default MyProfile
+export default MyProfile;

@@ -21,14 +21,14 @@ export default function EditProfile({ route, navigation }) {
 
     const profile = route.params.profile;
 
-    const [firstName, setFirstName] = useState({ value: '', error: '' });
-    const [lastName, setLastName] = useState({ value: '', error: '' });
-    const [email, setEmail] = useState({ value: '', error: '' });
+    const [firstName, setFirstName] = useState({ value: profile.FirstName, error: '' });
+    const [lastName, setLastName] = useState({ value: profile.LastName, error: '' });
+    const [email, setEmail] = useState({ value: profile.Email, error: '' });
     const [modalVisible, setModalVisible] = useState(false);
     const [errorFromDB, setErrorFromDB] = useState(false)
     const [counter, setCounter] = useState(0)
     const [oldEmail, setOldEmail] = useState('')
-    const [imageUri, setImageUri] = useState('')
+    const [imageUri, setImageUri] = useState(profile.ProfilePic)
     const [updatedUser, setUpdatedUser] = useState('');
 
     const apiUrl = 'http://proj.ruppin.ac.il/bgroup10/PROD/api/Tourist/EditProfile'
@@ -80,7 +80,7 @@ export default function EditProfile({ route, navigation }) {
         const setUserInAsyncStorage = async (user) =>{
             try {
                 await AsyncStorage.setItem(
-                  'user',
+                  'ProfileTourist',
                  JSON.stringify(user)
                 );
               } catch (error) {
@@ -154,18 +154,7 @@ export default function EditProfile({ route, navigation }) {
            
         }
 
-        const getUpdatedData = async () =>{
-            try {
-                const temp =  JSON.parse( await AsyncStorage.getItem(
-                  'user'
-                ));
-
-               console.warn('temp = ', temp)
-              } catch (error) {
-                // Error saving data
-                console.warn('error : ',error)
-              }
-        }
+        
 
     return (
         <View style={styles.headerContainer}>
