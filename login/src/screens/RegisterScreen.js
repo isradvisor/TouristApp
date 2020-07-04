@@ -196,6 +196,16 @@ const RegisterScreen = ({ route, navigation }) => {
           { cancelable: false }
         )
       }
+      if (email.error == '') {
+        Alert.alert(
+          'Error',
+          'Email Address is not valid',
+          [
+            { text: 'OK' },
+          ],
+          { cancelable: false }
+        )
+      }
       if (gender == '') {
         Alert.alert(
           'Error',

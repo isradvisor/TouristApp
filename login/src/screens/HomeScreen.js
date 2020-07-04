@@ -50,23 +50,12 @@ const HomeScreen = ({ navigation }) => {
   const apiUrlFacebook = 'http://proj.ruppin.ac.il/bgroup10/PROD/api/Tourist/FacebookUser';
   const apiUrlGoogle = 'http://proj.ruppin.ac.il/bgroup10/PROD/api/Tourist/GoogleUser';
 
-  
-
-
-
-
 
   const appId = '2490345164547632';
   const [isLoading, setIsLoading] = useState(false);
   const [profile, setProfile] = useState(null)
-
-
-
-
-
-
-
-
+  const [userDetailsFromDB, setUserDetailsFromDB] = useState(null)
+  
 
   //signin with google
   const signInWithGoogle = async () => {
@@ -192,12 +181,8 @@ const HomeScreen = ({ navigation }) => {
       else {
         getTourist(profile.Email);
         AsyncStorage.setItem('ProfileTourist',JSON.stringify(profile));
-
-        const user = {
-          email:profile.Email,
-          password:profile.PasswordTourist
-      }
-        //firebaseSvc.login(user);
+        console.warn('temp=', userDetailsFromDB)
+//עצרתי כאן - אחרי הגט, הבאתי את היוזר המעודכן. צריך להעביר אותו הלאה לעמוד הפרופיל
     
         Alert.alert(
           'Welcome!',
@@ -326,8 +311,11 @@ const HomeScreen = ({ navigation }) => {
   }
 
   const getTourist = (email) =>{
-
-    fetch('http://proj.ruppin.ac.il/bgroup10/PROD/api/Tourist?email=' + email, {
+    const user = {
+      Email: email
+    }
+console.warn(user.Email)
+    fetch('http://proj.ruppin.ac.il/bgroup10/PROD/api/Tourist?email=' + user.Email, {
       method: 'GET',
       headers: new Headers({
         'Content-type': 'application/json; charset=UTF-8' //very important to add the 'charset=UTF-8'!!!!
@@ -339,9 +327,11 @@ const HomeScreen = ({ navigation }) => {
         return res.json()
       })
       .then(
-        (result) => {
-          AsyncStorage.setItem('googleFacebookAccount',JSON.stringify(result));
-
+        (result1) => {
+         // console.warn("resultHomeScreen = ",result1)
+          AsyncStorage.setItem('googleFacebookAccount',JSON.stringify(result1));
+          setUserDetailsFromDB(result)
+          
         //console.warn("fetch POST= ", JSON.stringify(result));
          },
 

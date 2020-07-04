@@ -40,14 +40,12 @@ const FadeInView = (props) => {
 
 const MyProfile = ({ route, navigation }) => {
 
-    
+
     const [fontLoaded, setFontLoaded] = useState(false)
     const [profile, setProfile] = useState(null)
     const [notifications, setNotification] = useState({});
     let data = null;
-
-
-  
+    
     useEffect(() => {
         readUserData();
         
@@ -59,12 +57,14 @@ const MyProfile = ({ route, navigation }) => {
                 if (value == null) {
                     await AsyncStorage.getItem('googleFacebookAccount').then((value) => {
                         data = JSON.parse(value);
+                        console.warn("profile page = ", profile)
                         setProfile(data);
                         
                     })
                 } else {
                     data = JSON.parse(value);
-                    setProfile(data);
+                  // console.warn(data)
+                   route.params == undefined? setProfile(data) : setProfile(route.params.profile);
                     
                 }
 
@@ -89,8 +89,8 @@ const MyProfile = ({ route, navigation }) => {
             password: data.PasswordTourist,
             URL: data.ProfilePic
         }
-        console.warn(user2)
-        console.warn(notification.data);
+       // console.warn(user2)
+    //    console.warn(notification.data);
         if (notification.data.path !== null) {
             if (notification.data.path == 'Chat') {
                 console.warn('enter creat acount');

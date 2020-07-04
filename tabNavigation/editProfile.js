@@ -62,14 +62,14 @@ export default function EditProfile({ route, navigation }) {
                 setCounter(1)
             }
             else{
-                setUpdatedUser(user)
+                
                 const user = {
                     Email: oldEmail,
                     SecondEmail: email.value,
                     FirstName: firstName.value,
                     LastName: lastName.value
                 }
-                setUserInAsyncStorage(user);
+                setUpdatedUser(user)
                 fetchToDB(user, apiUrl);
                 setCounter(1)
                 
@@ -134,10 +134,15 @@ export default function EditProfile({ route, navigation }) {
               if (!result.cancelled) {
                 setImageUri(result.uri );
                 const user = {
-                    Email: profile.Email,
-                    ProfilePic: result.uri
+                    Email: email.value,
+                    ProfilePic: result.uri,
+                    FirstName: firstName.value,
+                    LastName: lastName.value
                 }
+                console.warn(user)
+                setUpdatedUser(user)
                 fetchToDB(user, apiUploadPic)
+               
               }
         };
        
@@ -147,9 +152,10 @@ export default function EditProfile({ route, navigation }) {
                 Email: updatedUser.SecondEmail,
                 FirstName: updatedUser.FirstName,
                 LastName: updatedUser.LastName,
-                ProfilePic: ''
+                ProfilePic: imageUri
             }
-            
+           
+            setUserInAsyncStorage(user);
            updatedUser != undefined && navigation.navigate('MyProfile',{profile: user});
            
         }
