@@ -8,6 +8,7 @@ import WeeklyCalendar from 'react-native-weekly-calendar';
 import AnimatedProgressWheel from 'react-native-progress-wheel';
 import MapView, { Marker } from 'react-native-maps';
 
+//import WeeklyCalendar from 'react-native-weekly-calendar';
 
 
 

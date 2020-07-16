@@ -61,14 +61,8 @@ const HomeScreen = ({ navigation }) => {
   const appId = '2490345164547632';
   const [isLoading, setIsLoading] = useState(false);
   const [profile, setProfile] = useState(null)
-
-
-
-
-
-
-
-
+  const [userDetailsFromDB, setUserDetailsFromDB] = useState(null)
+  
 
 
   //signin with google

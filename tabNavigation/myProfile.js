@@ -50,6 +50,7 @@ const MyProfile = ({ navigation }) => {
     const [status, setStatus] = useState(null)
     const [profile, setProfile] = useState(null)
     const [fontLoaded, setFontLoaded] = useState(false)
+    const [profile, setProfile] = useState(null)
     const [notifications, setNotification] = useState({});
     const [showrating, setShowRating] = useState(3.5);
     const [isLoading, setIsLoading] = useState(false);
@@ -364,23 +365,23 @@ const MyProfile = ({ navigation }) => {
 
             </View>
         );
-    } else {
-        return (
-            <ActivityIndicator
-                animating={true}
-                style={{
-                    flex: 1,
-                    alignItems: 'center',
-                    justifyContent: 'center',
-
-                    height: 80
-                }}
-                size="large"
-            />
-        );
-    }
-
-}
+                    } else {
+                        return (
+                            <ActivityIndicator
+                                animating={true}
+                                style={{
+                                    flex: 1,
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                
+                                    height: 80
+                                }}
+                                size="large"
+                            />
+                        );
+                    }
+                
+                }
 
 const styles = StyleSheet.create({
     mainbody: {
@@ -437,4 +438,4 @@ const styles = StyleSheet.create({
 
 })
 
-export default MyProfile
+export default MyProfile;

@@ -1,12 +1,12 @@
 import React, { useState,useEffect } from 'react'
 import {
-    Image,
     Platform,
     StyleSheet,
     Text,
     View,
     TouchableOpacity,
-    TouchableHighlight
+    TouchableHighlight,
+    AsyncStorage
 } from 'react-native';
 import {
     emailValidator
@@ -96,9 +96,9 @@ export default function EditProfile({ route, navigation }) {
                     FirstName: firstName,
                     LastName: lastName
                 }
-
                 fetchToDB(user, apiUrl);
                 setCounter(1)
+                
             }
     }
 

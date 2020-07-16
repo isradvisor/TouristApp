@@ -45,6 +45,7 @@ const RegisterScreen = ({ route, navigation }) => {
 
 
 
+
   const apiSignUpUrl = 'http://proj.ruppin.ac.il/bgroup10/PROD/api/Tourist/Register'
   const apiGFSignUpFirstTimeUrl = 'http://proj.ruppin.ac.il/bgroup10/PROD/api/Tourist/GoogleFacebookSignUpFirstTime'
   const languageApiUrl = 'http://proj.ruppin.ac.il/bgroup10/PROD/api/Language';
@@ -52,7 +53,7 @@ const RegisterScreen = ({ route, navigation }) => {
   //on load the screen - get all the languages from DB
   useEffect(() => {
     registerForPushNotificationsAsync();
-    _notificationSubscription = Notifications.addListener(_handleNotification);
+   const _notificationSubscription = Notifications.addListener(_handleNotification);
     getFromDB();
     if (googleFacebookAccount != undefined) {
       setFirstName({ value: googleFacebookAccount.profile.FirstName, error: '' });
