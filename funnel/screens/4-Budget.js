@@ -3,6 +3,7 @@ import { Animated, Text, View, StyleSheet, Alert} from 'react-native';
 import * as Font from 'expo-font';
 import AnimatedProgressWheel from 'react-native-progress-wheel';
 import { Button, Slider, CheckBox } from 'react-native-elements';
+import AsyncStorage from '@react-native-community/async-storage';
 
 
 const FadeInView = (props) => {
@@ -157,6 +158,8 @@ const fetchToDB = (user) =>{
             break;
 
             case 1:
+                let ifExist = true;
+                AsyncStorage.setItem('Budget',JSON.stringify(ifExist))
               //console.warn('fetch Succeeded! :)')    
               navigation.navigate('Interest', {profile: profile})             
             break;
@@ -257,7 +260,7 @@ const fetchToDB = (user) =>{
             />
 
         </View>}
-       <View style={{ flex: 0.2}}>
+       <View style={{ flex: 0.5}}>
        {(budgetValue > 0 || checked) &&  <Button
             title="Continue"
             type="outline"

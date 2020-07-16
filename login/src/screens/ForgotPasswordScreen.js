@@ -1,5 +1,5 @@
 import React, { memo, useState } from 'react';
-import { Text, StyleSheet, TouchableOpacity, Keyboard, TouchableWithoutFeedback  } from 'react-native';
+import { Text, StyleSheet, TouchableOpacity, Keyboard, TouchableWithoutFeedback, Alert } from 'react-native';
 import { emailValidator } from '../core/utils';
 import Background from '../components/Background';
 import BackButton from '../components/BackButton';
@@ -8,10 +8,12 @@ import Header from '../components/Header';
 import TextInput from '../components/TextInput';
 import { theme } from '../core/theme';
 import Button from '../components/Button';
-
+import firebaseSvc from '../../../services/firebaseSDK'
 
 const ForgotPasswordScreen = ({ navigation }) => {
   const [email, setEmail] = useState({ value: '', error: '' });
+  const apiUrl = "http://proj.ruppin.ac.il/bgroup10/PROD/api/Tourist/Reset"
+
 
   const _onSendPressed = () => {
     const emailError = emailValidator(email.value);
@@ -21,11 +23,52 @@ const ForgotPasswordScreen = ({ navigation }) => {
       return;
     }
 
-    navigation.navigate('LoginScreen');
-  };
+    fetch(apiUrl, {
+      method: 'POST',
+      body: JSON.stringify(email.value),
+      headers: new Headers({
+        'Content-type': 'application/json; charset=UTF-8' //very important to add the 'charset=UTF-8'!!!!
+      })
 
-  return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+    })
+      .then(res => {
+        //console.warn('res=', JSON.stringify(res));
+        return res.json()
+      })
+      .then(
+        (result) => {
+          if (result !== null) {
+            firebaseSvc.UpdatePassword(result);
+
+            Alert.alert(
+              'success!',
+              'Your password has been sent to your email',
+              [
+                { text: 'OK' },
+              ],
+              { cancelable: false }
+            )
+          
+          }
+          else {
+            Alert.alert(
+              'Error',
+              'Email not found',
+              [
+                { text: 'OK' },
+              ],
+              { cancelable: false }
+            )
+          }},
+  (error) => {
+    console.warn("err post=", error);
+  });
+
+  //navigation.navigate('LoginScreen');
+};
+
+return (
+  <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
     <Background>
       <BackButton goBack={() => navigation.navigate('LoginScreen')} />
 
@@ -47,7 +90,7 @@ const ForgotPasswordScreen = ({ navigation }) => {
       />
 
       <Button mode="contained" onPress={_onSendPressed} style={styles.button}>
-        Send Reset Instructions
+        Reset Password
       </Button>
 
       <TouchableOpacity
@@ -57,8 +100,8 @@ const ForgotPasswordScreen = ({ navigation }) => {
         <Text style={styles.label}>← Back to login</Text>
       </TouchableOpacity>
     </Background>
-    </TouchableWithoutFeedback>
-  );
+  </TouchableWithoutFeedback>
+);
 };
 
 const styles = StyleSheet.create({

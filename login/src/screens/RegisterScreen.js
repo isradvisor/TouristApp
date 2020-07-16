@@ -1,5 +1,6 @@
 import React, { memo, useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Alert,AsyncStorage } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import AsyncStorage from '@react-native-community/async-storage';
 import Background from '../components/Background';
 import Header from '../components/Header';
 import Button from '../components/Button';
@@ -11,7 +12,7 @@ import {
   passwordValidator,
   nameValidator,
 } from '../core/utils';
-import DateTimePickerModal from "react-native-modal-datetime-picker";
+//import DateTimePickerModal from "react-native-modal-datetime-picker";
 import AnimatedLoader from "react-native-animated-loader";
 import { Button as BTNElements, CheckBox } from 'react-native-elements';
 import { Foundation } from '@expo/vector-icons'
@@ -20,6 +21,8 @@ import RNPickerSelect from 'react-native-picker-select';
 import { Notifications } from 'expo';
 import * as Permissions from 'expo-permissions';
 import Constants from 'expo-constants';
+import DatePicker from 'react-native-datepicker'
+
 
 const RegisterScreen = ({ route, navigation }) => {
 
@@ -30,7 +33,7 @@ const RegisterScreen = ({ route, navigation }) => {
   const [password, setPassword] = useState({ value: '', error: '' });
   const [confirmPass, setConfirmPass] = useState({ value: '', error: '' });
   const [gender, setGender] = useState('');
-  const [birthdate, setBirthdate] = useState(null)
+  const [birthdate, setBirthdate] = useState(new Date())
   const [isLoading, setIsLoading] = useState(false);
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
   const [maleChecked, setMaleChecked] = useState(false)
@@ -164,7 +167,7 @@ const RegisterScreen = ({ route, navigation }) => {
 
   //on confirm press
   const handleConfirm = date => {
-    setBirthdate(moment(date).format('YYYY-MM-DD'))
+    setBirthdate(date);
     hideDatePicker();
   };
 
@@ -178,6 +181,17 @@ const RegisterScreen = ({ route, navigation }) => {
     const passwordError = passwordValidator(password.value);
     const confirmPassError = passwordValidator(confirmPass.value);
 
+    if (password.value !== confirmPass.value) {
+      Alert.alert(
+        'Error',
+        'Password and Confirm password are not matched!',
+        [
+          { text: 'OK' },
+        ],
+        { cancelable: false }
+      )
+    }
+    else{
 
     if (emailError || passwordError || nameError || lastNameError || password.value != confirmPass.value || gender == '' || birthdate == null || languageChosen == '') {
       setFirstName({ ...firstName, error: nameError });
@@ -185,10 +199,30 @@ const RegisterScreen = ({ route, navigation }) => {
       setEmail({ ...email, error: emailError });
       setPassword({ ...password, error: passwordError });
       setConfirmPass({ ...confirmPass, error: confirmPassError })
-      if (password.value != confirmPass.value) {
+      if (password.value != confirmPass.value || passwordError) {
         Alert.alert(
           'Error',
           'Password confirmation is incorrect',
+          [
+            { text: 'OK' },
+          ],
+          { cancelable: false }
+        )
+      }
+      if (nameError) {
+        Alert.alert(
+          'Error',
+          'Please enter a valid name',
+          [
+            { text: 'OK' },
+          ],
+          { cancelable: false }
+        )
+      }
+      if (email == ''|| emailError) {
+        Alert.alert(
+          'Error',
+          'Email Address is not valid',
           [
             { text: 'OK' },
           ],
@@ -249,9 +283,7 @@ const RegisterScreen = ({ route, navigation }) => {
 
         fetchToDB(user, apiGFSignUpFirstTimeUrl)
       }
-
-
-
+    }
     }
   };
 
@@ -346,7 +378,7 @@ const RegisterScreen = ({ route, navigation }) => {
   //navigation to next page with all the details of the user
   const navigateTo = (profile) => {
   AsyncStorage.setItem('ProfileTourist',JSON.stringify(profile));
-  console.warn('save item',profile);
+  console.warn('nativageTo',profile)
     setTimeout(() => {
       navigation.navigate('Dashboard', { profile: profile })
       sendPushNotification();
@@ -481,9 +513,10 @@ const RegisterScreen = ({ route, navigation }) => {
 
 
         </View>
-        <View style={{ alignItems: 'center' }}>
+        <View style={{ flex: 0, flexDirection: 'row' }}>
+        <Text style={{ color: 'white', fontWeight: 'bold', alignSelf: 'center', fontSize: 18 }}>BirthDay:</Text>
 
-          <BTNElements
+          {/* <BTNElements
             icon={
               <Foundation
                 name="calendar"
@@ -496,13 +529,19 @@ const RegisterScreen = ({ route, navigation }) => {
             buttonStyle={{ width: '78%', backgroundColor: 'white', alignSelf: 'center', marginLeft: 10, marginVertical: 12, borderRadius: 7 }}
             titleStyle={{ color: 'black' }}
             onPress={showDatePicker}
-          />
-          <DateTimePickerModal
-            isVisible={isDatePickerVisible}
+          /> */}
+          <DatePicker
+          style={{backgroundColor:"#fff",marginLeft: 10}}
+          date={birthdate}
+            placeholder="Birthday"
+            format="YYYY-MM-DD"
+            maxDate={new Date()}
             mode="date"
-            onConfirm={handleConfirm}
-            onCancel={hideDatePicker}
+            confirmBtnText="Confirm"
+            cancelBtnText="Cancel"
             headerTextIOS='Pick your BirthDate'
+            onDateChange={(date) => handleConfirm(date)}
+
           />
 
         </View>

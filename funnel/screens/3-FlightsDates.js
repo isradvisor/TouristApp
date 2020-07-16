@@ -6,6 +6,7 @@ import { Button } from 'react-native-elements';
 import  moment  from  "moment";
 import DateRangePicker from "react-native-daterange-picker";
 import MonthPicker from 'react-native-month-picker';
+import AsyncStorage from '@react-native-community/async-storage';
 
 //fade in view animation
 const FadeInView = (props) => {
@@ -126,10 +127,11 @@ const handleConfirm = date => {
 
     const user = {
       Email: profile.Email,
-      FromDate: startDate,
-      ToDate: endDate,
+      FromDate: null,
+      ToDate: null,
       EstimateDate: moment(esitmateMonth).format('YYYY-MM')
     }
+    console.warn('user',user);
     //console.warn(user)
     fetchToDB(user)
   }
@@ -180,7 +182,8 @@ const handleConfirm = date => {
             break;
 
             case 1:
-                          
+                let ifExist = true;
+                AsyncStorage.setItem('FlightsDates',JSON.stringify(ifExist))  
               navigation.navigate('Budget', {profile: profile})             
             break;
               default:

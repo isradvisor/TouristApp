@@ -1,5 +1,6 @@
 import React, { memo, useState, useEffect } from 'react';
-import { TouchableOpacity, StyleSheet, Text, View, AsyncStorage, Alert} from 'react-native';
+import { TouchableOpacity, StyleSheet, Text, View, Alert} from 'react-native';
+import AsyncStorage from '@react-native-community/async-storage';
 import Background from '../components/Background';
 import Logo from '../components/Logo';
 import Header from '../components/Header';
@@ -29,6 +30,7 @@ const LoginScreen = ({ navigation }) => {
     if (emailError || passwordError) {
       setEmail({ ...email, error: emailError });
       setPassword({ ...password, error: passwordError });
+      setIsLoading(false)
       return;
     }
     else{
@@ -54,11 +56,9 @@ const LoginScreen = ({ navigation }) => {
       .then(
         (result) => {
          
-        // console.warn("fetch POST= ", JSON.stringify(result));
+         //console.warn("fetch POST= ", JSON.stringify(result));
         const profile = result;
-       
-          if(profile.Email === null || profile.PasswordTourist === null){
-
+          if(result == null){
             Alert.alert(
               'Error',
               'Invalid Email or Password',
@@ -101,14 +101,21 @@ const CloseLoading = (profile) =>{
 }
 
 //navigation to next page with all the details of the user
-const navigateTo = (profile) =>{
+const navigateTo = async (profile) =>{
     const user = {
         email:profile.Email,
         password:profile.PasswordTourist
     }
+    try {
+      await AsyncStorage.setItem(
+        'ProfileTourist',
+        JSON.stringify(profile)
+      );
+    } catch (error) {
+      // Error saving data
+      console.warn(error);
+    }
     //AsyncStorage.clear();
-    AsyncStorage.setItem('ProfileTourist',JSON.stringify(profile));
-    firebaseSvc.login(user);
   setTimeout(() => {
     navigation.navigate('MyTabs', { screen: 'MyProfileStack',params:{ screen:'MyProfile',params:{profile: profile},},}); 
    }, 2500);
@@ -241,7 +248,7 @@ const navigateTo = (profile) =>{
       </Button>
 
       <View style={styles.row}>
-        <Text style={styles.label}>Donâ€™t have an account? </Text>
+        <Text style={styles.label}>Don't have an account? </Text>
         <TouchableOpacity onPress={() => navigation.navigate('RegisterScreen')}>
           <Text style={styles.link}>Sign up</Text>
         </TouchableOpacity>

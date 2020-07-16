@@ -1,5 +1,6 @@
-import React, { memo, useState, useRef, useEffect,componentWillMount } from 'react';
-import { Text, Alert, View, Animated, AsyncStorage } from 'react-native'
+import React, { memo, useState, useRef, useEffect, componentWillMount } from 'react';
+import { Text, Alert, View, Animated ,Image} from 'react-native'
+import AsyncStorage from '@react-native-community/async-storage';
 import Background from '../components/Background';
 import Header from '../components/Header';
 import Button from '../components/Button';
@@ -9,6 +10,7 @@ import { FontAwesome, AntDesign } from '@expo/vector-icons'
 import * as Google from "expo-google-app-auth";
 
 import firebaseSvc from '../../../services/firebaseSDK';
+import styles from 'react-native-weekly-calendar/src/Style';
 
 
 
@@ -50,7 +52,7 @@ const HomeScreen = ({ navigation }) => {
   const apiUrlFacebook = 'http://proj.ruppin.ac.il/bgroup10/PROD/api/Tourist/FacebookUser';
   const apiUrlGoogle = 'http://proj.ruppin.ac.il/bgroup10/PROD/api/Tourist/GoogleUser';
 
-  
+
 
 
 
@@ -68,9 +70,10 @@ const HomeScreen = ({ navigation }) => {
 
 
 
+
   //signin with google
   const signInWithGoogle = async () => {
-    setIsLoading(true)
+    //await AsyncStorage.removeItem('ProfileTourist')
     try {
       const result = await Google.logInAsync({
         iosClientId: IOS_CLIENT_ID,
@@ -107,6 +110,7 @@ const HomeScreen = ({ navigation }) => {
           })
           .then(
             (result) => {
+              console.warn(result)
               //  console.warn("fetch POST= ", JSON.stringify(result));
 
               //respond from db:
@@ -116,25 +120,32 @@ const HomeScreen = ({ navigation }) => {
 
               switch (result) {
                 case 0:
-                  Alert.alert(
-                    'Error',
-                    'An Error has occured, please try again',
-                    [
-                      { text: 'OK', onPress: () => setIsLoading(false) },
-                    ],
-                    { cancelable: false }
-                  )
+                    Alert.alert(
+                      'Error',
+                      'An Error has occured, please try again',
+                      [
+                        { text: 'OK' },
+                      ],
+                      { cancelable: false }
+                    )
                   break;
 
                 case 1:
-
-                  StopLoadingProccessWithNavigate(CloseLoading, profile, result);
-
-                  break;
+                    Alert.alert(
+                      'Welcome!',
+                      'Just finish the Regsitration and we are all set!',
+                      [
+                        { text: 'OK' },
+                      ],
+                      { cancelable: false }
+                    )
+                    navigation.navigate('RegisterScreen', { profile: profile })
+                    break;
 
                 case 2:
 
-                  StopLoadingProccessWithNavigate(CloseLoading, profile, result);
+                  //StopLoadingProccessWithNavigate(CloseLoading, profile, result);
+                  getTourist(profile.Email);
 
                   break;
 
@@ -155,71 +166,51 @@ const HomeScreen = ({ navigation }) => {
       } else {
         return { cancelled: true };
       }
-    } catch (e) {
-      setIsLoading(false)
-      return { error: true };
-    }
+    } catch ({e}) {
+      alert(`Google Login Error: ${e}`);}
   };
   //funciton that create call back - loading and after navigation
-  const StopLoadingProccessWithNavigate = async (CloseLoading, profile, caseResult) => {
+  // const StopLoadingProccessWithNavigate = async (CloseLoading, profile, caseResult) => {
 
-    CloseLoading(profile, caseResult);
-  }
+  //   CloseLoading(profile, caseResult);
+  // }
 
   //loading timer
-  const CloseLoading = (profile, caseResult) => {
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 1500);
-    navigateTo(profile, caseResult);
-  }
+  // const CloseLoading = (profile, caseResult) => {
+  //   setTimeout(() => {
+  //     setIsLoading(false);
+  //   }, 1500);
+  //   navigateTo(profile, caseResult);
+  // }
 
 
   //navigation to next page with all the details of the user
-  const navigateTo = (profile, caseResult) => {
-    
-    setTimeout(() => {
-      if (caseResult == 1) {
-        Alert.alert(
-          'Welcome!',
-          'Just finish the Regsitration and we are all set!',
-          [
-            { text: 'OK' },
-          ],
-          { cancelable: false }
-        )
-      }
-      else {
-        getTourist(profile.Email);
-        AsyncStorage.setItem('ProfileTourist',JSON.stringify(profile));
+  // const navigateTo = (profile, caseResult) => {
 
-        const user = {
-          email:profile.Email,
-          password:profile.PasswordTourist
-      }
-        //firebaseSvc.login(user);
-    
-        Alert.alert(
-          'Welcome!',
-          'You sign in successfully! enjoy your trip!',
-          [
-            { text: 'OK' },
-          ],
-          { cancelable: false }
-        )
-      }
+  //   setTimeout(() => {
+  //     if (caseResult == 1) {
+  //       Alert.alert(
+  //         'Welcome!',
+  //         'Just finish the Regsitration and we are all set!',
+  //         [
+  //           { text: 'OK' },
+  //         ],
+  //         { cancelable: false }
+  //       )
+  //     }
 
-      caseResult == 1 ? navigation.navigate('RegisterScreen', { profile: profile }) :
-        navigation.navigate('MyTabs', { screen: 'MyProfileStack', params: { screen: 'MyProfile', params: { profile: profile }, }, })
-    }, 1500);
+  //     // caseResult == 1 ? navigation.navigate('RegisterScreen', { profile: profile }) :
+  //     //   navigation.navigate('MyTabs', { screen: 'MyProfileStack', params: { screen: 'MyProfile', params: { profile: profile }, }, })
+  //   }, 1500);
 
 
-  }
+  // }
 
 
 
   //log in with facebook
   const logInWithFacebook = async () => {
+    //await AsyncStorage.removeItem('ProfileTourist')
     try {
       await Facebook.initializeAsync(appId);
       const { type, token } = await Facebook.logInWithReadPermissionsAsync({
@@ -286,16 +277,8 @@ const HomeScreen = ({ navigation }) => {
                   break;
 
                 case 2:
-                  Alert.alert(
-                    'Welcome!',
-                    'You sign in successfully! enjoy your trip!',
-                    [
-                      { text: 'OK' },
-                    ],
-                    { cancelable: false }
-                  )
+
                   getTourist(profile.Email);
-                  navigation.navigate('MyTabs', { screen: 'MyProfileStack', params: { screen: 'MyProfile', params: { profile: profile }, }, })
                   break;
 
                 default:
@@ -325,30 +308,44 @@ const HomeScreen = ({ navigation }) => {
     }
   }
 
-  const getTourist = (email) =>{
-
+  const getTourist = (email) => {
     fetch('http://proj.ruppin.ac.il/bgroup10/PROD/api/Tourist?email=' + email, {
       method: 'GET',
       headers: new Headers({
         'Content-type': 'application/json; charset=UTF-8' //very important to add the 'charset=UTF-8'!!!!
       })
-      
+
     })
       .then(res => {
-       //console.warn('res=', JSON.stringify(res));
+        //console.warn('res=', JSON.stringify(res));
         return res.json()
       })
       .then(
-        (result) => {
-          AsyncStorage.setItem('googleFacebookAccount',JSON.stringify(result));
+        async (result) => {
+          //await AsyncStorage.removeItem('ProfileTourist')
+          await AsyncStorage.setItem('ProfileTourist', JSON.stringify(result))
+          let profile = await AsyncStorage.getItem('ProfileTourist')
+          console.warn(profile)
+          if (profile !== undefined || profile !== null) {
+            Alert.alert(
+              'Welcome!',
+              'You sign in successfully! enjoy your trip!',
+              [
+                { text: 'OK' },
 
-        //console.warn("fetch POST= ", JSON.stringify(result));
-         },
+              ],
+              { cancelable: false }
+            )
+            navigation.navigate('MyTabs', { screen: 'MyProfileStack', params: { screen: 'MyProfile', params: { profile: result }, }, });
 
-        (error) => {
-          console.warn("err post=", error);
-        });
+          }
+          ;
+        }),
+      (error) => {
+        console.warn("err post=", error);
+      };
   }
+
 
   //LastName converter for facebook users
   const LastNameConverter = (splitOfFacebookNames) => {
@@ -362,7 +359,6 @@ const HomeScreen = ({ navigation }) => {
   }
   return (
     <Background>
-
       <FadeInView>
         <Header>Welcome To IsraAdvisor</Header>
         {/* {isLoading && <AnimatedLoader
@@ -376,6 +372,7 @@ const HomeScreen = ({ navigation }) => {
           Let's start create your trip in Israel!
     </Paragraph>
       </FadeInView>
+      
       <View style={{ height: '25%' }}>
 
       </View>

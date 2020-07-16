@@ -3,6 +3,7 @@ import { Animated, Text, View, StyleSheet, Image, ActivityIndicator, TouchableOp
 import * as Font from 'expo-font';
 import AnimatedProgressWheel from 'react-native-progress-wheel';
 import { Button } from 'react-native-elements';
+import AsyncStorage from '@react-native-community/async-storage';
 
 const FadeInView = (props) => {
 
@@ -111,7 +112,8 @@ export default ({route,navigation}) => {
             break;
 
             case 1:
-                          
+                let ifExist = true;
+                AsyncStorage.setItem('TripType',JSON.stringify(ifExist))
               navigation.navigate('FlightsDates', {profile: profile})             
             break;
               default:

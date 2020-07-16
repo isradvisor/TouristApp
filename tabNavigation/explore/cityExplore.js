@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, Image, ImageBackground, ScrollView, TouchableOpacity, FlatList} from 'react-native';
+import { StyleSheet, Text, View, Image, ImageBackground, ScrollView, TouchableOpacity, FlatList,Alert} from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import AnimatedLoader from "react-native-animated-loader";
 
@@ -44,11 +44,13 @@ const CityExplore = ({ route, navigation }) => {
 
     ])
 
+
+
     // get specific data from the api and based on the city and type of search(resturants,hotels...etc)
     const getDataAndContinue = (item) => {
         setIsLoading(true)
         if (item.name=='Attractions') {
-            fetch('https://www.triposo.com/api/20200405/poi.json?tag_labels=beaches|dancing|zoos|museums|exploringnature|poitype-Park|poitype-Shopping_centre&location_id=' + (myData.cityNameApi) + '&order_by=-score&count=100&fields=score,intro,location_id,name,images,tags,properties&account=FOBIVROX&token=znghja9mhtwjjt5gsc8jydhayg07gkqz', {
+            fetch('https://www.triposo.com/api/20200405/poi.json?tag_labels=beaches|dancing|zoos|museums|exploringnature|poitype-Park|poitype-Shopping_centre&location_id=' + (myData.cityNameApi) + '&order_by=-score&count=100&fields=id,score,intro,location_id,name,images,tags,properties&account=FOBIVROX&token=znghja9mhtwjjt5gsc8jydhayg07gkqz', {
                 method: 'GET',
                 headers: new Headers({
                     'Content-type': 'application/json; charset=UTF-8' //very important to add the 'charset=UTF-8'!!!!

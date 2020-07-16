@@ -40,12 +40,12 @@ useEffect(() => {
 const styles = StyleSheet.create({
   header: {
     fontSize: 29,
-    color: theme.colors.white,
+    color: '#80b3ff',
     fontWeight: 'bold',
     paddingVertical: 6,
     fontFamily: 'ComicNeue-Bold',
     marginTop: 30,
-    textShadowColor:'#585858',
+    textShadowColor:'#b3b3b3',
     textShadowOffset:{width: 5, height: 5},
     textShadowRadius: 3,
     

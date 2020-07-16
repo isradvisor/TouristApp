@@ -8,13 +8,16 @@ export const emailValidator = email => {
 };
 
 export const passwordValidator = password => {
-  if (!password || password.length <= 0) return 'Password cannot be empty.';
+  if (!password || password.length <= 5) return 'Password must be at least 6 characters.';
 
   return '';
 };
 
 export const nameValidator = name => {
-  if (!name || name.length <= 0 ) return 'Name cannot be empty.';
+  const pattern = /^[a-zA-Z]{2,40}/;
 
+  const re = /^[a-zA-Z\s]{2,32}/;
+  if (!name || name.length <= 2 ) return 'Name should be at least 3 characters.';
+  if (!pattern.test(name)) return 'Ooops! enter a valid name.';
   return '';
 };

@@ -1,53 +1,65 @@
 import React, { useState, useEffect } from 'react';
 import {
     StyleSheet, Text, View, Image, ImageBackground, ScrollView,
-    TouchableOpacity, FlatList, TextInput, AsyncStorage, ActivityIndicator
+    TouchableOpacity, FlatList, TextInput, ActivityIndicator,Alert
 } from 'react-native';
+import AsyncStorage from '@react-native-community/async-storage';
 import { Feather } from '@expo/vector-icons';
 import { Card, Divider } from 'react-native-elements';
-import { ScrollView as GestureHandlerScrollView } from 'react-native-gesture-handler'
+import { Notifications } from 'expo';
 
 
 
-
-
-
-const MainExplore = ({ navigation }) => {
+const MainExplore = ({ route,navigation }) => {
     const [profile, setProfile] = useState(null)
     const [myWeather, setMyWeather] = useState(null)
     const [isLoading, setIsLoading] = useState(true)
 
+ 
 
-    useEffect(() => {
-        readUserData();
+    // useEffect(()=>{
+    //     readUserData();  
+    //     readWeatherDataData();
+    // },[])
+
+
+        useEffect(() => {
+            const unsubscribe = navigation.addListener('focus', () => {
+        // The screen is focused
+        // Call any action
+        readUserData();  
         readWeatherDataData();
-    }, [])
+
+      });
+
+      // Return the function to unsubscribe from the event so it gets removed on unmount
+      return unsubscribe;
+      },[navigation])
 
 
     const readUserData = async () => {
         try {
-            await AsyncStorage.getItem('ProfileTourist').then(async(value) => {
-                if (value==null) {
-                    await AsyncStorage.getItem('googleFacebookAccount').then((value)=>{
+            await AsyncStorage.getItem('ProfileTourist').then(async (value) => {
+                if (value == null) {
+                    await AsyncStorage.getItem('googleFacebookAccount').then((value) => {
                         const data = JSON.parse(value);
                         setProfile(data);
-                        console.warn("facebook/google:",data);
                     })
                 } else {
                     const data = JSON.parse(value);
                     setProfile(data);
-                    console.warn("profile:",data);
+                    console.warn("profile:", data);
 
 
                 }
-              
+
             });
         }
         catch (e) {
             console.warn('failed to fetch data')
 
         }
-        
+
     }
     const readWeatherDataData = async () => {
         try {
@@ -147,108 +159,114 @@ const MainExplore = ({ navigation }) => {
     if (profile !== null && myWeather !== null) {
         return (
             <View style={{ flexGrow: 1, height: '100%' }}>
-                <View>
-                    <ImageBackground
-                        source={image}
-                        style={{ width: '100%', height: 270 }}
-                        imageStyle={{ borderBottomRightRadius: 65 }}
-                    >
-                        <View style={styles.DarkOvelay}></View>
-                        <View style={styles.SearchContainer}>
-                            <Text style={styles.UserGreet}>Hi {profile.FirstName} </Text>
-                            <Text style={styles.UserText}>Where would you like to go today</Text>
+                    <View>
+                        <ImageBackground
+                            source={image}
+                            style={{ width: '100%', height: 270 }}
+                            imageStyle={{ borderBottomRightRadius: 65 }}
+                        >
+                            <View style={styles.DarkOvelay}></View>
+                            <View style={styles.SearchContainer}>
+                                <Text style={styles.UserGreet}>Hi {profile.FirstName} </Text>
+                                <Text style={styles.UserText}>Where would you like to go today</Text>
+                            </View>
+                            <View>
+                                <TextInput
+                                    style={styles.SearchBox}
+                                    placeholder='Search Destination'
+                                    placeholderTextColor='#666'
+                                >
+                                </TextInput>
+                                <Feather name='search' size={22} color='#666' style={
+                                    { position: 'absolute', top: 25, right: 60, opacity: 0.6 }} />
+                            </View>
+
+
+                        </ImageBackground>
+
+                    </View>
+
+                    <ScrollView>
+                        <View style={{ padding: 20 }}>
+                            <Text style={{ fontSize: 22, fontWeight: 'bold' }}>
+                                Top Cities
+                       </Text>
                         </View>
                         <View>
-                            <TextInput
-                                style={styles.SearchBox}
-                                placeholder='Search Destination'
-                                placeholderTextColor='#666'
-                            >
-                            </TextInput>
-                            <Feather name='search' size={22} color='#666' style={
-                                { position: 'absolute', top: 25, right: 60, opacity: 0.6 }} />
+                            <ScrollView>
+                                <FlatList
+                                    horizontal={true}
+                                    data={gallery}
+                                    renderItem={({ item }) => {
+
+                                        return (
+                                            <View style={{ paddingVertical: 20, paddingLeft: 16 }}>
+                                                <TouchableOpacity onPress={() => navigation.navigate('CityExplore', { item: item })}>
+                                                    <Image source={item.image} style={{
+                                                        width: 150,
+                                                        marginRight: 8, height: 320, borderRadius: 10
+                                                    }} />
+                                                    <View style={styles.imageOverlay}></View>
+                                                    <Feather name='map-pin' size={16} color='white'
+                                                        style={styles.imageLocationIcon} />
+                                                    <Text style={styles.imageText}>{item.title}</Text>
+                                                </TouchableOpacity>
+                                            </View>
+                                            
+                                        )
+                                    }}
+                                />
+                            </ScrollView>
+
+                        </View>
+                        <View style={{ padding: 10 }}>
+                            <Text style={{ fontSize: 22, fontWeight: 'bold' }}>
+                                Current Weather
+                       </Text>
+                        </View>
+                        <View>
+                            <ScrollView>
+                                <FlatList
+                                    horizontal={true}
+                                    data={myWeather}
+                                    renderItem={({ item }) => {
+
+                                        let time;
+
+                                        // Create a new date from the passed date time
+                                        let date = new Date(item.dt * 1000);
+
+                                        // Hours part from the timestamp
+                                        let hours = date.getHours();
+
+                                        // Minutes part from the timestamp
+                                        let minutes = "0" + date.getMinutes();
+
+                                        time = hours + ':' + minutes.substr(-2);
+                                        return (
+                                            <Card containerStyle={styles.card} key={item.id} >
+                                                <Text style={styles.notes}>{item.name}</Text>
+
+                                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                    <Image style={{ width: 100, height: 100 }} source={{ uri: 'https://openweathermap.org/img/w/' + (item.weather[0].icon) + '.png' }} />
+                                                    <Text style={styles.time}>{time}</Text>
+                                                </View>
+
+                                                <Divider style={{ backgroundColor: '#dfe6e9', marginVertical: 20 }} />
+
+                                                <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                                                    <Text style={styles.notes}>{item.weather[0].description}</Text>
+                                                    <Text style={styles.notes}>{Math.round(item.main.temp * 10) / 10}&#8451;</Text>
+                                                </View>
+                                            </Card>
+                                        )
+                                    }}
+                                    keyExtractor={item => item.id.toString()}
+                                />
+                            </ScrollView>
                         </View>
 
-
-                    </ImageBackground>
-
-                </View>
-
-                <ScrollView>
-                    <View style={{ padding: 20 }}>
-                        <Text style={{ fontSize: 22, fontWeight: 'bold' }}>
-                            Top Cities
-                       </Text>
-                    </View>
-                    <View>
-                        <ScrollView>
-                            <FlatList
-                                horizontal={true}
-                                data={gallery}
-                                renderItem={({ item }) => {
-
-                                    return (
-                                        <View style={{ paddingVertical: 20, paddingLeft: 16 }}>
-                                            <TouchableOpacity onPress={() => navigation.navigate('CityExplore', { item: item })}>
-                                                <Image source={item.image} style={{
-                                                    width: 150,
-                                                    marginRight: 8, height: 320, borderRadius: 10
-                                                }} />
-                                                <View style={styles.imageOverlay}></View>
-                                                <Feather name='map-pin' size={16} color='white'
-                                                    style={styles.imageLocationIcon} />
-                                                <Text style={styles.imageText}>{item.title}</Text>
-                                            </TouchableOpacity>
-                                        </View>
-                                    )
-                                }}
-                            />
-                        </ScrollView>
-
-                    </View>
-                    <View>
-                        <ScrollView>
-                            <FlatList
-                                horizontal={true}
-                                data={myWeather}
-                                renderItem={({ item }) => {
-
-                                    let time;
-
-                                    // Create a new date from the passed date time
-                                    let date = new Date(item.dt * 1000);
-
-                                    // Hours part from the timestamp
-                                    let hours = date.getHours();
-
-                                    // Minutes part from the timestamp
-                                    let minutes = "0" + date.getMinutes();
-
-                                    time = hours + ':' + minutes.substr(-2);
-                                    return (
-                                        <Card containerStyle={styles.card} key={item.id} >
-                                            <Text style={styles.notes}>{item.name}</Text>
-
-                                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                                                <Image style={{ width: 100, height: 100 }} source={{ uri: 'https://openweathermap.org/img/w/' + (item.weather[0].icon) + '.png' }} />
-                                                <Text style={styles.time}>{time}</Text>
-                                            </View>
-
-                                            <Divider style={{ backgroundColor: '#dfe6e9', marginVertical: 20 }} />
-
-                                            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                                                <Text style={styles.notes}>{item.weather[0].description}</Text>
-                                                <Text style={styles.notes}>{Math.round(item.main.temp * 10) / 10}&#8451;</Text>
-                                            </View>
-                                        </Card>
-                                    )
-                                }}
-                                keyExtractor={item => item.id.toString()}
-                            />
-                        </ScrollView>
-                    </View>
-
-                </ScrollView>
+                    </ScrollView>
             </View>
         )
     }

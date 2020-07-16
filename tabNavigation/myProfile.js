@@ -1,13 +1,19 @@
-import { Text, View, StyleSheet, Image, ImageBackground, Animated, AsyncStorage, ActivityIndicator } from 'react-native';
+import { Text, View, StyleSheet, Image, ImageBackground, Animated, ActivityIndicator, AnimatedLoader, Alert } from 'react-native';
+import AsyncStorage from '@react-native-community/async-storage';
 import React, { useState, useEffect, useRef } from 'react';
 import { FontAwesome } from '@expo/vector-icons';
 import { sendEmail } from '../funnel/components/SendEmail';
 import { Notifications } from 'expo';
 import firebaseSvc from '../services/firebaseSDK';
+import { useRoute } from '@react-navigation/native';
 
-const bacckgroundPic = {
-    uri: 'https://c1.wallpaperflare.com/preview/25/631/792/dead-sea-salt-israel.jpg'
-}
+
+
+
+
+// const bacekgroundPic = {
+//     uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcTrLwj32NAzB7FQKHvgOknR76K5RalnfSJUtg&usqp=CAU'
+// }
 
 const FadeInView = (props) => {
 
@@ -38,36 +44,195 @@ const FadeInView = (props) => {
 }
 
 
-const MyProfile = ({ route, navigation }) => {
+const MyProfile = ({ navigation }) => {
+
     //const profile = route.params.profile;
+    const [status, setStatus] = useState(null)
     const [profile, setProfile] = useState(null)
     const [fontLoaded, setFontLoaded] = useState(false)
     const [notifications, setNotification] = useState({});
+    const [showrating, setShowRating] = useState(3.5);
+    const [isLoading, setIsLoading] = useState(false);
+    const [gotNotification, setGotNotification] = useState(false);
+    const route = useRoute();
+
+
     let data = null;
 
+    // useEffect(()=>{
+    //     readUserData();
+    // },[])
     useEffect(() => {
-        readUserData();
-    },[])
+        const unsubscribe = navigation.addListener('focus', () => {
+            readUserData();
+        });
+
+        return unsubscribe;
+    }, [navigation])
+
+    useEffect(() => {
+        _notificationSubscription = Notifications.addListener(_handleNotification);
+
+    }, [])
+
+
+    const _handleNotification = async (notification) => {
+        if (notification.data.path !== null) {
+
+            if (notification.data.path == 'Chat') {
+                console.warn('currentRoute', route)
+                if (route.name !== 'Chat') {
+                    Alert.alert(
+                        'New Message',
+                        'You Have A New Message',
+                        [
+                            { text: 'OK', onPress: () => navigation.navigate('MyTabs', { screen: 'Chat' }) }
+                        ],
+                        { cancelable: false }
+                    )
+                }
+
+            }
+            else if (notification.data.path == 'MyTrip') {
+
+                Alert.alert(
+                    'New Trip Alert',
+                    'Your trip was update',
+                    [
+                        { text: 'OK', onPress: () => navigation.navigate('MyTabs', { screen: 'MyTrip' }) }
+                    ],
+                    { cancelable: false }
+                )
+            }
+        }
+    }
+
+
+
+    const checkStatus = (email) => {
+        fetch('http://proj.ruppin.ac.il/bgroup10/PROD/api/BuildTrip/GetTouristStatus?email=' + email, {
+            method: 'GET',
+            headers: new Headers({
+                'Content-type': 'application/json; charset=UTF-8' //very important to add the 'charset=UTF-8'!!!!
+            })
+
+        })
+            .then(res => {
+                return res.json()
+            })
+            .then(
+                async (result) => {
+                    if (result !== null) {
+                        GetGuideDetails(result.GuideEmail);
+                        await AsyncStorage.removeItem('ChatStatus');
+                        await AsyncStorage.setItem('ChatStatus', result.Status)
+                        setStatus(result.Status);
+                        console.warn('resultStatud', result)
+                        if (result.Status == 'Start Chat') {
+                            const user = {
+                                email: data.Email,
+                                password: data.PasswordTourist
+                            }
+                            await firebaseSvc.login(user);
+
+                            //setIsLoading(false);
+                            //GetGuideDetails(result.GuideEmail);
+
+                        }
+                        else if (result.Status == 'Accept Request') {
+                            const user2 = {
+                                name: data.FirstName + ' ' + data.LastName,
+                                email: data.Email,
+                                password: data.PasswordTourist,
+                                URL: data.ProfilePic
+                            }
+                            firebaseSvc.createAccount(user2, result.GuideEmail).then((solve) => {
+                                console.warn('this is sinup data==>  ' + JSON.stringify(solve))
+
+                            }).catch((fail) => {
+                                console.warn('not getting data...................')
+                            })
+                            let user = {
+                                TouristEmail: data.Email,
+                                GuideEmail: result.GuideEmail,
+                                Status: 'Start Chat'
+                            }
+                            ChangeStatus(user)
+
+                        }
+                        else if (result.Status == 'Decline Chat') {
+                            alert('Your Request has been denied')
+                            navigation.navigate('MatchScreen')
+                        }
+                        else if (result.Status == 'send request') {
+
+                        }
+                    }
+                    else {
+                        let tempArr = [];
+                        let keys = ['firstTimeInIsrael', 'TripType', 'FlightsDates', 'Budget','Interest','MatchScreen'];
+                            AsyncStorage.multiGet(keys, (err, stores) => {
+                              stores.map((result, i, store) => {
+                                // get at each store's key/value so you can work with it
+                                let key = store[i][0];
+                                let value = store[i][1];
+                                tempArr.push({key:key,value:value});
+                              });
+                              for (let i = 0; i < tempArr.length; i++) {
+                                  const element = tempArr[i];
+                                  console.warn('element',element)
+                                  if (element.value == null) {
+                                      console.warn('key',element.key);
+                                      navigation.navigate(element.key,{profile:data});
+                                    break;
+                                  }
+                                  
+                              }
+                            }
+                            )
+                    }
+
+                }),
+            (error) => {
+                console.warn("err post=", error);
+            };
+
+    }
+
+    const GetGuideDetails = (email) => {
+        fetch('http://proj.ruppin.ac.il/bgroup10/PROD/api/Guide?email=' + email, {
+            method: 'GET',
+            headers: new Headers({
+                'Content-type': 'application/json; charset=UTF-8' //very important to add the 'charset=UTF-8'!!!!
+            })
+
+        })
+            .then(res => {
+                return res.json()
+            })
+            .then(
+                (result) => {
+                    AsyncStorage.setItem('Guide', JSON.stringify(result));
+                }
+            ),
+            (error) => {
+                console.warn("err post=", error);
+            };
+    }
 
     const readUserData = async () => {
         try {
             await AsyncStorage.getItem('ProfileTourist').then(async (value) => {
-                if (value == null) {
-                    await AsyncStorage.getItem('googleFacebookAccount').then((value) => {
-                        data = JSON.parse(value);
-                        setProfile(data);
-
-                    })
-                } else {
+                if (value !== null) {
                     data = JSON.parse(value);
                     setProfile(data);
-
-
+                    checkStatus(data.Email);
                 }
 
-            }).then(() => {
-                _notificationSubscription = Notifications.addListener(_handleNotification);
-            });
+            })
+            // .then(() => {
+            //     _notificationSubscription = Notifications.addListener(_handleNotification);
+            // });
         }
         catch (e) {
             console.warn('failed to fetch data')
@@ -76,40 +241,62 @@ const MyProfile = ({ route, navigation }) => {
 
     }
 
-    const _handleNotification = notification => {
-        //Vibration.vibrate();
-        setNotification(notification)
-      
-        const user2 = {
-            name: data.FirstName + ' ' + data.LastName,
-            email: data.Email,
-            password: data.PasswordTourist,
-            URL: data.ProfilePic
-        }
-        console.warn(user2)
-        console.warn(notification.data);
-        if (notification.data.path !== null) {
-            if (notification.data.path == 'Chat') {
-                console.warn('enter creat acount');
-                firebaseSvc.createAccount(user2, notification.data.info).then((solve) => {
-                    console.warn('this is sinup data==>  ' + JSON.stringify(solve))
-                }).catch((fail) => {
-                    console.warn('not getting data...................')
-                })
+    const ChangeStatus = (user) => {
+        console.warn('in change in app', user)
+        fetch('http://proj.ruppin.ac.il/bgroup10/PROD/api/BuildTrip', {
+            method: 'PUT',
+            body: JSON.stringify(user),
+            headers: new Headers({
+                'Content-type': 'application/json; charset=UTF-8' //very important to add the 'charset=UTF-8'!!!!
+            })
+        })
+            .then(res => {
+                return res.json()
+            })
+            .then(
+                (result) => {
+                    console.warn('changeStatus', result)
+
+                    let TouristStatus = "";
+
+                    result.map((item) => {
+                        if (item.TouristEmail == user.TouristEmail) { TouristStatus = item.Status } {
+                        }
+                    })
+                    console.warn('currentStatus', TouristStatus)
+                    AsyncStorage.setItem('ChatStatus', TouristStatus)
+                    setStatus(TouristStatus);
+                },
+                (error) => {
+                    console.log("err post=", error);
+                });
+    }
+
+
+
+
+    const logOutAndCleanAsyncStorage = async () => {
+        //let keys = ['ProfileTourist', 'googleFacebookAccount'];
+        let keys = ['ProfileTourist', 'googleFacebookAccount', 'messagesTourist', 'idChatTourist', 'GuideUser', 'idChatGuide', 'top3Guides', 'ChatStatus', 'GuideUser','firstTimeInIsrael', 'TripType', 'FlightsDates', 'Budget','Interest','MatchScreen'];
+        await AsyncStorage.multiRemove(keys, (err) => {
+            if (err == null) {
+                navigation.navigate('HomeScreen')
             }
-            //navigation.navigate('MyTabs', { screen: notification.data.path, params: { profile: profile } });
-        }
-        //console.warn(notification);
+            // keys k1 & k2 removed, if they existed
+            // do most stuff after removal (if you want)
+
+        });
+        //await AsyncStorage.removeItem('googleFacebookAccount')
+        // await AsyncStorage.removeItem('messagesTourist');
+        // await AsyncStorage.removeItem('idChatTourist');
+        // await AsyncStorage.removeItem('GuideUser');
+        // await AsyncStorage.removeItem('idChatGuide');
+        // await AsyncStorage.removeItem('top3Guides')
+        // await AsyncStorage.removeItem('ProfileTourist').then(
+        // )
 
     }
 
-
-
-    const logOutAndCleanAsyncStorage = () => {
-        AsyncStorage.removeItem('ProfileTourist')
-        AsyncStorage.removeItem('googleFacebookAccount')
-        navigation.navigate('HomeScreen')
-    }
 
 
     const send = () => {
@@ -125,9 +312,16 @@ const MyProfile = ({ route, navigation }) => {
     if (profile !== null) {
         return (
             <View>
+                {/* {isLoading &&  <AnimatedLoader
+        visible={isLoading}
+        overlayColor="rgba(255,255,255,0.75)"
+        animationStyle={{width: 100, height: 100}}
+        source={require("../assets/loading.json")}
+        speed={1}
+      />} */}
                 <FadeInView >
                     <ImageBackground
-                        source={bacckgroundPic}
+                        source={require('../login/src/assets/Backgroung-IsraAdvisor.jpeg')}
                         style={{ width: '100%', height: 735 }}
                     >
                         <View style={styles.mainbody}>
@@ -147,6 +341,7 @@ const MyProfile = ({ route, navigation }) => {
                                 />
 
                             }
+
                             <Text style={styles.name}>{profile.FirstName} {profile.LastName}</Text>
                         </View>
                         <View>
@@ -206,7 +401,7 @@ const styles = StyleSheet.create({
 
     },
     name: {
-        color: 'white',
+        color: 'black',
         fontSize: 28,
         fontWeight: 'bold',
         paddingBottom: 8,

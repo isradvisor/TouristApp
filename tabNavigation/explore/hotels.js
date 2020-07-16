@@ -8,6 +8,7 @@ import { FontAwesome } from '@expo/vector-icons';
 const hotels = ({ route, navigation }) => {
     const myApiData = route.params.myApiData;
 
+
     //if the following resturant have a website, we will send him there
     const goToWebsite = (item) => {
         let isExsist = false
@@ -41,7 +42,6 @@ const hotels = ({ route, navigation }) => {
                 </Body>
                 <Right/>
             </Header>
-            <Content>
                 <FlatList
                     data={myApiData}
                     renderItem={({ item }) => {
@@ -95,9 +95,7 @@ const hotels = ({ route, navigation }) => {
                         );
                     }
                     }
-                    keyExtractor={item => item.id.toString()}
-                />
-            </Content>
+                    keyExtractor={(item) => { return item.id.toString() }}                />
         </Container>
     );
 }

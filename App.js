@@ -1,11 +1,10 @@
-import React, { useEffect, useState, componentWillMount } from 'react';
-import { ActivityIndicator } from 'react-native';
-import { createAppContainer } from 'react-navigation';
+import React, { useEffect, useState, useRef, componentWillMount } from 'react';
+
 import firstTimeInIsrael from './funnel/screens/1-firstTimeInIsrael';
 import TripType from './funnel/screens/2-tripType';
 import FlightsDates from './funnel/screens/3-FlightsDates'
 import Budget from './funnel/screens/4-Budget'
-import Interest from './funnel/screens/5-Interests'
+//import Interest from './funnel/screens/interestsTemp'
 import MatchScreen from './funnel/screens/6-matchScreen'
 import GuideProfile from './funnel/screens/GuideProfile'
 import {
@@ -16,10 +15,11 @@ import {
   Dashboard,
 } from './login/src/screens';
 import MyTrip from "./tabNavigation/myTrip";
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, CommonActions } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
-import { Text, View, AsyncStorage } from 'react-native';
+import { Text, View, ActivityIndicator, Alert, AppState } from 'react-native';
+import AsyncStorage from '@react-native-community/async-storage';
 import MyProfile from "./tabNavigation/myProfile";
 import MainExplore from "./tabNavigation/explore/mainExplore";
 import CityExplore from "./tabNavigation/explore/cityExplore";
@@ -30,8 +30,15 @@ import Chat from './tabNavigation/chat';
 import EditProfile from './tabNavigation/editProfile';
 import { FontAwesome } from '@expo/vector-icons';
 import firebaseSvc from './services/firebaseSDK';
+import Interest from './funnel/screens/5-Interests';
+import { Notifications } from 'expo';
+import { Ionicons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
 
 
+
+
+let num1 = 0;
 
 
 
@@ -77,6 +84,7 @@ fetch('http://api.openweathermap.org/data/2.5/group?id=293397,281184,294801,2933
 const Stack = createStackNavigator();
 
 function MyStack(props) {
+
   return (
     props.data2 !== 'HomeScreen' ?
       <Stack.Navigator initialRouteName="MyTabs" headerMode="none" >
@@ -111,6 +119,7 @@ function MyStack(props) {
         <Stack.Screen name="GuideProfile" component={GuideProfile} />
         <Stack.Screen name="MyTabs" component={MyTabs} />
 
+
       </Stack.Navigator>
   );
 }
@@ -140,6 +149,53 @@ function MyProfileStack() {
   );
 }
 
+// function IconWithBadge({ name,badgeCount,color, size }) {
+//   console.warn('in icon with badge: ',badgeCount)
+//   return (
+//     <View style={{ width: 24, height: 24, margin: 5 }}>
+//       <Ionicons name={name} size={size} color={color}  />
+//       {badgeCount > 0 && (
+//         <View
+//           style={{
+//             // On React Native < 0.57 overflow outside of parent will not work on Android, see https://git.io/fhLJ8
+//             position: 'absolute',
+//             right: -6,
+//             top: -3,
+//             backgroundColor: 'red',
+//             borderRadius: 6,
+//             width: 12,
+//             height: 12,
+//             justifyContent: 'center',
+//             alignItems: 'center',
+//           }}
+//         >
+//           <Text style={{ color: 'white', fontSize: 10, fontWeight: 'bold' }}>
+//             {badgeCount}
+//           </Text>
+//         </View>
+//       )}
+//     </View>
+//   );
+// }
+
+// function  ChatIconWithBadge(props) {
+//   AsyncStorage.getItem('NumNotification').then((value)=>{
+//     if(value !== null){
+//       num1 = JSON.parse(value);
+//     }
+//   })
+//   console.warn('before display')
+//   console.warn('infunction',num1);
+//   // You should pass down the badgeCount in some other ways like React Context API, Redux, MobX or event emitters.
+//   return <IconWithBadge {...props} badgeCount={num1}/>;
+// }
+// const countNotification=(num2)=>{
+//   console.warn('beforeNum',num1);
+//   num1 = num2;
+//   console.warn('num',num1);
+//   }
+
+
 const Tab = createBottomTabNavigator();
 
 function MyTabs() {
@@ -165,7 +221,7 @@ function MyTabs() {
         component={Chat}
         options={{
           tabBarLabel: 'Chat',
-          tabBarIcon: ({ color, size }) => (
+          tabBarIcon: ({color, size }) => (
             <FontAwesome name="comment" color={color} size={size} />
           ),
         }}
@@ -195,77 +251,215 @@ function MyTabs() {
   );
 }
 
+
+
 export default function App() {
   //const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState(null)
+  const appState = useRef(AppState.currentState);
+  const [appStateVisible, setAppStateVisible] = useState(appState.current);
+
+
+
   useEffect(() => {
+    //AsyncStorage.clear();
     readUserData();
+    //countNotification(0);
   }, [])
-  const readUserData = async () => {
 
-    try {
-      await AsyncStorage.getItem('ProfileTourist').then(async(value) => {
-        if (value == null) {
-          await AsyncStorage.getItem('googleFacebookAccount').then((value) => {
-            if (value !== null) {
-              const data = JSON.parse(value);
-              const user = {
-                email: data.Email,
-                password: data.PasswordTourist
-              }
-              if (data !== null || data !== undefined) {
-                firebaseSvc.login(user);
-                setData(data)
-              }
-            }
-            else{
-              setData('HomeScreen');
-            }
-          
+  useEffect(() => {
+    AppState.addEventListener("change", _handleAppStateChange);
 
-          })
-        } else {
-          const data = JSON.parse(value);
-            const user = {
-              email: data.Email,
-              password: data.PasswordTourist
-            }
-            if (data !== null || data !== undefined) {
+    return () => {
+      AppState.removeEventListener("change", _handleAppStateChange);
+    };
+  }, []);
+
+  const _handleAppStateChange = async (nextAppState) => {
+    if (
+      appState.current.match(/inactive|background/) &&
+      nextAppState === "active"
+    ) {
+      console.warn("App has come to the foreground!");
+      try {
+        await AsyncStorage.getItem('ProfileTourist').then(async (value) => {
+          if (value !== null) {
+            console.warn('VALUE?=',value);
+            const profile = JSON.parse(value);
+            if (profile !== null || profile !== undefined) {
               //firebaseSvc.login(user);
-              setData(data)
-  
+              checkStatus(profile);
             }
+          }
+
+        });
+
+      }
+      catch (e) {
+        console.warn('failed to fetch data')
+      }
+    }
+
+    appState.current = nextAppState;
+    setAppStateVisible(appState.current);
+    console.warn("AppState", appState.current);
 
 
-        }
+  };
 
+ 
+
+  const readUserData = async () => {
+    try {
+      await AsyncStorage.getItem('ProfileTourist').then(async (value) => {
         if (value !== null) {
-          const data = JSON.parse(value);
-          const user = {
-            email: data.Email,
-            password: data.PasswordTourist
+          console.warn('VALUE?=',value);
+          const profile = JSON.parse(value);
+          if (profile !== null || profile !== undefined) {
+            //firebaseSvc.login(user);
+            setData(profile)
           }
-
-
-          if (data !== null || data !== undefined) {
-            firebaseSvc.login(user);
-            setData(data)
-
-          }
-
         }
-        else{
+        else {
           setData('HomeScreen');
         }
-        
       });
 
     }
     catch (e) {
       console.warn('failed to fetch data')
-
     }
   }
+
+
+
+  const ChangeStatus = (user) => {
+    console.warn('user', user)
+    fetch('http://proj.ruppin.ac.il/bgroup10/PROD/api/BuildTrip', {
+      method: 'PUT',
+      body: JSON.stringify(user),
+      headers: new Headers({
+        'Content-type': 'application/json; charset=UTF-8' //very important to add the 'charset=UTF-8'!!!!
+      })
+    })
+      .then(res => {
+        return res.json()
+      })
+      .then(
+        (result) => {
+          console.warn('res', result)
+          let TouristStatus = "";
+
+          result.map((item) => {
+            if (item.TouristEmail == user.TouristEmail) { TouristStatus = item.Status } {
+            }
+          })
+          console.warn('ChatStatus', TouristStatus);
+          AsyncStorage.setItem('ChatStatus', TouristStatus)
+        },
+        (error) => {
+          console.log("err post=", error);
+        });
+  }
+
+
+  const checkStatus = (profile) => {
+    console.warn('StatusAPPJS',profile)
+    fetch('http://proj.ruppin.ac.il/bgroup10/PROD/api/BuildTrip/GetTouristStatus?email=' + profile.Email, {
+      method: 'GET',
+      headers: new Headers({
+        'Content-type': 'application/json; charset=UTF-8' //very important to add the 'charset=UTF-8'!!!!
+      })
+
+    })
+      .then(res => {
+        return res.json()
+      })
+      .then(
+        async (result) => {
+          GetGuideDetails(result.GuideEmail);
+          await AsyncStorage.removeItem('ChatStatus');
+          await AsyncStorage.setItem('ChatStatus', result.Status)
+          if (result.Status == 'Start Chat') {
+            const user = {
+              email: profile.Email,
+              password: profile.PasswordTourist
+            }
+            await firebaseSvc.login(user);
+
+            //setIsLoading(false);
+            //GetGuideDetails(result.GuideEmail);
+
+          }
+          else if (result.Status == 'Accept Request') {
+            const user2 = {
+              name: profile.FirstName + ' ' + profile.LastName,
+              email: profile.Email,
+              password: profile.PasswordTourist,
+              URL: profile.ProfilePic
+            }
+            firebaseSvc.createAccount(user2, result.GuideEmail).then((solve) => {
+              console.warn('this is sinup data==>  ' + JSON.stringify(solve))
+
+            }).catch((fail) => {
+              console.warn('not getting data...................')
+            })
+            let user = {
+              TouristEmail: profile.Email,
+              GuideEmail: result.GuideEmail,
+              Status: 'Start Chat'
+            }
+            ChangeStatus(user)
+
+          }
+          else if (result.Status == 'Decline Chat') {
+            Alert.alert(
+              'Your Friend Request has been denied!',
+              'GO TO CHAT TO CHOOSE DIFFRENT GUIDE',
+              [
+                {
+                  text: 'OK'
+              
+                },
+              ],
+              { cancelable: false }
+            )
+
+          }
+
+        }),
+      (error) => {
+        console.warn("err post=", error);
+      };
+
+  }
+
+
+  const GetGuideDetails = (email) => {
+    fetch('http://proj.ruppin.ac.il/bgroup10/PROD/api/Guide?email=' + email, {
+      method: 'GET',
+      headers: new Headers({
+        'Content-type': 'application/json; charset=UTF-8' //very important to add the 'charset=UTF-8'!!!!
+      })
+
+    })
+      .then(res => {
+        return res.json()
+      })
+      .then(
+        (result) => {
+          AsyncStorage.setItem('Guide', JSON.stringify(result));
+        }
+      ),
+      (error) => {
+        console.warn("err post=", error);
+      };
+  }
+
+
+
+
+
   if (data !== null) {
     return (
       <NavigationContainer>
