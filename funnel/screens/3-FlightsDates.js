@@ -131,8 +131,7 @@ const handleConfirm = date => {
       ToDate: null,
       EstimateDate: moment(esitmateMonth).format('YYYY-MM')
     }
-    console.warn('user',user);
-    //console.warn(user)
+    
     fetchToDB(user)
   }
   else{
@@ -143,7 +142,6 @@ const handleConfirm = date => {
       ToDate: moment(endDate).format('YYYY-MM-DD'),
       EstimateDate: null
     }
-    //console.warn(user)
     fetchToDB(user)
   }
  }
@@ -158,12 +156,10 @@ const handleConfirm = date => {
     
   })
     .then(res => {
-    // console.warn('res=', JSON.stringify(res));
       return res.json()
     })
     .then(
       (result) => {
-     // console.warn("fetch POST= ", JSON.stringify(result));
 
     //list from fetch:
     //0 = db error

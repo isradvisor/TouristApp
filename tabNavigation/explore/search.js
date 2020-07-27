@@ -1,15 +1,15 @@
-import React, { useState, useCallback } from 'react';
-import { Container, Header, Content, Thumbnail, Text, Left, Right, Card, Button, CardItem, Subtitle, Title, View, Body, Icon } from 'native-base';
-import { Alert, ImageBackground, StyleSheet, Button as B, ScrollView, Modal, TouchableHighlight, Linking, Dimensions, FlatList } from 'react-native';
-import { FontAwesome, Feather } from '@expo/vector-icons';
+import React,{useState,useCallback} from 'react';
+import { Container, Header, Content, Thumbnail, Text, Left, Right, Card,Button, CardItem, Subtitle, Title, View, Body, Icon } from 'native-base';
+import {  Alert, ImageBackground, StyleSheet,Button as B, ScrollView, Modal, TouchableHighlight, Linking, Dimensions,FlatList } from 'react-native';
+import { FontAwesome,Feather } from '@expo/vector-icons';
 import MapView, { Marker } from 'react-native-maps';
-import createOpenLink from 'react-native-open-maps';
+import openMap from 'react-native-open-maps';
 
 
 
 
 
-const attractions = ({ route, navigation }) => {
+const search = ({ route, navigation }) => {
     const myApiData = route.params.myApiData;
     const [MapVisible, setMapVisible] = useState(false);
     const [modalVisible, setModalVisible] = useState(false);
@@ -30,8 +30,8 @@ const attractions = ({ route, navigation }) => {
         }
         if (isExsist) {
             return website_link
-        }
-        else {
+        } 
+        else{
             return "";
         }
     }
@@ -101,10 +101,6 @@ const attractions = ({ route, navigation }) => {
 
         return <B title={children} onPress={handlePress} />;
     };
-
-    const openYosemiteZoomedOut =(lat,long)=>{ createOpenLink({latitude:lat,longitude:long,zoom:30 });}
-
-  
     if (MapVisible) {
         return (
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
@@ -118,7 +114,7 @@ const attractions = ({ route, navigation }) => {
                         longitudeDelta: 0.121,
                     }} >
                     <Marker
-                        onPress={() => openYosemiteZoomedOut(currentElement.coordinates.latitude,currentElement.coordinates.longitude)}
+                    onPress={()=>openMap({ latitude: currentElement.coordinates.latitude, longitude: currentElement.coordinates.longitude })}
                         coordinate={{
                             latitude: currentElement.coordinates.latitude,
                             longitude: currentElement.coordinates.longitude,
@@ -134,13 +130,13 @@ const attractions = ({ route, navigation }) => {
             <Container>
                 <Header>
                     <Left>
-                        <Button transparent onPress={() => navigation.navigate('MainExplore')}>
-                            <Icon name='arrow-back' />
-                            <Text>Back</Text>
-                        </Button>
-                    </Left>
+                    <Button transparent onPress={() => navigation.navigate('MainExplore')}>
+                        <Icon name='arrow-back' />
+                        <Text>Back</Text>
+                    </Button>
+                </Left>
                     <Title>
-                        Resturants
+                        Results
                  </Title>
                     <Right />
 
@@ -287,4 +283,4 @@ const styles = StyleSheet.create({
     }
 
 });
-export default attractions
+export default search

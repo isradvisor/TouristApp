@@ -1,4 +1,5 @@
 import firebase from 'firebase'
+import {Alert} from 'react-native'
 import '@firebase/firestore'
 import uuid from 'uuid'
 import AsyncStorage from '@react-native-community/async-storage';
@@ -21,9 +22,7 @@ class FirebaseSvc {
         }
         if (!firebase.apps.length) {
             firebase.initializeApp(config);
-            // firebase.firestore().settings({
-            //     timestampsInSnapshots: true
-            // })
+          
         } else {
             console.log("firebase apps already running...")
         }
@@ -34,11 +33,6 @@ class FirebaseSvc {
 
     }
 
-    componentWillUnmount() {
-        // if (this.removeListener) {
-        //     this.removeListener()
-        // }
-    }
 
     connect = () =>{
        return firebase.firestore()
@@ -46,7 +40,6 @@ class FirebaseSvc {
     }
 
     login = async (user) => {
-        console.warn('Im in login firebase',user);
         let guideID = '';
         let asyTour = '';
         let GuideUser = '';
@@ -64,7 +57,6 @@ class FirebaseSvc {
                                 let guideEmail = currentdata.guideEmail;
                                 firebase.firestore().collection('users').get()
                                     .then(async(res) => {
-                                        // AsyncStorage.removeItem('messagesTourist');
                                             await AsyncStorage.removeItem('idChatTourist');
                                             await AsyncStorage.removeItem('GuideUser');
                                             await AsyncStorage.removeItem('idChatGuide');
@@ -91,8 +83,6 @@ class FirebaseSvc {
 
 
     createAccount = async (user, GuideEmail) => {
-        console.warn('user',user);
-        console.warn('GuideEmail',GuideEmail);
         let asyGuide = '';
         let asyTour = '';
         let URL = user.URL;
@@ -146,8 +136,15 @@ class FirebaseSvc {
                                 JSON.stringify(pass.user.uid)
                             );
                        
-                console.warn("User " + user.name + " was created successfully. Please login.")
-             
+
+                            Alert.alert(
+                                'chat alert',
+                                'The chat functionality is now open!',
+                                [
+                                  { text: 'OK'},
+                                ],
+                                { cancelable: false }
+                              )             
                 }, function (error) {
                 });
         }, function (error) {
@@ -373,7 +370,6 @@ let newPassword = result.NewPassword;
                         JSON.stringify(arr)
                     );
                     console.log("555666")
-                    //return arr;
                 }
                 )
                 .then(async(r)=> console.log('f',this.listMessage))

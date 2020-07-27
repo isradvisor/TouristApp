@@ -8,7 +8,6 @@ const ratingModal = (props) => {
     const [rating, setRating] = useState(3);
     const SendRatingToChat = () => {
         setModalVisible(false)
-        console.warn('kosssss emek')
         props.sendReviewToSQL(rating)
 
     }

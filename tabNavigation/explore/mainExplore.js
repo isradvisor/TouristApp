@@ -6,21 +6,16 @@ import {
 import AsyncStorage from '@react-native-community/async-storage';
 import { Feather } from '@expo/vector-icons';
 import { Card, Divider } from 'react-native-elements';
-import { Notifications } from 'expo';
+import AnimatedLoader from "react-native-animated-loader";
+
 
 
 
 const MainExplore = ({ route,navigation }) => {
     const [profile, setProfile] = useState(null)
     const [myWeather, setMyWeather] = useState(null)
-    const [isLoading, setIsLoading] = useState(true)
-
- 
-
-    // useEffect(()=>{
-    //     readUserData();  
-    //     readWeatherDataData();
-    // },[])
+    const [isLoading, setIsLoading] = useState(false)
+    const [searchAtt, setSearchAtt] = useState('');
 
 
         useEffect(() => {
@@ -48,7 +43,6 @@ const MainExplore = ({ route,navigation }) => {
                 } else {
                     const data = JSON.parse(value);
                     setProfile(data);
-                    console.warn("profile:", data);
 
 
                 }
@@ -74,6 +68,56 @@ const MainExplore = ({ route,navigation }) => {
 
         }
     }
+
+    const SearchAttractions=()=>{
+        setIsLoading(true)
+        fetch('https://www.triposo.com/api/20200405/poi.json?location_id=Israel&order_by=-trigram&fields=id,coordinates,score,intro,location_id,name,images,tags,properties&annotate=trigram:' + searchAtt + '&trigram=>=0.5&account=FOBIVROX&token=znghja9mhtwjjt5gsc8jydhayg07gkqz', {
+            method: 'GET',
+            headers: new Headers({
+                'Content-type': 'application/json; charset=UTF-8' //very important to add the 'charset=UTF-8'!!!!
+            })
+        })
+            .then(res => {
+                return res.json()
+            })
+            .then((result) => {
+                const myApiData = result.results;
+                StopLoadingProccessWithNavigate(CloseLoading, myApiData);
+                                (error) => {
+                    console.warn("err post=", error);
+                    setIsLoading(false)
+                };
+            })
+    }
+    const StopLoadingProccessWithNavigate = async (CloseLoading, myApiData) => {
+        CloseLoading(myApiData);
+    }
+    const CloseLoading = (myApiData) => {
+        setTimeout(() => {
+            setIsLoading(false);
+        }, 2500);
+        navigateTo(myApiData);
+    }
+    const navigateTo = (myApiData) => {
+        if (myApiData.length>0) {
+            setTimeout(() => {
+                navigation.navigate('MyTabs', { screen: 'MyExploreStack',params:{ screen:'Search',params:{myApiData: myApiData},},}); 
+            }, 2500);  
+        }
+        else{
+            Alert.alert(
+                'Error',
+                'We did not find any place with the name '+searchAtt,
+                [
+                  { text: 'OK' },
+                ],
+                { cancelable: false }
+              )
+        }
+     
+    }
+
+    
 
     const image = {
         uri: 'https://cdn.pixabay.com/photo/2016/12/10/14/20/landscape-1897362_960_720.jpg'
@@ -159,6 +203,13 @@ const MainExplore = ({ route,navigation }) => {
     if (profile !== null && myWeather !== null) {
         return (
             <View style={{ flexGrow: 1, height: '100%' }}>
+                  {isLoading && <AnimatedLoader
+                visible={isLoading}
+                overlayColor="rgba(255,255,255,0.75)"
+                animationStyle={{ width: 100, height: 100 }}
+                source={require("../../assets/loading.json")}
+                speed={1}
+            />}
                     <View>
                         <ImageBackground
                             source={image}
@@ -175,10 +226,13 @@ const MainExplore = ({ route,navigation }) => {
                                     style={styles.SearchBox}
                                     placeholder='Search Destination'
                                     placeholderTextColor='#666'
+                                    onChangeText={text => setSearchAtt(text)}
                                 >
                                 </TextInput>
                                 <Feather name='search' size={22} color='#666' style={
-                                    { position: 'absolute', top: 25, right: 60, opacity: 0.6 }} />
+                                    { position: 'absolute', top: 25, right: 60, opacity: 0.6 }} 
+                                    onPress={SearchAttractions}
+                                    />
                             </View>
 
 

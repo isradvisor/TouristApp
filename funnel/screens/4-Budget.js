@@ -134,12 +134,10 @@ const fetchToDB = (user) =>{
     
   })
     .then(res => {
-     //console.warn('res=', JSON.stringify(res));
       return res.json()
     })
     .then(
       (result) => {
-      //console.warn("fetch POST= ", JSON.stringify(result));
 
     //list from fetch:
     //0 = db error
@@ -160,7 +158,6 @@ const fetchToDB = (user) =>{
             case 1:
                 let ifExist = true;
                 AsyncStorage.setItem('Budget',JSON.stringify(ifExist))
-              //console.warn('fetch Succeeded! :)')    
               navigation.navigate('Interest', {profile: profile})             
             break;
               default:

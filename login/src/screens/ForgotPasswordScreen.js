@@ -3,7 +3,6 @@ import { Text, StyleSheet, TouchableOpacity, Keyboard, TouchableWithoutFeedback,
 import { emailValidator } from '../core/utils';
 import Background from '../components/Background';
 import BackButton from '../components/BackButton';
-import Logo from '../components/Logo';
 import Header from '../components/Header';
 import TextInput from '../components/TextInput';
 import { theme } from '../core/theme';
@@ -32,7 +31,6 @@ const ForgotPasswordScreen = ({ navigation }) => {
 
     })
       .then(res => {
-        //console.warn('res=', JSON.stringify(res));
         return res.json()
       })
       .then(
@@ -64,7 +62,6 @@ const ForgotPasswordScreen = ({ navigation }) => {
     console.warn("err post=", error);
   });
 
-  //navigation.navigate('LoginScreen');
 };
 
 return (

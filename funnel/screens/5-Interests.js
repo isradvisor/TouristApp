@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
-    StyleSheet, Text, View, Image, ImageBackground, ScrollView,
-    TouchableOpacity, FlatList, TextInput, ActivityIndicator, Animated, Alert, TouchableHighlight
+    StyleSheet, Text, View, Image, ScrollView,
+    TouchableOpacity, FlatList, Animated, Alert, TouchableHighlight
 } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { Button, Badge } from 'react-native-elements';
@@ -80,7 +80,6 @@ const interestTemp = ({route,navigation}) => {
         if (expertise !== null && hobbies !== null) {
             expertise.map(item => { arr.push({ title: item.NameE, image: item.Picture, key: item.NameE, type: item.Type, code: item.Code, isPicked: false }) });
             hobbies.map(item => { arr.push({ title: item.HName, image: item.Picture, key: item.HName, type: item.Type, code: item.HCode, isPicked: false }) });
-            console.warn(arr[arr.length - 1]);
             shuffleArray(arr);
             AddToNewArray(arr);
         }
@@ -99,9 +98,10 @@ const interestTemp = ({route,navigation}) => {
                 item = [
                     item1, item2
                 ]
+
             }
 
-            arr2.push(item);
+            arr2.push({item:item,key:i});
         }
 
         if (arr2.length > 0) {
@@ -133,12 +133,10 @@ const interestTemp = ({route,navigation}) => {
 
         })
             .then(res => {
-                // console.warn('res=', JSON.stringify(res));
                 return res.json()
             })
             .then(
                 (result) => {
-                    //console.warn("fetch POST= ", JSON.stringify(result));
                     getExpertiseFromDB(result);
                 },
                 (error) => {
@@ -154,22 +152,11 @@ const interestTemp = ({route,navigation}) => {
 
         })
             .then(res => {
-                // console.warn('res=', JSON.stringify(res));
                 return res.json()
             })
             .then(
                 (result) => {
-                    //console.warn("fetch POST= ", JSON.stringify(result));
-                    // const Type = result[0].Type == 'Hobby' ? "Hobby" : "Expertise";
-                    // switch (Type) {
-                    //     case 'Expertise':
-                    //         setExpertiseList(result)
-                    //         break;
-
-                    //     case 'Hobby':
-                    //         setHobbyList(result)
-                    //         break;
-                    //}
+                  
                     check(result, hobbiesList);
                 },
                 (error) => {
@@ -258,13 +245,11 @@ const interestTemp = ({route,navigation}) => {
             
           })
             .then(res => {
-            // console.warn('res=', JSON.stringify(res));
               return res.json()
             })
             .then(
               //results = row affected in DB & tourist ID
               (result) => {
-               //console.warn("fetch POST= ", JSON.stringify(result));
                let ifExist = true;
                AsyncStorage.setItem('Interest',JSON.stringify(ifExist))
                navigation.navigate('MatchScreen', {TouristId: result[0], profile: profile})
@@ -277,8 +262,6 @@ const interestTemp = ({route,navigation}) => {
     }
 
 
-    // if (isLoaded) {
-    //console.warn(arr2)
     return (
         <View style={{ flex: 1, alignItems: 'center' }}>
             <View style={styles.viewProgress}>
@@ -305,61 +288,58 @@ const interestTemp = ({route,navigation}) => {
                         return (
                             <View style={{ flex: 0.4, marginTop: 20 }}>
                                 <View style={{ paddingVertical: 20, paddingLeft: 16 }}>
-                                    <TouchableOpacity onPress={() => CheckItem(item[0])}>
+                                    <TouchableOpacity onPress={() => CheckItem(item.item[0])}>
 
-                                        <Image source={{ uri: item[0].image }} style={{
+                                        <Image source={{ uri: item.item[0].image }} style={{
                                             width: 150,
                                             marginRight: 8, height: 150, borderRadius: 10
                                         }} />
-                                        {paintItem(item[0].isPicked)}
+                                        {paintItem(item.item[0].isPicked)}
                                         <View style={styles.imageOverlay}></View>
-                                        <Text style={styles.imageText}>{item[0].title}</Text>
+                                        <Text style={styles.imageText}>{item.item[0].title}</Text>
                                     </TouchableOpacity>
                                 </View>
-                                {item.length > 1 ?
+                                {item.item.length > 1 ?
                                     <View style={{ paddingVertical: 20, paddingLeft: 16 }}>
-                                        <TouchableOpacity onPress={() => CheckItem(item[1])}>
-                                            <Image source={{ uri: item[1].image }} style={{
+                                        <TouchableOpacity onPress={() => CheckItem(item.item[1])}>
+                                            <Image source={{ uri: item.item[1].image}} style={{
                                                 width: 150,
                                                 marginRight: 8, height: 150, borderRadius: 10
                                             }} />
-                                            {paintItem(item[1].isPicked)}
+                                            {paintItem(item.item[1].isPicked)}
                                             <View style={styles.imageOverlay}></View>
-                                            <Text style={styles.imageText}>{item[1].title}</Text>
+                                            <Text style={styles.imageText}>{item.item[1].title}</Text>
                                         </TouchableOpacity>
                                     </View> : null}
                             </View>
 
                         )
                     }}
+                    keyExtractor={(item) => { return item.key.toString() }}
+
                 />
             </ScrollView>
             <View style={styles.bottomView}>
-                <View style={styles.bottomView}>
                 {listAdded.length >= 4 ? <View style={{ flex: 1, }}>
                     <Button
                         title="Continue"
                         type="outline"
                         buttonStyle={styles.continueBtn}
                         onPress={fetchAndContinue}
-                        containerStyle={{ marginRight: '5%' }}
+                        containerStyle={{ position: 'absolute', top: -4, left:-4, alignSelf: 'center', marginLeft: 120, marginTop: -20 }}
                     />
                 </View>:null}
-                </View>
-                    <View style={styles.bottomView} >
                 {listAdded.length > 0 ?
-                    <View style={{ justifyContent: 'flex-end' }}>
+                    <View style={{flex:1,justifyContent: 'flex-end' }}>
                         <Badge
                             value={listAdded.length}
                             status="primary"
                             textStyle={{ fontSize: 20, fontWeight: 'bold' }}
-                            containerStyle={{ position: 'absolute', top: -4, right: -4, alignSelf: 'flex-end', marginRight: 20, marginTop: 13 }}
+                            containerStyle={{ position: 'absolute', top: -4, right: -4, alignSelf: 'flex-end', marginRight: 20, marginTop: -10 }}
                             badgeStyle={{ height: 40, width: 40, borderRadius: 100, }}
                         />
                     </View>:null
                 }
-                </View>
-
             </View>
 
             <View style={styles.centeredView}>

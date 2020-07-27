@@ -1,16 +1,6 @@
 import React, { useState,useEffect } from 'react'
-import {
-    Platform,
-    StyleSheet,
-    Text,
-    View,
-    TouchableOpacity,
-    TouchableHighlight,
-    AsyncStorage
-} from 'react-native';
-import {
-    emailValidator
-} from '../login/src/core/utils';
+import { Platform,
+    StyleSheet,Text,View, TouchableOpacity,TouchableHighlight,} from 'react-native';
 import Modal from 'react-native-modal';
 import TextInput from '../login/src/components/TextInput';
 import { Avatar } from 'react-native-elements'
@@ -26,25 +16,15 @@ export default function EditProfile({ route, navigation }) {
 
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
-    const [email, setEmail] = useState({ value: '', error: '' });
     const [modalVisible, setModalVisible] = useState(false);
     const [errorFromDB, setErrorFromDB] = useState(false)
     const [counter, setCounter] = useState(0)
-    const [oldEmail, setOldEmail] = useState('')
     const [imageUri, setImageUri] = useState('')
     const [profileTourist, setProfile]=useState('')
     const apiUrl = 'http://proj.ruppin.ac.il/bgroup10/PROD/api/Tourist/EditProfile'
     const apiUploadPic = 'http://proj.ruppin.ac.il/bgroup10/PROD/api/Tourist/UploadPicture'
 
-    // useEffect(()=>{
-    //     if (route.params) {
-    //         setFirstName(profile.FirstName);
-    //         setLastName(profile.LastName);
-    //         setImageUri(profile.ProfilePic);
-    //     }
-    //     getUserData();
-     
-    // },[])
+  
 
     useEffect(() => {
         const unsubscribe = navigation.addListener('focus', () => {
@@ -157,9 +137,6 @@ export default function EditProfile({ route, navigation }) {
         if (!result.cancelled) {
             setImageUri(result.uri);
             let end = result.uri.split(".");
-            console.warn(end)
-            console.warn(result.uri)
-            //let urlAPI = "http://.../site01/uploadpicture";
             let dataI = new FormData();
             dataI.append('picture', {
                 uri: result.uri,
@@ -205,8 +182,9 @@ export default function EditProfile({ route, navigation }) {
 
                 <View style={styles.headerColumn}>
                         <Avatar
+                     
                             rounded
-                            source={imageUri == '' || imageUri==null ? require('../assets/user.png') : { uri: imageUri }}
+                            source={imageUri == '' || imageUri==null ? {uri:'http://proj.ruppin.ac.il/bgroup10/PROD/Images/Default-welcomer.png'} : { uri: imageUri }}
                             size='xlarge'
                             avatarStyle={styles.userImage}
                         />

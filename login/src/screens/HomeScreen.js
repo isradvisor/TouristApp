@@ -1,5 +1,5 @@
-import React, { memo, useState, useRef, useEffect, componentWillMount } from 'react';
-import { Text, Alert, View, Animated ,Image} from 'react-native'
+import React, { memo, useState, useRef, useEffect } from 'react';
+import { Text, Alert, View, Animated} from 'react-native'
 import AsyncStorage from '@react-native-community/async-storage';
 import Background from '../components/Background';
 import Header from '../components/Header';
@@ -9,8 +9,7 @@ import * as Facebook from 'expo-facebook';
 import { FontAwesome, AntDesign } from '@expo/vector-icons'
 import * as Google from "expo-google-app-auth";
 
-import firebaseSvc from '../../../services/firebaseSDK';
-import styles from 'react-native-weekly-calendar/src/Style';
+
 
 
 
@@ -76,7 +75,6 @@ const HomeScreen = ({ navigation }) => {
       });
 
       if (result.type === "success") {
-        // console.warn("LoginScreen.js.js 21 | ", result);
 
         const temp = result;
 
@@ -99,13 +97,10 @@ const HomeScreen = ({ navigation }) => {
 
         })
           .then(res => {
-            //  console.warn('res=', JSON.stringify(res));
             return res.json()
           })
           .then(
             (result) => {
-              console.warn(result)
-              //  console.warn("fetch POST= ", JSON.stringify(result));
 
               //respond from db:
               //0 = db error
@@ -138,7 +133,6 @@ const HomeScreen = ({ navigation }) => {
 
                 case 2:
 
-                  //StopLoadingProccessWithNavigate(CloseLoading, profile, result);
                   getTourist(profile.Email);
 
                   break;
@@ -163,44 +157,6 @@ const HomeScreen = ({ navigation }) => {
     } catch ({e}) {
       alert(`Google Login Error: ${e}`);}
   };
-  //funciton that create call back - loading and after navigation
-  // const StopLoadingProccessWithNavigate = async (CloseLoading, profile, caseResult) => {
-
-  //   CloseLoading(profile, caseResult);
-  // }
-
-  //loading timer
-  // const CloseLoading = (profile, caseResult) => {
-  //   setTimeout(() => {
-  //     setIsLoading(false);
-  //   }, 1500);
-  //   navigateTo(profile, caseResult);
-  // }
-
-
-  //navigation to next page with all the details of the user
-  // const navigateTo = (profile, caseResult) => {
-
-  //   setTimeout(() => {
-  //     if (caseResult == 1) {
-  //       Alert.alert(
-  //         'Welcome!',
-  //         'Just finish the Regsitration and we are all set!',
-  //         [
-  //           { text: 'OK' },
-  //         ],
-  //         { cancelable: false }
-  //       )
-  //     }
-
-  //     // caseResult == 1 ? navigation.navigate('RegisterScreen', { profile: profile }) :
-  //     //   navigation.navigate('MyTabs', { screen: 'MyProfileStack', params: { screen: 'MyProfile', params: { profile: profile }, }, })
-  //   }, 1500);
-
-
-  // }
-
-
 
   //log in with facebook
   const logInWithFacebook = async () => {
@@ -222,7 +178,6 @@ const HomeScreen = ({ navigation }) => {
           Email: temp.email,
           ProfilePic: temp.picture.data.url,
         }
-        //AsyncStorage.setItem('googleFacebookAccount',JSON.stringify(profile));
 
         //fetch to db
         fetch(apiUrlFacebook, {
@@ -234,12 +189,10 @@ const HomeScreen = ({ navigation }) => {
 
         })
           .then(res => {
-            //  console.warn('res=', JSON.stringify(res));
             return res.json()
           })
           .then(
             (result) => {
-              //  console.warn("fetch POST= ", JSON.stringify(result));
 
               //respond from db:
               //0 = db error
@@ -311,12 +264,10 @@ const HomeScreen = ({ navigation }) => {
 
     })
       .then(res => {
-        //console.warn('res=', JSON.stringify(res));
         return res.json()
       })
       .then(
         async (result) => {
-          //await AsyncStorage.removeItem('ProfileTourist')
           await AsyncStorage.setItem('ProfileTourist', JSON.stringify(result))
           let profile = await AsyncStorage.getItem('ProfileTourist')
           console.warn(profile)
@@ -355,13 +306,6 @@ const HomeScreen = ({ navigation }) => {
     <Background>
       <FadeInView>
         <Header>Welcome To IsraAdvisor</Header>
-        {/* {isLoading && <AnimatedLoader
-          visible={isLoading}
-          overlayColor="rgba(255,255,255,0.75)"
-          animationStyle={{ width: 100, height: 100 }}
-          source={require("../../../assets/loading.json")}
-          speed={1}
-        />} */}
         <Paragraph >
           Let's start create your trip in Israel!
     </Paragraph>

@@ -88,12 +88,10 @@ export default ({route,navigation}) => {
     
   })
     .then(res => {
-     //console.warn('res=', JSON.stringify(res));
       return res.json()
     })
     .then(
       (result) => {
-      //console.warn("fetch POST= ", JSON.stringify(result));
 
     //list from fetch:
     //0 = db error

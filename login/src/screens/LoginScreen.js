@@ -2,7 +2,6 @@ import React, { memo, useState, useEffect } from 'react';
 import { TouchableOpacity, StyleSheet, Text, View, Alert} from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import Background from '../components/Background';
-import Logo from '../components/Logo';
 import Header from '../components/Header';
 import Button from '../components/Button';
 import TextInput from '../components/TextInput';
@@ -11,7 +10,8 @@ import { theme } from '../core/theme';
 import { emailValidator, passwordValidator } from '../core/utils';
 import { CheckBox } from 'react-native-elements'
 import AnimatedLoader from "react-native-animated-loader";
-import firebaseSvc from '../../../services/firebaseSDK';
+
+
 const LoginScreen = ({ navigation }) => {
   
   const [email, setEmail] = useState({ value: '', error: '' }); 
@@ -50,13 +50,11 @@ const LoginScreen = ({ navigation }) => {
       
     })
       .then(res => {
-       // console.warn('res=', JSON.stringify(res));
         return res.json()
       })
       .then(
         (result) => {
          
-         //console.warn("fetch POST= ", JSON.stringify(result));
         const profile = result;
           if(result == null){
             Alert.alert(
@@ -115,7 +113,6 @@ const navigateTo = async (profile) =>{
       // Error saving data
       console.warn(error);
     }
-    //AsyncStorage.clear();
   setTimeout(() => {
     navigation.navigate('MyTabs', { screen: 'MyProfileStack',params:{ screen:'MyProfile',params:{profile: profile},},}); 
    }, 2500);

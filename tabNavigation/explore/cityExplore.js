@@ -50,7 +50,7 @@ const CityExplore = ({ route, navigation }) => {
     const getDataAndContinue = (item) => {
         setIsLoading(true)
         if (item.name=='Attractions') {
-            fetch('https://www.triposo.com/api/20200405/poi.json?tag_labels=beaches|dancing|zoos|museums|exploringnature|poitype-Park|poitype-Shopping_centre&location_id=' + (myData.cityNameApi) + '&order_by=-score&count=100&fields=id,score,intro,location_id,name,images,tags,properties&account=FOBIVROX&token=znghja9mhtwjjt5gsc8jydhayg07gkqz', {
+            fetch('https://www.triposo.com/api/20200405/poi.json?tag_labels=beaches|dancing|zoos|museums|exploringnature|poitype-Park|poitype-Shopping_centre&location_id=' + (myData.cityNameApi) + '&order_by=-score&count=100&fields=id,coordinates,score,intro,location_id,name,images,tags,properties&account=FOBIVROX&token=znghja9mhtwjjt5gsc8jydhayg07gkqz', {
                 method: 'GET',
                 headers: new Headers({
                     'Content-type': 'application/json; charset=UTF-8' //very important to add the 'charset=UTF-8'!!!!
@@ -70,7 +70,7 @@ const CityExplore = ({ route, navigation }) => {
                 })
             
         } else {
-            fetch('https://www.triposo.com/api/20200405/poi.json?tag_labels=' + (item.apiName) + '&location_id=' + (myData.cityNameApi) + '&order_by=-score&count=100&fields=id,score,intro,location_id,name,images,tags,properties&account=FOBIVROX&token=znghja9mhtwjjt5gsc8jydhayg07gkqz', {
+            fetch('https://www.triposo.com/api/20200405/poi.json?tag_labels=' + (item.apiName) + '&location_id=' + (myData.cityNameApi) + '&order_by=-score&count=100&fields=id,coordinates,score,intro,location_id,name,images,tags,properties&account=FOBIVROX&token=znghja9mhtwjjt5gsc8jydhayg07gkqz', {
                 method: 'GET',
                 headers: new Headers({
                     'Content-type': 'application/json; charset=UTF-8' //very important to add the 'charset=UTF-8'!!!!

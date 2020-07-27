@@ -1,9 +1,10 @@
 import { Text, View, StyleSheet, ActivityIndicator } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
+import Background from '../login/src/components/Background'
 
 import React, { useState, useEffect, useRef } from 'react';
 
-const watingToChat = () => {
+const watingToChat = (props) => {
     const [profile, setProfile] = useState(null)
 
     useEffect(() => {
@@ -38,10 +39,12 @@ const watingToChat = () => {
     }
     if (profile !== null) {
         return (
+            <Background>
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                <Text>Hello {profile.FirstName}</Text>
-                <Text>The Chat functionality will start as soon as the guide will approve your request!</Text>
+                <Text style={{fontSize:50}}>Hello {profile.FirstName}!</Text>
+                <Text style={{fontSize:18 ,margin:20}}>{props.message}</Text>
             </View>
+            </Background>
         );
 
     } else {

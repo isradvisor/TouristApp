@@ -7,21 +7,15 @@ import Button from '../components/Button';
 import TextInput from '../components/TextInput';
 import BackButton from '../components/BackButton';
 import { theme } from '../core/theme';
-import {
-  emailValidator,
-  passwordValidator,
-  nameValidator,
-} from '../core/utils';
-//import DateTimePickerModal from "react-native-modal-datetime-picker";
+import { emailValidator, passwordValidator, nameValidator, } from '../core/utils';
 import AnimatedLoader from "react-native-animated-loader";
 import { Button as BTNElements, CheckBox } from 'react-native-elements';
-import { Foundation } from '@expo/vector-icons'
-import moment from "moment";
 import RNPickerSelect from 'react-native-picker-select';
 import { Notifications } from 'expo';
 import * as Permissions from 'expo-permissions';
 import Constants from 'expo-constants';
 import DatePicker from 'react-native-datepicker'
+
 
 
 const RegisterScreen = ({ route, navigation }) => {
@@ -53,7 +47,7 @@ const RegisterScreen = ({ route, navigation }) => {
   //on load the screen - get all the languages from DB
   useEffect(() => {
     registerForPushNotificationsAsync();
-   const _notificationSubscription = Notifications.addListener(_handleNotification);
+    const _notificationSubscription = Notifications.addListener(_handleNotification);
     getFromDB();
     if (googleFacebookAccount != undefined) {
       setFirstName({ value: googleFacebookAccount.profile.FirstName, error: '' });
@@ -93,7 +87,6 @@ const RegisterScreen = ({ route, navigation }) => {
   };
 
   const _handleNotification = notification => {
-    //Vibration.vibrate();
     console.log(notification);
     setNotification(notification)
   };
@@ -132,12 +125,10 @@ const RegisterScreen = ({ route, navigation }) => {
 
     })
       .then(res => {
-        // console.warn('res=', JSON.stringify(res));
         return res.json()
       })
       .then(
         (result) => {
-          //console.warn("fetch POST= ", JSON.stringify(result));
           const temp = [];
           for (let i = 0; i < result.length; i++) {
 
@@ -192,99 +183,99 @@ const RegisterScreen = ({ route, navigation }) => {
         { cancelable: false }
       )
     }
-    else{
-
-    if (emailError || passwordError || nameError || lastNameError || password.value != confirmPass.value || gender == '' || birthdate == null || languageChosen == '') {
-      setFirstName({ ...firstName, error: nameError });
-      setLastName({ ...lastName, error: lastNameError });
-      setEmail({ ...email, error: emailError });
-      setPassword({ ...password, error: passwordError });
-      setConfirmPass({ ...confirmPass, error: confirmPassError })
-      if (password.value != confirmPass.value || passwordError) {
-        Alert.alert(
-          'Error',
-          'Password confirmation is incorrect',
-          [
-            { text: 'OK' },
-          ],
-          { cancelable: false }
-        )
-      }
-      if (nameError) {
-        Alert.alert(
-          'Error',
-          'Please enter a valid name',
-          [
-            { text: 'OK' },
-          ],
-          { cancelable: false }
-        )
-      }
-      if (email == ''|| emailError) {
-        Alert.alert(
-          'Error',
-          'Email Address is not valid',
-          [
-            { text: 'OK' },
-          ],
-          { cancelable: false }
-        )
-      }
-      if (gender == '') {
-        Alert.alert(
-          'Error',
-          'Please choose gender',
-          [
-            { text: 'OK' },
-          ],
-          { cancelable: false }
-        )
-      }
-      if (birthdate == null) {
-        Alert.alert(
-          'Error',
-          'Please set your BirthDate',
-          [
-            { text: 'OK' },
-          ],
-          { cancelable: false }
-        )
-      }
-      if (languageChosen == '') {
-        Alert.alert(
-          'Error',
-          'Please set your native language',
-          [
-            { text: 'OK' },
-          ],
-          { cancelable: false }
-        )
-      }
-
-
-      return;
-    }
-
-    //if the validation ok, he will turn to this path of registration
     else {
-      const user = {
-        FirstName: firstName.value,
-        LastName: lastName.value,
-        Email: email.value,
-        PasswordTourist: password.value,
-        Gender: gender,
-        YearOfBirth: birthdate,
-        LanguageCode: languageChosen,
-        Token:expoPushToken
-      }
-      if (googleFacebookAccount == undefined) {
 
-        fetchToDB(user, apiSignUpUrl)
-      } else {
+      if (emailError || passwordError || nameError || lastNameError || password.value != confirmPass.value || gender == '' || birthdate == null || languageChosen == '') {
+        setFirstName({ ...firstName, error: nameError });
+        setLastName({ ...lastName, error: lastNameError });
+        setEmail({ ...email, error: emailError });
+        setPassword({ ...password, error: passwordError });
+        setConfirmPass({ ...confirmPass, error: confirmPassError })
+        if (password.value != confirmPass.value || passwordError) {
+          Alert.alert(
+            'Error',
+            'Password confirmation is incorrect',
+            [
+              { text: 'OK' },
+            ],
+            { cancelable: false }
+          )
+        }
+        if (nameError) {
+          Alert.alert(
+            'Error',
+            'Please enter a valid name',
+            [
+              { text: 'OK' },
+            ],
+            { cancelable: false }
+          )
+        }
+        if (email == '' || emailError) {
+          Alert.alert(
+            'Error',
+            'Email Address is not valid',
+            [
+              { text: 'OK' },
+            ],
+            { cancelable: false }
+          )
+        }
+        if (gender == '') {
+          Alert.alert(
+            'Error',
+            'Please choose gender',
+            [
+              { text: 'OK' },
+            ],
+            { cancelable: false }
+          )
+        }
+        if (birthdate == null) {
+          Alert.alert(
+            'Error',
+            'Please set your BirthDate',
+            [
+              { text: 'OK' },
+            ],
+            { cancelable: false }
+          )
+        }
+        if (languageChosen == '') {
+          Alert.alert(
+            'Error',
+            'Please set your native language',
+            [
+              { text: 'OK' },
+            ],
+            { cancelable: false }
+          )
+        }
 
-        fetchToDB(user, apiGFSignUpFirstTimeUrl)
+
+        return;
       }
-    }
+
+      //if the validation ok, he will turn to this path of registration
+      else {
+        const user = {
+          FirstName: firstName.value,
+          LastName: lastName.value,
+          Email: email.value,
+          PasswordTourist: password.value,
+          Gender: gender,
+          YearOfBirth: birthdate,
+          LanguageCode: languageChosen,
+          Token: expoPushToken
+        }
+        if (googleFacebookAccount == undefined) {
+
+          fetchToDB(user, apiSignUpUrl)
+        } else {
+
+          fetchToDB(user, apiGFSignUpFirstTimeUrl)
+        }
+      }
     }
   };
 
@@ -300,12 +291,10 @@ const RegisterScreen = ({ route, navigation }) => {
 
     })
       .then(res => {
-        //console.warn('res=', JSON.stringify(res));
         return res.json()
       })
       .then(
         (result) => {
-          // console.warn("fetch POST= ", JSON.stringify(result));
 
           //Error list from fetch:
           //0 / 1 = db error
@@ -378,13 +367,12 @@ const RegisterScreen = ({ route, navigation }) => {
 
   //navigation to next page with all the details of the user
   const navigateTo = (profile) => {
-  AsyncStorage.setItem('ProfileTourist',JSON.stringify(profile));
-  console.warn('nativageTo',profile)
+    AsyncStorage.setItem('ProfileTourist', JSON.stringify(profile));
     setTimeout(() => {
       navigation.navigate('Dashboard', { profile: profile })
       sendPushNotification();
     }, 2500);
-  
+
   }
 
 
@@ -515,7 +503,7 @@ const RegisterScreen = ({ route, navigation }) => {
 
         </View>
         <View style={{ flex: 0, flexDirection: 'row' }}>
-        <Text style={{ color: 'white', fontWeight: 'bold', alignSelf: 'center', fontSize: 18 }}>BirthDay:</Text>
+          <Text style={{ color: 'white', fontWeight: 'bold', alignSelf: 'center', fontSize: 18 }}>BirthDay:</Text>
 
           {/* <BTNElements
             icon={
@@ -532,8 +520,8 @@ const RegisterScreen = ({ route, navigation }) => {
             onPress={showDatePicker}
           /> */}
           <DatePicker
-          style={{backgroundColor:"#fff",marginLeft: 10}}
-          date={birthdate}
+            style={{ backgroundColor: "#fff", marginLeft: 10 }}
+            date={birthdate}
             placeholder="Birthday"
             format="YYYY-MM-DD"
             maxDate={new Date()}

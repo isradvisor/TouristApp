@@ -1,24 +1,16 @@
-import React, { useEffect, useState, useRef, componentWillMount } from 'react';
-
+import React, { useEffect, useState, useRef} from 'react';
 import firstTimeInIsrael from './funnel/screens/1-firstTimeInIsrael';
 import TripType from './funnel/screens/2-tripType';
 import FlightsDates from './funnel/screens/3-FlightsDates'
 import Budget from './funnel/screens/4-Budget'
-//import Interest from './funnel/screens/interestsTemp'
 import MatchScreen from './funnel/screens/6-matchScreen'
 import GuideProfile from './funnel/screens/GuideProfile'
-import {
-  HomeScreen,
-  LoginScreen,
-  RegisterScreen,
-  ForgotPasswordScreen,
-  Dashboard,
-} from './login/src/screens';
+import { HomeScreen,LoginScreen,RegisterScreen, ForgotPasswordScreen, Dashboard} from './login/src/screens';
 import MyTrip from "./tabNavigation/myTrip";
-import { NavigationContainer, CommonActions } from '@react-navigation/native';
+import { NavigationContainer} from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
-import { Text, View, ActivityIndicator, Alert, AppState } from 'react-native';
+import {ActivityIndicator, Alert, AppState} from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import MyProfile from "./tabNavigation/myProfile";
 import MainExplore from "./tabNavigation/explore/mainExplore";
@@ -26,26 +18,14 @@ import CityExplore from "./tabNavigation/explore/cityExplore";
 import Attractions from "./tabNavigation/explore/attractions";
 import Resturants from "./tabNavigation/explore/resturants";
 import Hotels from "./tabNavigation/explore/hotels";
+import Search from './tabNavigation/explore/search'; 
 import Chat from './tabNavigation/chat';
 import EditProfile from './tabNavigation/editProfile';
 import { FontAwesome } from '@expo/vector-icons';
 import firebaseSvc from './services/firebaseSDK';
 import Interest from './funnel/screens/5-Interests';
-import { Notifications } from 'expo';
-import { Ionicons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
 
 
-
-
-let num1 = 0;
-
-
-
-
-
-
-//http://api.openweathermap.org/data/2.5/group?id=524901,703448,2643743&units=metric
 
 
 fetch('http://api.openweathermap.org/data/2.5/group?id=293397,281184,294801,293322,295721,295277,7117228,294098&units=metric&appid=821ab800e4695da1b165f622f586a636', {
@@ -64,7 +44,6 @@ fetch('http://api.openweathermap.org/data/2.5/group?id=293397,281184,294801,2933
         JSON.stringify(result.list)
       );
     } catch (error) {
-      // Error saving data
       console.warn('error : ', error)
     };
     (error) => {
@@ -73,13 +52,7 @@ fetch('http://api.openweathermap.org/data/2.5/group?id=293397,281184,294801,2933
   })
 
 
-// function myTrip() {
-//   return (
-//     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-//       <Text>My Trip!</Text>
-//     </View>
-//   );
-// }
+
 
 const Stack = createStackNavigator();
 
@@ -134,6 +107,7 @@ function MyExploreStack() {
       <ExploreStack.Screen name="Attractions" component={Attractions} />
       <ExploreStack.Screen name="Resturants" component={Resturants} />
       <ExploreStack.Screen name="Hotels" component={Hotels} />
+      <ExploreStack.Screen name="Search" component={Search} />
     </ExploreStack.Navigator>
   );
 }
@@ -148,53 +122,6 @@ function MyProfileStack() {
     </ProfileStack.Navigator>
   );
 }
-
-// function IconWithBadge({ name,badgeCount,color, size }) {
-//   console.warn('in icon with badge: ',badgeCount)
-//   return (
-//     <View style={{ width: 24, height: 24, margin: 5 }}>
-//       <Ionicons name={name} size={size} color={color}  />
-//       {badgeCount > 0 && (
-//         <View
-//           style={{
-//             // On React Native < 0.57 overflow outside of parent will not work on Android, see https://git.io/fhLJ8
-//             position: 'absolute',
-//             right: -6,
-//             top: -3,
-//             backgroundColor: 'red',
-//             borderRadius: 6,
-//             width: 12,
-//             height: 12,
-//             justifyContent: 'center',
-//             alignItems: 'center',
-//           }}
-//         >
-//           <Text style={{ color: 'white', fontSize: 10, fontWeight: 'bold' }}>
-//             {badgeCount}
-//           </Text>
-//         </View>
-//       )}
-//     </View>
-//   );
-// }
-
-// function  ChatIconWithBadge(props) {
-//   AsyncStorage.getItem('NumNotification').then((value)=>{
-//     if(value !== null){
-//       num1 = JSON.parse(value);
-//     }
-//   })
-//   console.warn('before display')
-//   console.warn('infunction',num1);
-//   // You should pass down the badgeCount in some other ways like React Context API, Redux, MobX or event emitters.
-//   return <IconWithBadge {...props} badgeCount={num1}/>;
-// }
-// const countNotification=(num2)=>{
-//   console.warn('beforeNum',num1);
-//   num1 = num2;
-//   console.warn('num',num1);
-//   }
-
 
 const Tab = createBottomTabNavigator();
 
@@ -254,7 +181,6 @@ function MyTabs() {
 
 
 export default function App() {
-  //const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState(null)
   const appState = useRef(AppState.currentState);
   const [appStateVisible, setAppStateVisible] = useState(appState.current);
@@ -262,9 +188,8 @@ export default function App() {
 
 
   useEffect(() => {
-    //AsyncStorage.clear();
+    AsyncStorage.clear();
     readUserData();
-    //countNotification(0);
   }, [])
 
   useEffect(() => {
@@ -280,14 +205,11 @@ export default function App() {
       appState.current.match(/inactive|background/) &&
       nextAppState === "active"
     ) {
-      console.warn("App has come to the foreground!");
       try {
         await AsyncStorage.getItem('ProfileTourist').then(async (value) => {
           if (value !== null) {
-            console.warn('VALUE?=',value);
             const profile = JSON.parse(value);
             if (profile !== null || profile !== undefined) {
-              //firebaseSvc.login(user);
               checkStatus(profile);
             }
           }
@@ -302,7 +224,6 @@ export default function App() {
 
     appState.current = nextAppState;
     setAppStateVisible(appState.current);
-    console.warn("AppState", appState.current);
 
 
   };
@@ -313,10 +234,8 @@ export default function App() {
     try {
       await AsyncStorage.getItem('ProfileTourist').then(async (value) => {
         if (value !== null) {
-          console.warn('VALUE?=',value);
           const profile = JSON.parse(value);
           if (profile !== null || profile !== undefined) {
-            //firebaseSvc.login(user);
             setData(profile)
           }
         }
@@ -334,7 +253,6 @@ export default function App() {
 
 
   const ChangeStatus = (user) => {
-    console.warn('user', user)
     fetch('http://proj.ruppin.ac.il/bgroup10/PROD/api/BuildTrip', {
       method: 'PUT',
       body: JSON.stringify(user),
@@ -347,14 +265,12 @@ export default function App() {
       })
       .then(
         (result) => {
-          console.warn('res', result)
           let TouristStatus = "";
 
           result.map((item) => {
             if (item.TouristEmail == user.TouristEmail) { TouristStatus = item.Status } {
             }
           })
-          console.warn('ChatStatus', TouristStatus);
           AsyncStorage.setItem('ChatStatus', TouristStatus)
         },
         (error) => {
@@ -364,7 +280,6 @@ export default function App() {
 
 
   const checkStatus = (profile) => {
-    console.warn('StatusAPPJS',profile)
     fetch('http://proj.ruppin.ac.il/bgroup10/PROD/api/BuildTrip/GetTouristStatus?email=' + profile.Email, {
       method: 'GET',
       headers: new Headers({
@@ -386,10 +301,6 @@ export default function App() {
               password: profile.PasswordTourist
             }
             await firebaseSvc.login(user);
-
-            //setIsLoading(false);
-            //GetGuideDetails(result.GuideEmail);
-
           }
           else if (result.Status == 'Accept Request') {
             const user2 = {

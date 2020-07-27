@@ -1,4 +1,4 @@
-import { Text, View, StyleSheet, Image, ImageBackground, Animated, ActivityIndicator, AnimatedLoader, Alert } from 'react-native';
+import { Text, View, StyleSheet, Image, ImageBackground, Animated, ActivityIndicator, Alert } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import React, { useState, useEffect, useRef } from 'react';
 import { FontAwesome } from '@expo/vector-icons';
@@ -7,13 +7,6 @@ import { Notifications } from 'expo';
 import firebaseSvc from '../services/firebaseSDK';
 import { useRoute } from '@react-navigation/native';
 
-
-
-
-
-// const bacekgroundPic = {
-//     uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcTrLwj32NAzB7FQKHvgOknR76K5RalnfSJUtg&usqp=CAU'
-// }
 
 const FadeInView = (props) => {
 
@@ -49,20 +42,11 @@ const MyProfile = ({ navigation }) => {
     //const profile = route.params.profile;
     const [status, setStatus] = useState(null)
     const [profile, setProfile] = useState(null)
-    const [fontLoaded, setFontLoaded] = useState(false)
-    const [profile, setProfile] = useState(null)
-    const [notifications, setNotification] = useState({});
-    const [showrating, setShowRating] = useState(3.5);
-    const [isLoading, setIsLoading] = useState(false);
-    const [gotNotification, setGotNotification] = useState(false);
     const route = useRoute();
 
 
     let data = null;
 
-    // useEffect(()=>{
-    //     readUserData();
-    // },[])
     useEffect(() => {
         const unsubscribe = navigation.addListener('focus', () => {
             readUserData();
@@ -81,7 +65,6 @@ const MyProfile = ({ navigation }) => {
         if (notification.data.path !== null) {
 
             if (notification.data.path == 'Chat') {
-                console.warn('currentRoute', route)
                 if (route.name !== 'Chat') {
                     Alert.alert(
                         'New Message',
@@ -128,7 +111,6 @@ const MyProfile = ({ navigation }) => {
                         await AsyncStorage.removeItem('ChatStatus');
                         await AsyncStorage.setItem('ChatStatus', result.Status)
                         setStatus(result.Status);
-                        console.warn('resultStatud', result)
                         if (result.Status == 'Start Chat') {
                             const user = {
                                 email: data.Email,
@@ -136,8 +118,7 @@ const MyProfile = ({ navigation }) => {
                             }
                             await firebaseSvc.login(user);
 
-                            //setIsLoading(false);
-                            //GetGuideDetails(result.GuideEmail);
+                         
 
                         }
                         else if (result.Status == 'Accept Request') {
@@ -181,9 +162,7 @@ const MyProfile = ({ navigation }) => {
                               });
                               for (let i = 0; i < tempArr.length; i++) {
                                   const element = tempArr[i];
-                                  console.warn('element',element)
                                   if (element.value == null) {
-                                      console.warn('key',element.key);
                                       navigation.navigate(element.key,{profile:data});
                                     break;
                                   }
@@ -231,9 +210,7 @@ const MyProfile = ({ navigation }) => {
                 }
 
             })
-            // .then(() => {
-            //     _notificationSubscription = Notifications.addListener(_handleNotification);
-            // });
+         
         }
         catch (e) {
             console.warn('failed to fetch data')
@@ -243,7 +220,6 @@ const MyProfile = ({ navigation }) => {
     }
 
     const ChangeStatus = (user) => {
-        console.warn('in change in app', user)
         fetch('http://proj.ruppin.ac.il/bgroup10/PROD/api/BuildTrip', {
             method: 'PUT',
             body: JSON.stringify(user),
@@ -256,7 +232,6 @@ const MyProfile = ({ navigation }) => {
             })
             .then(
                 (result) => {
-                    console.warn('changeStatus', result)
 
                     let TouristStatus = "";
 
@@ -264,7 +239,6 @@ const MyProfile = ({ navigation }) => {
                         if (item.TouristEmail == user.TouristEmail) { TouristStatus = item.Status } {
                         }
                     })
-                    console.warn('currentStatus', TouristStatus)
                     AsyncStorage.setItem('ChatStatus', TouristStatus)
                     setStatus(TouristStatus);
                 },
@@ -277,24 +251,15 @@ const MyProfile = ({ navigation }) => {
 
 
     const logOutAndCleanAsyncStorage = async () => {
-        //let keys = ['ProfileTourist', 'googleFacebookAccount'];
         let keys = ['ProfileTourist', 'googleFacebookAccount', 'messagesTourist', 'idChatTourist', 'GuideUser', 'idChatGuide', 'top3Guides', 'ChatStatus', 'GuideUser','firstTimeInIsrael', 'TripType', 'FlightsDates', 'Budget','Interest','MatchScreen'];
         await AsyncStorage.multiRemove(keys, (err) => {
             if (err == null) {
                 navigation.navigate('HomeScreen')
             }
-            // keys k1 & k2 removed, if they existed
-            // do most stuff after removal (if you want)
+           
 
         });
-        //await AsyncStorage.removeItem('googleFacebookAccount')
-        // await AsyncStorage.removeItem('messagesTourist');
-        // await AsyncStorage.removeItem('idChatTourist');
-        // await AsyncStorage.removeItem('GuideUser');
-        // await AsyncStorage.removeItem('idChatGuide');
-        // await AsyncStorage.removeItem('top3Guides')
-        // await AsyncStorage.removeItem('ProfileTourist').then(
-        // )
+   
 
     }
 
@@ -313,13 +278,6 @@ const MyProfile = ({ navigation }) => {
     if (profile !== null) {
         return (
             <View>
-                {/* {isLoading &&  <AnimatedLoader
-        visible={isLoading}
-        overlayColor="rgba(255,255,255,0.75)"
-        animationStyle={{width: 100, height: 100}}
-        source={require("../assets/loading.json")}
-        speed={1}
-      />} */}
                 <FadeInView >
                     <ImageBackground
                         source={require('../login/src/assets/Backgroung-IsraAdvisor.jpeg')}
@@ -330,7 +288,10 @@ const MyProfile = ({ navigation }) => {
 
                                 <Image
                                     style={styles.imgProfile}
-                                    source={require('../assets/user.png')}
+                                    source={{
+                                        uri:'http://proj.ruppin.ac.il/bgroup10/PROD/Images/Default-welcomer.png'
+                                    }
+                                    }
 
                                 />
                                 :
@@ -392,8 +353,8 @@ const styles = StyleSheet.create({
     },
     imgProfile: {
         borderRadius: 85,
-        borderWidth: 3,
-        borderColor: 'white',
+        borderWidth: 1,
+        borderColor: 'black',
         height: 130,
         marginBottom: 15,
         marginTop: 80,

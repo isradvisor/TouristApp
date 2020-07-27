@@ -4,10 +4,8 @@ import AsyncStorage from '@react-native-community/async-storage';
 import * as Font from 'expo-font';
 import AnimatedProgressWheel from 'react-native-progress-wheel';
 import { Card, ListItem, Button } from 'react-native-elements';
-import firebaseSvc from '../../services/firebaseSDK';
-import { Notifications } from 'expo';
-import * as Permissions from 'expo-permissions';
-import Constants from 'expo-constants';
+import { create } from 'uuid-js';
+
 
 
 const FadeInView = (props) => {
@@ -43,7 +41,8 @@ export default ({ route, navigation }) => {
   const [profile, setProfile] = useState('');
   const [TouristId, setTouristId] = useState('');
   const [fontLoaded, setFontLoaded] = useState(false);
-  const [topThreeGuides, setTopThreeGuides] = useState([])
+  const [topThreeGuides, setTopThreeGuides] = useState([]);
+
   let apiUrl = "";
 
 
@@ -65,7 +64,6 @@ export default ({ route, navigation }) => {
   const tempFunc = async () => {
     let profile = await AsyncStorage.getItem('ProfileTourist');
     if (profile !== undefined || profile !== null) {
-      console.warn('tempFunc', profile)
       profile = JSON.parse(profile);
       getTourist(profile.Email)
     }
@@ -76,7 +74,6 @@ export default ({ route, navigation }) => {
 
 
   const getTourist = async (email) => {
-    console.warn(email)
     fetch('http://proj.ruppin.ac.il/bgroup10/PROD/api/Tourist?email=' + email, {
       method: 'GET',
       headers: new Headers({
@@ -85,34 +82,25 @@ export default ({ route, navigation }) => {
 
     })
       .then(res => {
-        //console.warn('res=', JSON.stringify(res));
         return res.json()
       })
       .then(
         async (result) => {
-          console.warn('matchScreen', result)
-          //await AsyncStorage.removeItem('ProfileTourist')
           await AsyncStorage.setItem('ProfileTourist', JSON.stringify(result))
           let profile = await AsyncStorage.getItem('ProfileTourist');
-          console.warn('after', JSON.parse(profile))
           if (profile !== undefined || profile !== null) {
             profile = JSON.parse(profile);
             setTouristId(profile.TouristID);
             setProfile(profile)
-            console.warn('after set tourist');
-            console.warn(profile.TouristID)
             apiUrl = 'http://proj.ruppin.ac.il/bgroup10/PROD/api/Match/calculateTouristBetweenGuides/' + profile.TouristID
           }
           await AsyncStorage.getItem("top3Guides")
             .then((value) => {
               if (value !== null) {
                 let top3Guides = JSON.parse(value);
-                console.warn("in use effect-async", top3Guides)
                 setTopThreeGuides(top3Guides)
 
               } else {
-                console.warn("in use effect-not async")
-
                 getAllMatchGuidesToTourist();
               }
             }
@@ -125,41 +113,7 @@ export default ({ route, navigation }) => {
 
   }
 
-  // const tempName = async()=>{
-  //   await AsyncStorage.getItem('ProfileTourist').then((value) => {
-  //     if (value !== null || value !== undefined) {
-  //       let ProfileTourist = JSON.parse(value);
-  //       console.warn('async',ProfileTourist);
-  //       setTouristId(ProfileTourist.TouristID);
-  //       setProfile(ProfileTourist)
-  //       console.warn('after set tourist');
-  //       apiUrl = 'http://proj.ruppin.ac.il/bgroup10/PROD/api/Match/calculateTouristBetweenGuides/' + ProfileTourist.TouristID
 
-  //     }
-  //     else {
-  //       setTouristId(route.params.TouristId);
-  //       console.warn('noasync',TouristId);
-  //       console.warn('params: ',route.params)
-  //       setProfile(route.params.profile);
-  //       apiUrl = 'http://proj.ruppin.ac.il/bgroup10/PROD/api/Match/calculateTouristBetweenGuides/' + route.params.Profile.TouristId
-
-  //     }
-  //   });
-  //   await AsyncStorage.getItem("top3Guides")
-  //     .then((value) => {
-  //       if (value !== null) {
-  //         let top3Guides = JSON.parse(value);
-  //         console.warn("in use effect-async", top3Guides)
-  //         setTopThreeGuides(top3Guides)
-
-  //       } else {
-  //         console.warn("in use effect-not async")
-
-  //         getAllMatchGuidesToTourist();
-  //       }
-  //     }
-  //     )
-  // }
 
 
   const onPressCreate = async (profile, guide) => {
@@ -197,13 +151,11 @@ export default ({ route, navigation }) => {
 
     })
       .then(res => {
-        //console.warn('res=', JSON.stringify(res));
         return res.json()
       })
       .then(
         (result) => {
           console.log(result);
-          //console.warn("fetch POST= ", JSON.stringify(result));
         },
 
         (error) => {
@@ -223,7 +175,6 @@ export default ({ route, navigation }) => {
 
   //get Function from DB - list of the top 3 match guides and their id
   const getAllMatchGuidesToTourist = () => {
-    console.warn(apiUrl);
     fetch(apiUrl, {
       method: 'GET',
       headers: new Headers({
@@ -232,13 +183,10 @@ export default ({ route, navigation }) => {
 
     })
       .then(res => {
-        //console.warn('res=', JSON.stringify(res));
         return res.json()
       })
       .then(
         async (result) => {
-          console.warn("first result", result)
-          //console.warn("fetch POST= ", JSON.stringify(result));
           result.length > 0 && getGuides(result);
 
         },
@@ -264,14 +212,11 @@ export default ({ route, navigation }) => {
 
       })
         .then(res => {
-          //console.warn('res=', JSON.stringify(res));
           return res.json()
         })
         .then(
           async (result) => {
-            //console.warn("fetch POST= ", JSON.stringify(result));
             for (let i = 0; i < result.length; i++) {
-              //console.warn(matchResults[i])
               if (result[i].gCode == matchResults[i].Id2) {
 
                 result[i] = {
@@ -282,7 +227,6 @@ export default ({ route, navigation }) => {
               }
 
             }
-            console.warn("final guides", result)
             await AsyncStorage.setItem("top3Guides", JSON.stringify(result));
             setTopThreeGuides(result)
 
@@ -294,6 +238,18 @@ export default ({ route, navigation }) => {
           });
     }
 
+  }
+  const changecolor = (number) => {
+
+    if (number > 80) {
+      return '#4ddb64'
+    }
+    else if(number>60){
+      return '#dbdb4d';
+    }
+    else{
+      return '#db714d';
+    }
   }
 
 
@@ -327,35 +283,43 @@ export default ({ route, navigation }) => {
             <Card title="IT'S A MATCH!" titleStyle={styles.matchTtile}>
               {
                 topThreeGuides.map((guide, i) => {
+                  let pic ="";
+                  {guide.ProfilePic ==null || guide.ProfilePic =="" ? 
+                  pic='http://proj.ruppin.ac.il/bgroup10/PROD/Images/Default-welcomer.png'
+                  :
+                  pic=guide.ProfilePic
+                 }
+                  
                   return (
-
-                    <TouchableOpacity key={i} onPress={() => navigation.navigate('GuideProfile', { guide: guide })}>
+                    <View key={i}>
                       <ListItem
                         key={i}
                         leftAvatar={{
                           title: guide.FirstName,
-                          source: { uri: guide.ProfilePic },
+                          
+                          source: { uri: pic },
                           size: 'medium',
                           resizeMode: "cover",
                         }}
                         badge={{
                           value: guide.Percents.toFixed(2) + '%',
-                          badgeStyle: styles.badge,
+                          badgeStyle: style={ height: 50, borderRadius: 100,backgroundColor:changecolor(guide.Percents.toFixed(2))}
                         }}
                         bottomDivider
-                        title={guide.FirstName}
-                        subtitle={guide.LastName}
+                        title={guide.FirstName + ' ' + guide.LastName}
+                        subtitle='view profile'
+                        subtitleStyle={{ fontSize: 12, color: '#2089dc', textDecorationLine: 'underline' }}
+                        onPress={() => navigation.navigate('GuideProfile', { guide: guide })}
                         chevron
                         rightElement={
                           <Button
                             title={' Friend ' + "\n" + 'Request'}
                             titleStyle={{ fontSize: 14 }}
-                            containerStyle={{ marginLeft: 20 }}
+                            containerStyle={{ marginLeft: 10 }}
                             onPress={() => onPressCreate(profile, guide)}
-                          //onPress={() =>  navigation.navigate('MyTabs', { screen: 'MyProfileStack',params:{ screen:'MyProfile',params:{profile: profile},},})}
                           />}
                       />
-                    </TouchableOpacity>
+                    </View>
                   );
                 })
               }
@@ -401,7 +365,7 @@ const styles = StyleSheet.create({
 
   fadeTitle: {
     width: 420,
-    marginTop: 50,
+    marginTop: 40,
   },
 
   title: {
@@ -412,15 +376,8 @@ const styles = StyleSheet.create({
 
   matchTtile: {
     fontFamily: 'ComicNeue-Bold',
-    fontSize: 24
+    fontSize: 24,
   },
-
-  badge: {
-    height: 50,
-    borderRadius: 100,
-    backgroundColor: '#4ddb64'
-  }
-
 
 })
 

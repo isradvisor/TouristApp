@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Animated, Text, View, StyleSheet, Vibration, Image, ActivityIndicator, Alert,Dimensions } from 'react-native';
+import { Animated, Text, View, StyleSheet, Vibration, Image, ActivityIndicator, Alert } from 'react-native';
 import * as Font from 'expo-font';
 import { Button } from 'react-native-elements';
 import { SimpleLineIcons } from '@expo/vector-icons';
@@ -64,12 +64,10 @@ export default ({ route, navigation }) => {
 
     })
       .then(res => {
-        //console.warn('res=', JSON.stringify(res));
         return res.json()
       })
       .then(
         (result) => {
-          // console.warn("fetch POST= ", JSON.stringify(result));
 
           //list from fetch:
           //0 = db error
