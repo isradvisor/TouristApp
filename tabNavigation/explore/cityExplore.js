@@ -10,7 +10,6 @@ const CityExplore = ({ route, navigation }) => {
 
     const myData = route.params.item;
     const [isLoading, setIsLoading] = useState(false);
-    const [isLiked, setIsLiked] = useState(false);
 
    //list of attractions 
     const [data, setData] = useState([
@@ -138,14 +137,6 @@ const CityExplore = ({ route, navigation }) => {
                 }}>
                     <Feather name='arrow-left' sise={24} color='#fff' />
                 </TouchableOpacity>
-
-                <TouchableOpacity style={{
-                    position: 'absolute', right: 20, top: 40,
-                    backgroundColor: '#66b3ff', padding: 10, borderRadius: 40
-                }}>
-                    <Feather name='heart' sise={24} color='#fff' />
-                </TouchableOpacity>
-
 
             </ImageBackground>
 

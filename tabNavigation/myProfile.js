@@ -267,7 +267,7 @@ const MyProfile = ({ navigation }) => {
 
     const send = () => {
         sendEmail(
-            'IsraAdisor@gmail.com',
+            'Isradisor@gmail.com',
             '',
             ''
         ).then(() => {
