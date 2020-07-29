@@ -1,5 +1,5 @@
 import firebase from 'firebase'
-import {Alert} from 'react-native'
+import { Alert } from 'react-native'
 import '@firebase/firestore'
 import uuid from 'uuid'
 import AsyncStorage from '@react-native-community/async-storage';
@@ -23,7 +23,7 @@ class FirebaseSvc {
         }
         if (!firebase.apps.length) {
             firebase.initializeApp(config);
-          
+
         } else {
             console.log("firebase apps already running...")
         }
@@ -35,9 +35,9 @@ class FirebaseSvc {
     }
 
 
-    connect = () =>{
-       return firebase.firestore()
-           
+    connect = () => {
+        return firebase.firestore()
+
     }
 
     login = async (user) => {
@@ -57,14 +57,14 @@ class FirebaseSvc {
                                 const currentdata = doc.data()
                                 let guideEmail = currentdata.guideEmail;
                                 firebase.firestore().collection('users').get()
-                                    .then(async(res) => {
-                                            await AsyncStorage.removeItem('idChatTourist');
-                                            await AsyncStorage.removeItem('GuideUser');
-                                            await AsyncStorage.removeItem('idChatGuide');
+                                    .then(async (res) => {
+                                        await AsyncStorage.removeItem('idChatTourist');
+                                        await AsyncStorage.removeItem('GuideUser');
+                                        await AsyncStorage.removeItem('idChatGuide');
                                         for (let i = 0; i < res.docs.length; i++) {
                                             const element = res.docs[i];
                                             if (element.data().email == guideEmail) {
-                                                 GuideUser = {
+                                                GuideUser = {
                                                     _id: element.data().id,
                                                     name: element.data().name,
                                                     avatar: element.data().URL
@@ -72,9 +72,9 @@ class FirebaseSvc {
                                                 guideID = element.data().id
                                             }
                                         }
-                                       await AsyncStorage.setItem('idChatTourist',JSON.stringify(asyTour))
-                                       await AsyncStorage.setItem('GuideUser',JSON.stringify(GuideUser))
-                                       await AsyncStorage.setItem('idChatGuide',JSON.stringify(guideID))
+                                        await AsyncStorage.setItem('idChatTourist', JSON.stringify(asyTour))
+                                        await AsyncStorage.setItem('GuideUser', JSON.stringify(GuideUser))
+                                        await AsyncStorage.setItem('idChatGuide', JSON.stringify(guideID))
                                     })
                             })
                         })
@@ -87,11 +87,11 @@ class FirebaseSvc {
         let asyGuide = '';
         let asyTour = '';
         let URL = user.URL;
-        if(URL == "" || URL == null){
+        if (URL == "" || URL == null) {
             URL = "http://proj.ruppin.ac.il/bgroup10/PROD/Images/Default-welcomer.png"
         }
         try {
-           await AsyncStorage.removeItem('messagesTourist');
+            await AsyncStorage.removeItem('messagesTourist');
             await AsyncStorage.removeItem('idChatTourist');
             await AsyncStorage.removeItem('GuideUser');
             await AsyncStorage.removeItem('idChatGuide');
@@ -103,49 +103,49 @@ class FirebaseSvc {
                 .createUserWithEmailAndPassword(user.email, user.password)
                 .then(function (pass) {
 
-                            firebase.firestore().collection("users").add({
-                                name: user.name,
-                                id: pass.user.uid,
-                                email: user.email,
-                                password: user.password,
-                                URL: URL,
-                                type: "Tourist",
-                                guideEmail: GuideEmail,
-                                messages: [{ notificationId: "", number: 0 }]
-                            })
-                                .then(function () {
-                                    firebase.firestore().collection('users').get()
-                                        .then((res) => {
-                                            for (let i = 0; i < res.docs.length; i++) {
-                                                const element = res.docs[i];
-                                                if (element.data().email == GuideEmail) {
-                                                    let GuideUser = {
-                                                        _id: element.data().id,
-                                                        name: element.data().name,
-                                                        avatar: element.data().URL
-                                                    }
-                                                    asyGuide = element.data().id
-                                                    asyTour = pass.user.uid
-                                                    AsyncStorage.setItem('GuideUser', JSON.stringify(GuideUser));
-                                                    AsyncStorage.setItem('idChatGuide', JSON.stringify(element.data().id));
-                                                }
+                    firebase.firestore().collection("users").add({
+                        name: user.name,
+                        id: pass.user.uid,
+                        email: user.email,
+                        password: user.password,
+                        URL: URL,
+                        type: "Tourist",
+                        guideEmail: GuideEmail,
+                        messages: [{ notificationId: "", number: 0 }]
+                    })
+                        .then(function () {
+                            firebase.firestore().collection('users').get()
+                                .then((res) => {
+                                    for (let i = 0; i < res.docs.length; i++) {
+                                        const element = res.docs[i];
+                                        if (element.data().email == GuideEmail) {
+                                            let GuideUser = {
+                                                _id: element.data().id,
+                                                name: element.data().name,
+                                                avatar: element.data().URL
                                             }
-                                        })
+                                            asyGuide = element.data().id
+                                            asyTour = pass.user.uid
+                                            AsyncStorage.setItem('GuideUser', JSON.stringify(GuideUser));
+                                            AsyncStorage.setItem('idChatGuide', JSON.stringify(element.data().id));
+                                        }
+                                    }
                                 })
-                            AsyncStorage.setItem(
-                                'idChatTourist',
-                                JSON.stringify(pass.user.uid)
-                            );
-                       
+                        })
+                    AsyncStorage.setItem(
+                        'idChatTourist',
+                        JSON.stringify(pass.user.uid)
+                    );
 
-                            Alert.alert(
-                                'chat alert',
-                                'The chat functionality is now open!',
-                                [
-                                  { text: 'OK'},
-                                ],
-                                { cancelable: false }
-                              )             
+
+                    Alert.alert(
+                        'chat alert',
+                        'The chat functionality is now open!',
+                        [
+                            { text: 'OK' },
+                        ],
+                        { cancelable: false }
+                    )
                 }, function (error) {
                 });
         }, function (error) {
@@ -167,40 +167,40 @@ class FirebaseSvc {
         return firebase.database.ServerValue.TIMESTAMP;
     }
 
-    sendMessages = async(guideNotifications,guideDocumentID,guideID,touristID,groupChatId, timestamp, itemMessage) => {
-        console.log('guideNotifications',guideNotifications);
-        console.log('guideDocumentID',guideDocumentID);
-        console.log('touristID',touristID);
+    sendMessages = async (guideNotifications, guideDocumentID, guideID, touristID, groupChatId, timestamp, itemMessage) => {
+        console.log('guideNotifications', guideNotifications);
+        console.log('guideDocumentID', guideDocumentID);
+        console.log('touristID', touristID);
 
         let notificationMessages = [];
 
-       await firebase.firestore()
+        await firebase.firestore()
             .collection('messages')
             .doc(groupChatId)
             .collection(groupChatId)
             .doc(timestamp)
             .set(itemMessage)
 
-            if (guideNotifications.length > 0) {
-                guideNotifications.map((item) => {
-                    if (item.notificationId != touristID) {
-                        notificationMessages.push(
-                            {
-                                notificationId: item.notificationId,
-                                number: item.number
-                            }
-                        )
-                    }
-                })
-            }
-                notificationMessages.push({
-                    notificationId: touristID,
-                        number: 1
-                })
-            console.log('notificationMessages',notificationMessages);
-            
-      
-       await firebase.firestore()
+        if (guideNotifications.length > 0) {
+            guideNotifications.map((item) => {
+                if (item.notificationId != touristID) {
+                    notificationMessages.push(
+                        {
+                            notificationId: item.notificationId,
+                            number: item.number
+                        }
+                    )
+                }
+            })
+        }
+        notificationMessages.push({
+            notificationId: touristID,
+            number: 1
+        })
+        console.log('notificationMessages', notificationMessages);
+
+
+        await firebase.firestore()
             .collection('users')
             .doc(guideDocumentID)
             .update(
@@ -208,82 +208,83 @@ class FirebaseSvc {
                     messages: notificationMessages
                 }
             )
-            .then((data) => {console.log("Suceess") })
+            .then((data) => { console.log("Suceess") })
             .catch(err => {
-              
+
             })
     }
 
-    UpdatePassword = (result) =>{
-let email = result.TouristEmail;
-let oldPassword = result.OldPassword;
-let newPassword = result.NewPassword;
-    firebase.auth().signInWithEmailAndPassword(email, oldPassword)
-.then(async res => {
-    var user = firebase.auth().currentUser;
-    if (user) {
-        await firebase.firestore().collection('users')
-            .where('id', "==", user.uid)
-            .get()
-            .then(function (querySnapshot) {
-                querySnapshot.forEach(function (doc) {
-                    const currentdata = doc.data()
-                    user.updatePassword(newPassword).then(function () {
-                        firebase.firestore().collection("users").doc(doc.id).update({
-                            password: newPassword
-                            // Update successful.
-                        }).catch(function (error) {
-                            // An error happened.
-                        });
-                    })
-                })
-            })
+    UpdatePassword = (result) => {
+        let email = result.TouristEmail;
+        let oldPassword = result.OldPassword;
+        let newPassword = result.NewPassword;
+        firebase.auth().signInWithEmailAndPassword(email, oldPassword)
+            .then(async res => {
+                var user = firebase.auth().currentUser;
+                    console.warn(res);
+                if (user) {
+                    await firebase.firestore().collection('users')
+                        .where('id', "==", user.uid)
+                        .get()
+                        .then(function (querySnapshot) {
+                            querySnapshot.forEach(function (doc) {
+                                const currentdata = doc.data()
+                                user.updatePassword(newPassword).then(function () {
+                                    firebase.firestore().collection("users").doc(doc.id).update({
+                                        password: newPassword
+                                        // Update successful.
+                                    }).catch(function (error) {
+                                        // An error happened.
+                                    });
+                                })
+                            })
+                        })
+                }
+
+
+            }).catch(function(error){})
     }
 
 
-})
-    }
-
-
- updateProfilePictureFirebase = async(result) => {
-         var user = firebase.auth().currentUser;
+    updateProfilePictureFirebase = async (result) => {
+        var user = firebase.auth().currentUser;
         if (user) {
             await firebase.firestore().collection('users')
-            .where('id', "==", user.uid)
-            .get()
-            .then(function (querySnapshot) {
-                querySnapshot.forEach(function (doc) {
-                    const currentdata = doc.data()
+                .where('id', "==", user.uid)
+                .get()
+                .then(function (querySnapshot) {
+                    querySnapshot.forEach(function (doc) {
+                        const currentdata = doc.data()
                         firebase.firestore().collection("users").doc(doc.id).update({
                             URL: result
                             // Update successful.
                         }).catch(function (error) {
                             // An error happened.
                         });
+                    })
                 })
-            })
         }
     }
 
-    updateNameFirebase = async(result) => {
+    updateNameFirebase = async (result) => {
         var user = firebase.auth().currentUser;
-       if (user) {
-           await firebase.firestore().collection('users')
-           .where('id', "==", user.uid)
-           .get()
-           .then(function (querySnapshot) {
-               querySnapshot.forEach(function (doc) {
-                   const currentdata = doc.data()
-                       firebase.firestore().collection("users").doc(doc.id).update({
-                           name: result
-                           // Update successful.
-                       }).catch(function (error) {
-                           // An error happened.
-                       });
-               })
-           })
-       }
-   }
+        if (user) {
+            await firebase.firestore().collection('users')
+                .where('id', "==", user.uid)
+                .get()
+                .then(function (querySnapshot) {
+                    querySnapshot.forEach(function (doc) {
+                        const currentdata = doc.data()
+                        firebase.firestore().collection("users").doc(doc.id).update({
+                            name: result
+                            // Update successful.
+                        }).catch(function (error) {
+                            // An error happened.
+                        });
+                    })
+                })
+        }
+    }
 
     getMessages = (groupChatId) => {
         console.log('groupchatID', groupChatId);
@@ -354,26 +355,26 @@ let newPassword = result.NewPassword;
             this.groupChatId = `${guideID}-${touristID}`
         }
         // Get history and listen new data added
-    let d =  await firebase.firestore()
+        let d = await firebase.firestore()
             .collection('messages')
             .doc(this.groupChatId)
             .collection(this.groupChatId)
             .onSnapshot(
-             async(snapshot) => {
-                 snapshot.docChanges().forEach((change) => {
+                async (snapshot) => {
+                    snapshot.docChanges().forEach((change) => {
                         if (change.type === 'added') {
                             arr.push(change.doc.data())
                             this.listMessage.push(change.doc.data())
                         }
                     })
-                     AsyncStorage.setItem(
+                    AsyncStorage.setItem(
                         'messagesTourist',
                         JSON.stringify(arr)
                     );
                     console.log("555666")
                 }
-                )
-                .then(async(r)=> console.log('f',this.listMessage))
+            )
+            .then(async (r) => console.log('f', this.listMessage))
     }
 }
 

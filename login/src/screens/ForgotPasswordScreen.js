@@ -35,6 +35,7 @@ const ForgotPasswordScreen = ({ navigation }) => {
       })
       .then(
         (result) => {
+          console.warn('result',result)
           if (result !== null) {
             firebaseSvc.UpdatePassword(result);
 
@@ -71,7 +72,7 @@ return (
 
       {/* <Logo /> */}
 
-      <Header>Restore Password</Header>
+      <Header>Reset Password</Header>
 
       <TextInput
         label="E-mail address"
