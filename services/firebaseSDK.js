@@ -15,6 +15,7 @@ const config = {
 
 }
 
+
 class FirebaseSvc {
     constructor() {
         this.state = {

@@ -14,9 +14,7 @@ export const passwordValidator = password => {
 };
 
 export const nameValidator = name => {
-  const pattern = /^[a-zA-Z]{2,40}/;
-
-  const re = /^[a-zA-Z\s]{2,32}/;
+  const pattern = /^[a-zA-Z]+$/;
   if (!name || name.length <= 2 ) return 'Name should be at least 3 characters.';
   if (!pattern.test(name)) return 'Ooops! enter a valid name.';
   return '';

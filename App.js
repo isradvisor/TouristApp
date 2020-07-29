@@ -188,7 +188,7 @@ export default function App() {
 
 
   useEffect(() => {
-    AsyncStorage.clear();
+    //AsyncStorage.clear();
     readUserData();
   }, [])
 

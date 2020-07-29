@@ -219,7 +219,7 @@ const MainExplore = ({ route,navigation }) => {
                             <View style={styles.DarkOvelay}></View>
                             <View style={styles.SearchContainer}>
                                 <Text style={styles.UserGreet}>Hi {profile.FirstName} </Text>
-                                <Text style={styles.UserText}>Where would you like to go today</Text>
+                                <Text style={styles.UserText}>Where would you like to go today ?</Text>
                             </View>
                             <View>
                                 <TextInput
